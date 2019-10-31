@@ -38,6 +38,6 @@ pair =
     let
         f : FVV
         f _ expr1 expr2 =
-            VTuple ( expr1, expr2 )
+            VTuple (Tuple.pair expr1 expr2)
     in
     FunctionVV "Tuple.pair" f
