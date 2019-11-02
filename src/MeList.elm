@@ -88,15 +88,11 @@ sortInt =
     sort MeInt.toInt
 
 
-sort : (V -> Result String comparable1) -> Expr
-sort unbox =
+transformSort : FV -> (V -> Result String comparable) -> Context -> List Expr -> V
+transformSort ord unbox c exprLst =
     let
-        ord : FV
-        ord c expr =
-            computeV c expr
-
-        listOfTups : Context -> List Expr -> Result String (List ( comparable1, Expr ))
-        listOfTups c lst =
+        listOfTups : List Expr -> Result String (List ( comparable, Expr ))
+        listOfTups lst =
             case lst of
                 [] ->
                     Ok []
@@ -104,7 +100,7 @@ sort unbox =
                 head :: rest ->
                     case unbox (ord c head) of
                         Ok h ->
-                            case listOfTups c rest of
+                            case listOfTups rest of
                                 Ok others ->
                                     ( h, head )
                                         :: others
@@ -115,24 +111,30 @@ sort unbox =
 
                         Err s ->
                             Err s
+    in
+    case listOfTups exprLst of
+        Ok tups ->
+            tups
+                |> List.sortBy Tuple.first
+                |> List.map Tuple.second
+                |> VList
 
-        transformSort : Context -> List Expr -> V
-        transformSort c lst =
-            case listOfTups c lst of
-                Ok tups ->
-                    tups
-                        |> List.sortBy Tuple.first
-                        |> List.map Tuple.second
-                        |> VList
+        Err s ->
+            VError s
 
-                Err s ->
-                    VError s
+
+sort : (V -> Result String comparable) -> Expr
+sort unbox =
+    let
+        ord : FV
+        ord c expr =
+            computeV c expr
 
         f : FV
         f c expr =
             case computeV c expr of
                 VList lst ->
-                    transformSort c lst
+                    transformSort ord unbox c lst
 
                 _ ->
                     VError "sort wants a list"
