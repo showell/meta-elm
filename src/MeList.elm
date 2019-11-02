@@ -165,7 +165,7 @@ map mapperExpr =
                     happy_path lst (mapper c)
 
                 ( _, Err s ) ->
-                    VError ("bad mapper" ++ s)
+                    VError ("bad mapper: " ++ s)
 
                 _ ->
                     VError "map wants a list"

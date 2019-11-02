@@ -31,8 +31,8 @@ type alias BinaryImpl =
     }
 
 
-fMap2 : BinaryImpl -> String -> Expr
-fMap2 impl name =
+binOp : BinaryImpl -> String -> Expr
+binOp impl name =
     let
         f : FVV
         f c expr1 expr2 =
@@ -58,7 +58,7 @@ fMap2 impl name =
                 _ ->
                     VError "need numbers here"
     in
-    FunctionVV name f
+    BinOp name "n" f
 
 
 plus : Expr
@@ -87,4 +87,4 @@ plus =
             , fFF = fFF
             }
     in
-    fMap2 impl "(+)"
+    binOp impl "+"

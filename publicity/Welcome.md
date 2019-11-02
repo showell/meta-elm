@@ -117,7 +117,7 @@ normalize lst =
         |> List.indexedMap Tuple.pair
         |> List.sortBy Tuple.second
         |> List.map Tuple.first
-        |> List.map ((+) 1)
+        |> List.map (\n -> n + 1)
 
 normalize testList
 ```

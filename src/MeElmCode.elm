@@ -27,7 +27,7 @@ toElmCode topExpr =
         withoutParens s =
             s
 
-        toCode parenWraper expr =
+        toCode parenWrapper expr =
             case expr of
                 Var name _ ->
                     -- TODO: make let statements
@@ -59,17 +59,25 @@ toElmCode topExpr =
                 FunctionVV name _ ->
                     name
 
+                BinOp opname vname _ ->
+                    "\\"
+                        ++ vname
+                        ++ " -> "
+                        ++ vname
+                        ++ " "
+                        ++ opname
+
                 Curry fvvExpr curryExpr ->
                     toCode withParens fvvExpr
                         ++ " "
                         ++ toCode withParens curryExpr
-                        |> parenWraper
+                        |> parenWrapper
 
                 ComposeF name exprF _ ->
                     name
                         ++ " "
                         ++ toCode withParens exprF
-                        |> parenWraper
+                        |> parenWrapper
 
                 _ ->
                     " ? "

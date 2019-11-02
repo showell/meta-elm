@@ -82,16 +82,16 @@ getFuncV context expr =
             Ok f
 
         Curry curryExpr op1Expr ->
-            case curryExpr of
-                FunctionVV _ fvv ->
+            case getFuncVV context curryExpr of
+                Ok fvv ->
                     let
                         fv c op2Expr =
                             fvv c op1Expr op2Expr
                     in
                     Ok fv
 
-                _ ->
-                    Err "curry wants a function"
+                Err s ->
+                    Err ("curry wants a function: " ++ s)
 
         _ ->
             Err "not a function"
@@ -101,6 +101,9 @@ getFuncVV : Context -> Expr -> Result String FVV
 getFuncVV _ expr =
     case expr of
         FunctionVV _ fvv ->
+            Ok fvv
+
+        BinOp _ _ fvv ->
             Ok fvv
 
         _ ->
