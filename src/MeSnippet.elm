@@ -20,7 +20,8 @@ permuteFloats testList =
         pipeline =
             MeType.PipeLine
                 lst
-                [ MeList.map MeInt.toFloat
+                [ MeList.sortInt
+                , MeList.map MeInt.toFloat
                 , MeList.map (MeType.Curry MeNumber.plus (MeFloat.init 0.5))
                 ]
 
@@ -36,7 +37,7 @@ permuteFloatStrings : List String
 permuteFloatStrings =
     let
         inData =
-            [ 1, 2, 3, 4, 5 ]
+            [ 4, 3, 2, 5, 1 ]
 
         inExpr =
             inData

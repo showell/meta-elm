@@ -2,8 +2,10 @@ module MeList exposing
     ( indexedMap
     , initInts
     , map
+    , sort
     , sortBy
     , sortByInt
+    , sortInt
     , toList
     )
 
@@ -81,6 +83,63 @@ indexedMap mapperExpr =
     ComposeF "List.indexedMap" mapperExpr f
 
 
+sortInt : Expr
+sortInt =
+    sort MeInt.toInt
+
+
+sort : (V -> Result String comparable1) -> Expr
+sort unbox =
+    let
+        ord : FV
+        ord c expr =
+            computeV c expr
+
+        listOfTups : Context -> List Expr -> Result String (List ( comparable1, Expr ))
+        listOfTups c lst =
+            case lst of
+                [] ->
+                    Ok []
+
+                head :: rest ->
+                    case unbox (ord c head) of
+                        Ok h ->
+                            case listOfTups c rest of
+                                Ok others ->
+                                    ( h, head )
+                                        :: others
+                                        |> Ok
+
+                                Err s ->
+                                    Err s
+
+                        Err s ->
+                            Err s
+
+        transformSort : Context -> List Expr -> V
+        transformSort c lst =
+            case listOfTups c lst of
+                Ok tups ->
+                    tups
+                        |> List.sortBy Tuple.first
+                        |> List.map Tuple.second
+                        |> VList
+
+                Err s ->
+                    VError s
+
+        f : FV
+        f c expr =
+            case computeV c expr of
+                VList lst ->
+                    transformSort c lst
+
+                _ ->
+                    VError "sort wants a list"
+    in
+    FunctionV "List.sort" f
+
+
 sortByInt : Expr -> Expr
 sortByInt mapper =
     sortBy MeInt.toInt 0 mapper
@@ -117,6 +176,10 @@ sortBy unbox default ordExpr =
         The approach above will still use List.sortBy for the
         heavy lifting (which is basically Elm.Kernel.List.sortBy).
         It will require me to re-box everything in O(N) time.
+
+        SEE sort -- it's better, and we can probably have it
+                    accept an `ord` and rename it `sortHelper`
+                    or something to share code
     --}
     let
         happy_path : List Expr -> (Expr -> V) -> V
