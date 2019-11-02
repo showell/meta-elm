@@ -9,8 +9,10 @@ of concept.
 ### MetaElm is Pure Elm
 
 **MetaElm** is pure Elm code that implements a runtime for an
-AST language that is **just Elm** running inside Elm. Think
-of it as Elm-in-Elm.
+AST language that is **just Elm** running inside Elm.
+
+It is sort of the same idea as [elm-in-elm](https://github.com/elm-in-elm/compiler),
+but smaller and focused on literally running **inside** Elm.
 
 The AST language is just an Elm custom type called `MeType.Expr`.
 
