@@ -2,6 +2,7 @@ module MeList exposing
     ( indexedMap
     , initInts
     , map
+    , prepend
     , sort
     , sortBy
     , sortByInt
@@ -187,6 +188,24 @@ map mapperExpr =
                     VError "map wants a list"
     in
     ComposeF "List.map" mapperExpr f
+
+
+prepend : Expr
+prepend =
+    let
+        f : FVV
+        f c expr1 expr2 =
+            case ( computeV c expr1, computeV c expr2 ) of
+                ( VError s, _ ) ->
+                    VError ("bad arg to :: - " ++ s)
+
+                ( h, VList lst ) ->
+                    VList (expr1 :: lst)
+
+                ( _, _ ) ->
+                    VError "need list to prepend to"
+    in
+    BinOp "::" "h" f
 
 
 initInts : List Int -> Expr

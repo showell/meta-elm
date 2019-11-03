@@ -23,6 +23,7 @@ permuteFloats testList =
                 [ MeList.sortInt
                 , MeList.map MeInt.toFloat
                 , MeList.map (MeType.Curry MeNumber.plus (MeFloat.init 0.5))
+                , MeType.Curry MeList.prepend (MeFloat.init 0.5)
                 ]
 
         f =
