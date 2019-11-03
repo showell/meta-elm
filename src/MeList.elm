@@ -54,8 +54,8 @@ toList getItem listValue =
 indexedMap : Expr -> Expr
 indexedMap mapperExpr =
     let
-        happy_path : List Expr -> (Expr -> Expr -> V) -> V
-        happy_path lst mapper =
+        happyPath : List Expr -> (Expr -> Expr -> V) -> V
+        happyPath lst mapper =
             let
                 wrapped_mapper idx item =
                     let
@@ -72,7 +72,7 @@ indexedMap mapperExpr =
         f c v =
             case ( computeV c v, getFuncVV c mapperExpr ) of
                 ( VList lst, Ok mapper ) ->
-                    happy_path lst (mapper c)
+                    happyPath lst (mapper c)
 
                 ( _, Err s ) ->
                     VError ("bad mapper" ++ s)
@@ -168,8 +168,8 @@ sortBy unbox ordExpr =
 map : Expr -> Expr
 map mapperExpr =
     let
-        happy_path : List Expr -> (Expr -> V) -> V
-        happy_path lst mapper =
+        happyPath : List Expr -> (Expr -> V) -> V
+        happyPath lst mapper =
             lst
                 |> List.map mapper
                 |> List.map ComputedValue
@@ -178,7 +178,7 @@ map mapperExpr =
         f c expr =
             case ( computeV c expr, getFuncV c mapperExpr ) of
                 ( VList lst, Ok mapper ) ->
-                    happy_path lst (mapper c)
+                    happyPath lst (mapper c)
 
                 ( _, Err s ) ->
                     VError ("bad mapper: " ++ s)
