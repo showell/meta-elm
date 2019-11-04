@@ -18,7 +18,7 @@ The AST language is just an Elm custom type called `MeType.Expr`.
 
 It lets you:
 
-- use helpers like `MeList.initInts` to create AST values
+- use helpers like `MeList.initInts` or `MeParser.toExpr` to create AST values
 - use helpers like `MeType.UserFunction` and `MeType.PipeLine` to create AST functions
 - use `MeRunTime.computeVal` to evaluate functions/expressions
 - use `MeRepr.fromVal` and `MeRepr.fromExpr` to serialize AST data to strings
@@ -55,7 +55,7 @@ are very few moving parts:
 * no hacking into Elm.Kernel
 * no opcodes
 * no custom-written list/dict types
-* no parsing required
+* no parsing required (but there's a convenient JSON-like parser for values)
 
 It's really **just Elm**.
 
@@ -74,25 +74,22 @@ Here is an example of the AST (i.e. MetaElm or Expr Space).  Note
 that the code looks like Elm, because it is **just Elm**.
 
 ```elm
-normalize : Expr -> Expr
-normalize testList =
+normalize : Context
+normalize =
     let
         f =
-            UserFunction "normalize" [ "lst" ] <|
-                PipeLine
-                    (VarName "lst")
-                    [ MeList.indexedMap MeTuple.pair
-                    , MeList.sortByInt MeTuple.second
-                    , MeList.map MeTuple.first
-                    , MeList.indexedMap MeTuple.pair
-                    , MeList.sortByInt MeTuple.second
-                    , MeList.map MeTuple.first
-                    , MeList.map <| LambdaLeft "n" MeNumber.plus (MeInt.init 1)
-                    ]
+            PipeLine
+                (VarName "lst")
+                [ MeList.indexedMap MeTuple.pair
+                , MeList.sortByInt MeTuple.second
+                , MeList.map MeTuple.first
+                , MeList.indexedMap MeTuple.pair
+                , MeList.sortByInt MeTuple.second
+                , MeList.map MeTuple.first
+                , MeList.map <| LambdaLeft "n" MeNumber.plus (MeInt.init 1)
+                ]
     in
-    FunctionCall f
-        [ ( "lst", testList )
-        ]
+    [ ( "normalize", f ) ]
 ```
 
 This AST is roughly equivalent to the Elm code below, but
@@ -143,7 +140,8 @@ which looks like this:
 
 ```elm
 type V
-    = VInt Int
+    = VBool Bool
+    | VInt Int
     | VFloat Float
     | VTuple ( Expr, Expr )
     | VList (List Expr)
@@ -153,15 +151,14 @@ type V
 This is still an early version, but here are the main data types that
 are targeted for support:
 
-- numbers and strings
+- bools, numbers, and strings
 - list, tuples, and dicts
 - functions and operators
 - records
 
 Essentially, MetaElm targets basic primitives inside of
-basic containers.  (The one conspicuos omission here is custom
-types.  They may be tricky; I just haven't thought hard about
-them yet.  Everything else "has a plan".)
+basic containers.  (I didn't list custom types above, since
+they might be tricky, but I'm not ruling them out either.)
 
 In MetaElm (as in Elm), everything is an expression.  But in
 MetaElm everything literally is in a type called `Expr`.
@@ -334,8 +331,8 @@ to being pure Elm, but just a little bit abstracted.  Here's another
 example of user-generated MetaElm:
 
 ``` elm
-permuteFloats : Expr -> Expr
-permuteFloats testList =
+permuteFloats : Context
+permuteFloats =
     let
         startList =
             PipeLine (VarName "lst") [ MeList.map MeInt.toFloat ]
@@ -349,22 +346,19 @@ permuteFloats testList =
                 ]
 
         f =
-            UserFunction "permuteFloats" [ "lst" ] <|
-                LetIn
-                    [ ( "startList", startList )
-                    , ( "newElements", newElements )
+            LetIn
+                [ ( "startList", startList )
+                , ( "newElements", newElements )
+                ]
+                (PipeLine
+                    (VarName "newElements")
+                    [ MeList.map MeList.singleton
+                    , MeList.map
+                        (LambdaRight (VarName "startList") MeList.plus "x")
                     ]
-                    (PipeLine
-                        (VarName "newElements")
-                        [ MeList.map MeList.singleton
-                        , MeList.map
-                            (LambdaRight (VarName "startList") MeList.plus "x")
-                        ]
-                    )
+                )
     in
-    FunctionCall f
-        [ ( "lst", testList )
-        ]
+    [ ( "permuteFloats", f ) ]
 ```
 
 The above code doesn't require any spcial type checks.
@@ -475,8 +469,8 @@ Many `Expr` subtypes are just values:
 The more interesting subtypes are expressions combining functions
 and values
 
-* PipeLine - an example is `22 |> incr |> double`
-* FunctionCall - an example is `someFunction 15 18`
+* PipeLine - maps roughly to `22 |> incr |> double`
+* FuncCall - maps roughly to `someFunction 15`
 
 Everything basically works on recursive descent, as you can
 see from the code below:
