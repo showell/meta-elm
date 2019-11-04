@@ -205,7 +205,7 @@ prepend =
                 ( _, _ ) ->
                     VError "need list to prepend to"
     in
-    BinOp "::" "h" f
+    BinOp "::" f
 
 
 initInts : List Int -> Expr

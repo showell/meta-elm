@@ -59,19 +59,40 @@ toElmCode topExpr =
                 FunctionVV name _ ->
                     name
 
-                BinOp opname vname _ ->
-                    "\\"
-                        ++ vname
-                        ++ " -> "
-                        ++ vname
-                        ++ " "
-                        ++ opname
+                BinOp opname _ ->
+                    "(" ++ opname ++ ")"
 
-                Curry fvvExpr curryExpr ->
-                    toCode withParens fvvExpr
-                        ++ " "
-                        ++ toCode withParens curryExpr
-                        |> parenWrapper
+                LambdaRight argLeft opExpr vname ->
+                    case opExpr of
+                        BinOp opName _ ->
+                            "\\"
+                                ++ vname
+                                ++ " -> "
+                                ++ toCode withParens argLeft
+                                ++ " "
+                                ++ opName
+                                ++ " "
+                                ++ vname
+                                |> parenWrapper
+
+                        _ ->
+                            "?"
+
+                LambdaLeft vname opExpr argRight ->
+                    case opExpr of
+                        BinOp opName _ ->
+                            "\\"
+                                ++ vname
+                                ++ " -> "
+                                ++ vname
+                                ++ " "
+                                ++ opName
+                                ++ " "
+                                ++ toCode withParens argRight
+                                |> parenWrapper
+
+                        _ ->
+                            "?"
 
                 ComposeF name exprF _ ->
                     name
@@ -80,6 +101,6 @@ toElmCode topExpr =
                         |> parenWrapper
 
                 _ ->
-                    " ? "
+                    "?"
     in
     toCode withoutParens topExpr

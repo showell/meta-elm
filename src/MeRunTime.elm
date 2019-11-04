@@ -81,17 +81,29 @@ getFuncV context expr =
         ComposeF _ _ f ->
             Ok f
 
-        Curry curryExpr op1Expr ->
-            case getFuncVV context curryExpr of
+        LambdaLeft _ binOp opRight ->
+            case getFuncVV context binOp of
                 Ok fvv ->
                     let
-                        fv c op2Expr =
-                            fvv c op1Expr op2Expr
+                        fv c opLeft =
+                            fvv c opLeft opRight
                     in
                     Ok fv
 
                 Err s ->
-                    Err ("curry wants a function: " ++ s)
+                    Err ("lambda left needs a function: " ++ s)
+
+        LambdaRight opLeft binOp _ ->
+            case getFuncVV context binOp of
+                Ok fvv ->
+                    let
+                        fv c opRight =
+                            fvv c opLeft opRight
+                    in
+                    Ok fv
+
+                Err s ->
+                    Err ("lambda left needs a function: " ++ s)
 
         _ ->
             Err "not a function"
@@ -103,7 +115,7 @@ getFuncVV _ expr =
         FunctionVV _ fvv ->
             Ok fvv
 
-        BinOp _ _ fvv ->
+        BinOp _ fvv ->
             Ok fvv
 
         _ ->

@@ -22,8 +22,8 @@ permuteFloats testList =
                 lst
                 [ MeList.sortInt
                 , MeList.map MeInt.toFloat
-                , MeList.map (MeType.Curry MeNumber.plus (MeFloat.init 0.5))
-                , MeType.Curry MeList.prepend (MeFloat.init 0.5)
+                , MeList.map <| MeType.LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5)
+                , MeType.LambdaRight (MeFloat.init 0.5) MeList.prepend "items"
                 ]
 
         f =
@@ -63,12 +63,6 @@ permuteFloatStrings =
 normalize : MeType.Expr -> MeType.Expr
 normalize testList =
     let
-        one =
-            MeInt.init 1
-
-        incr =
-            MeType.Curry MeNumber.plus one
-
         lst =
             MeType.VarName "lst"
 
@@ -81,7 +75,7 @@ normalize testList =
                 , MeList.indexedMap MeTuple.pair
                 , MeList.sortByInt MeTuple.second
                 , MeList.map MeTuple.first
-                , MeList.map incr
+                , MeList.map <| MeType.LambdaLeft "n" MeNumber.plus (MeInt.init 1)
                 ]
 
         f =

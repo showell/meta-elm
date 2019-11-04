@@ -32,10 +32,11 @@ type Expr
     | FunctionCall Expr Context
     | FunctionV String FV
     | ComposeF String Expr FV
-    | BinOp String String FVV
+    | BinOp String FVV
     | FunctionVV String FVV
     | PipeLine Expr (List Expr)
-    | Curry Expr Expr
+    | LambdaLeft String Expr Expr
+    | LambdaRight Expr Expr String
 
 
 type alias Context =

@@ -74,34 +74,31 @@ Here is an example of the AST (i.e. MetaElm or Expr Space).  Note
 that the code looks like Elm, because it is **just Elm**.
 
 ```elm
-let
-    one =
-        MeInt.init 1
+normalize : MeType.Expr -> MeType.Expr
+normalize testList =
+    let
+        lst =
+            MeType.VarName "lst"
 
-    incr =
-        MeType.Curry MeNumber.plus one
+        pipeline =
+            MeType.PipeLine
+                lst
+                [ MeList.indexedMap MeTuple.pair
+                , MeList.sortByInt MeTuple.second
+                , MeList.map MeTuple.first
+                , MeList.indexedMap MeTuple.pair
+                , MeList.sortByInt MeTuple.second
+                , MeList.map MeTuple.first
+                , MeList.map <| MeType.LambdaLeft "n" MeNumber.plus (MeInt.init 1)
+                ]
 
-    lst =
-        MeType.VarName "lst"
+        f =
+            MeType.UserFunction "normalize" [ "lst" ] pipeline
+    in
+    MeType.FunctionCall f
+        [ ( "lst", testList )
+        ]
 
-    pipeline =
-        MeType.PipeLine
-            lst
-            [ MeList.indexedMap MeTuple.pair
-            , MeList.sortByInt MeTuple.second
-            , MeList.map MeTuple.first
-            , MeList.indexedMap MeTuple.pair
-            , MeList.sortByInt MeTuple.second
-            , MeList.map MeTuple.first
-            , MeList.map incr
-            ]
-
-    f =
-        MeType.UserFunction "normalize" [ "lst" ] pipeline
-in
-MeType.FunctionCall f
-    [ ( "lst", testList )
-    ]
 ```
 
 This AST is roughly equivalent to the Elm code below, but
@@ -191,9 +188,11 @@ type Expr
     | FunctionCall Expr Context
     | FunctionV String FV
     | ComposeF String Expr FV
+    | BinOp String FVV
     | FunctionVV String FVV
     | PipeLine Expr (List Expr)
-    | Curry Expr Expr
+    | LambdaLeft String Expr Expr
+    | LambdaRight Expr Expr String
 ```
 
 The `Expr` type **is** the AST.  You can either evaluate
@@ -349,8 +348,10 @@ permuteFloats testList =
         pipeline =
             MeType.PipeLine
                 lst
-                [ MeList.map MeInt.toFloat
-                , MeList.map (MeType.Curry MeNumber.plus (MeFloat.init 0.5))
+                [ MeList.sortInt
+                , MeList.map MeInt.toFloat
+                , MeList.map <| MeType.LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5)
+                , MeType.LambdaRight (MeFloat.init 0.5) MeList.prepend "items"
                 ]
 
         f =
@@ -508,7 +509,8 @@ include:
 
 - FunctionV
 - ComposeF
-- Curry
+- LambdaLeft
+- LambdaRight
 
 You'll recall from earlier that `MeList.map` returns this:
 

@@ -58,7 +58,7 @@ binOp impl name =
                 _ ->
                     VError "need numbers here"
     in
-    BinOp name "n" f
+    BinOp name f
 
 
 plus : Expr
