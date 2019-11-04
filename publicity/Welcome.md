@@ -351,7 +351,7 @@ permuteFloats testList =
                 [ MeList.sortInt
                 , MeList.map MeInt.toFloat
                 , MeList.map <| MeType.LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5)
-                , MeType.LambdaRight (MeFloat.init 0.5) MeList.prepend "items"
+                , MeType.LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
 
         f =

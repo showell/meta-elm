@@ -1,8 +1,8 @@
 module MeList exposing
-    ( indexedMap
+    ( cons
+    , indexedMap
     , initInts
     , map
-    , prepend
     , singleton
     , sort
     , sortBy
@@ -202,8 +202,8 @@ singleton =
     FunctionV "List.singleton" f
 
 
-prepend : Expr
-prepend =
+cons : Expr
+cons =
     let
         f : FVV
         f c expr1 expr2 =
@@ -215,7 +215,7 @@ prepend =
                     VList (expr1 :: lst)
 
                 ( _, _ ) ->
-                    VError "need list to prepend to"
+                    VError "need list to cons to"
     in
     BinOp "::" f
 
