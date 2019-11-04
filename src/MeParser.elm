@@ -20,38 +20,34 @@ import Parser
         )
 
 
+parseList item =
+    sequence
+        { start = "["
+        , separator = ","
+        , spaces = spaces
+        , end = "]"
+        , item = item
+        , trailing = Optional
+        }
+        |> map (\lst -> SimpleValue (VList lst))
+
+
+parseExpr =
+    oneOf
+        [ parseValue
+        , Parser.lazy (\_ -> parseList parseExpr) -- should be parseExpr (not value)
+        ]
+
+
+parseValue =
+    oneOf
+        [ int |> map (\n -> SimpleValue (VInt n))
+        , float |> map (\n -> SimpleValue (VFloat n))
+        ]
+
+
 toExpr : String -> Expr
 toExpr s =
-    let
-        {--
-            TODO: get lists of lists working
-                (lazy seems broken in 0.19, so mutual
-                recursion is impossible
-        --}
-        value =
-            oneOf
-                [ int |> map (\n -> SimpleValue (VInt n))
-                , float |> map (\n -> SimpleValue (VFloat n))
-                ]
-
-        list item =
-            sequence
-                { start = "["
-                , separator = ","
-                , spaces = spaces
-                , end = "]"
-                , item = item
-                , trailing = Optional
-                }
-                |> map (\lst -> SimpleValue (VList lst))
-
-        parseExpr : Parser Expr
-        parseExpr =
-            oneOf
-                [ value
-                , Parser.lazy (\_ -> list value) -- should be parseExpr (not value)
-                ]
-    in
     case run parseExpr s of
         Ok expr ->
             expr
