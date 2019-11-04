@@ -48,32 +48,6 @@ permuteFloats testList =
         ]
 
 
-permuteFloatStrings : List String
-permuteFloatStrings =
-    let
-        inData =
-            [ 4, 3, 2, 5, 1 ]
-
-        inExpr =
-            inData
-                |> MeList.initInts
-
-        code =
-            inExpr
-                |> permuteFloats
-                |> MeElmCode.toElmCode
-
-        outVal =
-            inExpr
-                |> permuteFloats
-                |> MeRunTime.computeVal
-    in
-    [ code
-    , inExpr |> MeRepr.fromExpr
-    , outVal |> MeRepr.fromVal
-    ]
-
-
 normalize : Expr -> Expr
 normalize testList =
     let
@@ -95,34 +69,32 @@ normalize testList =
         ]
 
 
-normalizeStrings : List String
-normalizeStrings =
+helper : (Expr -> Expr) -> String -> List String
+helper f inData =
     let
-        inData =
-            "[ 99, 98, 97, 100, 101, 44, 42, 41 ]"
-
         inExpr =
             inData
                 |> MeParser.toExpr
 
         code =
             inExpr
-                |> normalize
+                |> f
                 |> MeElmCode.toElmCode
 
         outVal =
             inExpr
-                |> normalize
+                |> f
                 |> MeRunTime.computeVal
+                |> MeRepr.fromVal
     in
     [ code
     , inData
-    , outVal |> MeRepr.fromVal
+    , outVal
     ]
 
 
 testData : List (List String)
 testData =
-    [ normalizeStrings
-    , permuteFloatStrings
+    [ helper normalize "[ 99, 98, 97, 100, 101, 44, 42, 41 ]"
+    , helper permuteFloats "[ 4, 3, 2, 5, 1 ]"
     ]
