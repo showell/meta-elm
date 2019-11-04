@@ -1,4 +1,7 @@
-module MeElmCode exposing (toElmCode)
+module MeElmCode exposing
+    ( codeFromContext
+    , toElmCode
+    )
 
 {--
 
@@ -24,6 +27,19 @@ indent code =
         |> String.split "\n"
         |> List.map (\s -> "    " ++ s)
         |> String.join "\n"
+
+
+codeFromContext : Context -> String
+codeFromContext ns =
+    let
+        block ( name, expr ) =
+            name
+                ++ " =\n"
+                ++ (indent <| toElmCode expr)
+    in
+    ns
+        |> List.map block
+        |> String.join "\n\n"
 
 
 toElmCode : Expr -> String
@@ -64,21 +80,11 @@ toElmCode topExpr =
                 VarName name ->
                     name
 
-                FunctionCall calledFunc _ ->
-                    -- TODO: show call
-                    toCode withoutParens calledFunc
+                FuncCall _ _ _ ->
+                    "(not implemented)"
 
                 SimpleValue v ->
                     MeRepr.fromVal v
-
-                UserFunction fname args f ->
-                    let
-                        body =
-                            toCode withoutParens f
-                    in
-                    ((fname :: args) |> String.join " ")
-                        ++ " =\n"
-                        ++ indent body
 
                 PipeLine a lst ->
                     a

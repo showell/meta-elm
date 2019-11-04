@@ -28,8 +28,7 @@ type Expr
     | ComputedValue V
     | VarName String
     | Var String Expr
-    | UserFunction String (List String) Expr
-    | FunctionCall Expr Context
+    | FuncCall Context String Context
     | FunctionV String FV
     | ComposeF String Expr FV
     | BinOp String FVV

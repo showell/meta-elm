@@ -49,24 +49,21 @@ computeV context expr =
         PipeLine topExpr lst ->
             evalPipeLine context topExpr lst
 
-        FunctionCall calledFunc argTups ->
-            -- we are assuming for now that we don't have
-            -- vars in outer functions or at module scope
-            case calledFunc of
-                UserFunction fName params f ->
-                    let
-                        args =
-                            argTups
-                                |> List.map Tuple.first
-                    in
-                    if args == params then
-                        computeV argTups f
+        FuncCall ns funcName args ->
+            let
+                funcImpl =
+                    List.Extra.find (\( n, _ ) -> n == funcName) ns
+                        |> Maybe.map Tuple.second
+            in
+            case funcImpl of
+                Just impl ->
+                    -- there's no type check here, we just populate
+                    -- the namespace assuming funcImpl will ask for
+                    -- the right names via VarName
+                    computeV (args ++ ns) impl
 
-                    else
-                        VError ("args do not match params for " ++ fName)
-
-                _ ->
-                    VError "only user functions are supported now"
+                Nothing ->
+                    VError ("cannot find name in module: " ++ funcName)
 
         _ ->
             VError "cannot evaluate this type as a value yet"
