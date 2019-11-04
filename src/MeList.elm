@@ -3,6 +3,7 @@ module MeList exposing
     , initInts
     , map
     , prepend
+    , singleton
     , sort
     , sortBy
     , sortByInt
@@ -188,6 +189,17 @@ map mapperExpr =
                     VError "map wants a list"
     in
     ComposeF "List.map" mapperExpr f
+
+
+singleton : Expr
+singleton =
+    let
+        f : FV
+        f c expr =
+            [ ComputedValue (computeV c expr) ]
+                |> VList
+    in
+    FunctionV "List.singleton" f
 
 
 prepend : Expr
