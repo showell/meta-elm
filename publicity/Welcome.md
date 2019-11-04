@@ -165,8 +165,6 @@ MetaElm everything literally is in a type called `Expr`.
 
 ##### Expr
 
-My current version of the `Expr` type is pretty small.
-
 Here's the current version (as of 2019-11-04):
 
 ```elm
@@ -175,15 +173,17 @@ type Expr
     | ComputedValue V
     | VarName String
     | Var String Expr
-    | UserFunction String (List String) Expr
-    | FunctionCall Expr Context
+    | Call String Context
+    | FuncCall Context String Context
     | FunctionV String FV
     | ComposeF String Expr FV
     | BinOp String FVV
     | FunctionVV String FVV
     | PipeLine Expr (List Expr)
+    | Infix Expr Expr Expr
     | LambdaLeft String Expr Expr
     | LambdaRight Expr Expr String
+    | IfElse Expr Expr Expr
     | LetIn Context Expr
 ```
 
