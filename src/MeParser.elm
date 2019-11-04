@@ -34,13 +34,13 @@ toExpr s =
                 , float |> map (\n -> SimpleValue (VFloat n))
                 ]
 
-        list =
+        list item =
             sequence
                 { start = "["
                 , separator = ","
                 , spaces = spaces
                 , end = "]"
-                , item = value -- Should be parseExpr!
+                , item = item
                 , trailing = Optional
                 }
                 |> map (\lst -> SimpleValue (VList lst))
@@ -49,7 +49,7 @@ toExpr s =
         parseExpr =
             oneOf
                 [ value
-                , list
+                , Parser.lazy (\_ -> list value) -- should be parseExpr (not value)
                 ]
     in
     case run parseExpr s of
