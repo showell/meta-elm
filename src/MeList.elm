@@ -220,7 +220,7 @@ cons =
                     VError ("bad arg to :: - " ++ s)
 
                 ( h, VList lst ) ->
-                    VList (expr1 :: lst)
+                    VList (ComputedValue h :: lst)
 
                 ( _, _ ) ->
                     VError "need list to cons to"
