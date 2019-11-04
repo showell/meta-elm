@@ -49,6 +49,26 @@ computeV context expr =
         PipeLine topExpr lst ->
             evalPipeLine context topExpr lst
 
+        Call funcName args ->
+            let
+                funcImpl =
+                    List.Extra.find (\( n, _ ) -> n == funcName) context
+                        |> Maybe.map Tuple.second
+
+                computedArgs =
+                    args
+                        |> List.map
+                            (\( n, arg ) ->
+                                ( n, ComputedValue <| computeV context arg )
+                            )
+            in
+            case funcImpl of
+                Just impl ->
+                    computeV (computedArgs ++ context) impl
+
+                Nothing ->
+                    VError ("cannot find name in module: " ++ funcName)
+
         FuncCall ns funcName args ->
             let
                 funcImpl =
@@ -64,6 +84,29 @@ computeV context expr =
 
                 Nothing ->
                     VError ("cannot find name in module: " ++ funcName)
+
+        IfElse cond ifExpr elseExpr ->
+            case computeV context cond of
+                VBool b ->
+                    if b then
+                        computeV context ifExpr
+
+                    else
+                        computeV context elseExpr
+
+                VError s ->
+                    VError ("error with if conditional: " ++ s)
+
+                _ ->
+                    VError "if needs a conditional"
+
+        Infix opLeft binOp opRight ->
+            case getFuncVV context binOp of
+                Ok fvv ->
+                    fvv context opLeft opRight
+
+                Err s ->
+                    VError ("infix needs a binary operator: " ++ s)
 
         _ ->
             VError "cannot evaluate this type as a value yet"

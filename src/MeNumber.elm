@@ -1,4 +1,8 @@
-module MeNumber exposing (plus)
+module MeNumber exposing
+    ( minus
+    , mult
+    , plus
+    )
 
 import MeRunTime
     exposing
@@ -88,3 +92,61 @@ plus =
             }
     in
     binOp impl "+"
+
+
+minus : Expr
+minus =
+    let
+        fII : II
+        fII a b =
+            a - b
+
+        fIF : IF
+        fIF a b =
+            toFloat a - b
+
+        fFI : FI
+        fFI a b =
+            a - toFloat b
+
+        fFF : FF
+        fFF a b =
+            a - b
+
+        impl =
+            { fII = fII
+            , fIF = fIF
+            , fFI = fFI
+            , fFF = fFF
+            }
+    in
+    binOp impl "-"
+
+
+mult : Expr
+mult =
+    let
+        fII : II
+        fII a b =
+            a * b
+
+        fIF : IF
+        fIF a b =
+            toFloat a * b
+
+        fFI : FI
+        fFI a b =
+            a * toFloat b
+
+        fFF : FF
+        fFF a b =
+            a * b
+
+        impl =
+            { fII = fII
+            , fIF = fIF
+            , fFI = fFI
+            , fFF = fFF
+            }
+    in
+    binOp impl "*"

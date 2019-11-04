@@ -16,6 +16,25 @@ import MeType
         )
 
 
+factorial : Context
+factorial =
+    let
+        f =
+            IfElse
+                (Infix (VarName "n") MeInt.eq (MeInt.init 0))
+                (MeInt.init 1)
+                (Infix
+                    (VarName "n")
+                    MeNumber.mult
+                    (Call "factorial"
+                        [ ( "n", Infix (VarName "n") MeNumber.minus (MeInt.init 1) )
+                        ]
+                    )
+                )
+    in
+    [ ( "factorial", f ) ]
+
+
 permuteFloats : Context
 permuteFloats =
     let
@@ -88,6 +107,7 @@ helper ns funcName argName inString =
 
 testData : List (List String)
 testData =
-    [ helper normalize "normalize" "lst" "[ 99, 98, 97, 100, 101, 44, 42, 41 ]"
+    [ helper factorial "factorial" "n" "17"
+    , helper normalize "normalize" "lst" "[ 99, 98, 97, 100, 101, 44, 42, 41 ]"
     , helper permuteFloats "permuteFloats" "lst" "[ 4, 3, 2, 5, 1 ]"
     ]

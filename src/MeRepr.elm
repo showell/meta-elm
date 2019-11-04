@@ -39,6 +39,13 @@ fromExpr expr =
                         ++ fromExpr b
                         ++ ")"
 
+                VBool b ->
+                    if b then
+                        "true"
+
+                    else
+                        "false"
+
                 VInt n ->
                     String.fromInt n
 

@@ -73,12 +73,33 @@ toElmCode topExpr =
                         ++ "\nin\n"
                         ++ result
 
+                IfElse cond expr1 expr2 ->
+                    "if "
+                        ++ toCode withoutParens cond
+                        ++ " then\n"
+                        ++ (indent <| toCode withoutParens expr1)
+                        ++ "\nelse\n"
+                        ++ (indent <| toCode withoutParens expr2)
+
                 Var name _ ->
                     -- TODO: make let statements
                     name
 
                 VarName name ->
                     name
+
+                Call funcName args ->
+                    let
+                        argString =
+                            args
+                                |> List.map Tuple.second
+                                |> List.map (toCode withParens)
+                                |> String.join " "
+                    in
+                    funcName
+                        ++ " "
+                        ++ argString
+                        |> parenWrapper
 
                 FuncCall _ _ _ ->
                     "(not implemented)"
@@ -100,6 +121,19 @@ toElmCode topExpr =
 
                 BinOp opname _ ->
                     "(" ++ opname ++ ")"
+
+                Infix argLeft opExpr argRight ->
+                    case opExpr of
+                        BinOp opName _ ->
+                            toCode withParens argLeft
+                                ++ " "
+                                ++ opName
+                                ++ " "
+                                ++ toCode withParens argRight
+                                |> parenWrapper
+
+                        _ ->
+                            "?"
 
                 LambdaRight argLeft opExpr vname ->
                     case opExpr of

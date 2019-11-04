@@ -1,5 +1,6 @@
 module MeInt exposing
     ( div
+    , eq
     , init
     , toFloat
     , toInt
@@ -63,6 +64,27 @@ init num =
     num
         |> VInt
         |> SimpleValue
+
+
+eq : Expr
+eq =
+    let
+        f : FVV
+        f c expr1 expr2 =
+            case ( computeV c expr1, computeV c expr2 ) of
+                ( VInt a, VInt b ) ->
+                    VBool (a == b)
+
+                ( VError s, _ ) ->
+                    VError (s ++ " (first arg)")
+
+                ( _, VError s ) ->
+                    VError (s ++ " (second arg)")
+
+                _ ->
+                    VError "need numbers here"
+    in
+    BinOp "==" f
 
 
 toInt : V -> Result String Int
