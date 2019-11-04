@@ -3,14 +3,17 @@ module MeList exposing
     , indexedMap
     , initInts
     , map
+    , plus
     , singleton
     , sort
     , sortBy
     , sortByInt
+    , sortFloat
     , sortInt
     , toList
     )
 
+import MeFloat
 import MeInt
 import MeRunTime exposing (..)
 import MeType exposing (..)
@@ -83,6 +86,11 @@ indexedMap mapperExpr =
                     VError "indexedMap wants a list"
     in
     ComposeF "List.indexedMap" mapperExpr f
+
+
+sortFloat : Expr
+sortFloat =
+    sort MeFloat.toFloat
 
 
 sortInt : Expr
@@ -218,6 +226,21 @@ cons =
                     VError "need list to cons to"
     in
     BinOp "::" f
+
+
+plus : Expr
+plus =
+    let
+        f : FVV
+        f c expr1 expr2 =
+            case ( computeV c expr1, computeV c expr2 ) of
+                ( VList lst1, VList lst2 ) ->
+                    VList (lst1 ++ lst2)
+
+                ( _, _ ) ->
+                    VError "need lists in ++"
+    in
+    BinOp "++" f
 
 
 initInts : List Int -> Expr

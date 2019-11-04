@@ -30,6 +30,7 @@ fromExpr expr =
                     "["
                         ++ String.join ", " items
                         ++ "]"
+                        |> String.replace "], " "]\n,"
 
                 VTuple ( a, b ) ->
                     "("

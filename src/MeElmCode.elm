@@ -18,6 +18,14 @@ import MeRepr
 import MeType exposing (..)
 
 
+indent : String -> String
+indent code =
+    code
+        |> String.split "\n"
+        |> List.map (\s -> "    " ++ s)
+        |> String.join "\n"
+
+
 toElmCode : Expr -> String
 toElmCode topExpr =
     let
@@ -29,6 +37,26 @@ toElmCode topExpr =
 
         toCode parenWrapper expr =
             case expr of
+                LetIn lets vexpr ->
+                    let
+                        assign ( name, v ) =
+                            name
+                                ++ " =\n"
+                                ++ (toElmCode v |> indent)
+
+                        letBody =
+                            lets
+                                |> List.map assign
+                                |> String.join "\n\n"
+
+                        result =
+                            toCode withoutParens vexpr
+                    in
+                    "let\n"
+                        ++ indent letBody
+                        ++ "\nin\n"
+                        ++ result
+
                 Var name _ ->
                     -- TODO: make let statements
                     name
@@ -43,9 +71,14 @@ toElmCode topExpr =
                 SimpleValue v ->
                     MeRepr.fromVal v
 
-                UserFunction _ _ f ->
-                    -- TODO: show definition
-                    toCode withoutParens f
+                UserFunction fname args f ->
+                    let
+                        body =
+                            toCode withoutParens f
+                    in
+                    ((fname :: args) |> String.join " ")
+                        ++ " =\n"
+                        ++ indent body
 
                 PipeLine a lst ->
                     a

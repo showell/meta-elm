@@ -22,6 +22,9 @@ computeVal expr =
 computeV : FV
 computeV context expr =
     case expr of
+        LetIn c resultExpr ->
+            computeV (c ++ context) resultExpr
+
         Var _ v ->
             computeV context v
 

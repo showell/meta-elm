@@ -17,17 +17,34 @@ permuteFloats testList =
         lst =
             MeType.VarName "lst"
 
-        pipeline =
+        startList =
+            MeType.PipeLine lst [ MeList.map MeInt.toFloat ]
+
+        newElements =
             MeType.PipeLine
-                lst
-                [ MeList.sortInt
-                , MeList.map MeInt.toFloat
+                (MeType.VarName "startList")
+                [ MeList.sortFloat
                 , MeList.map <| MeType.LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5)
                 , MeType.LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
 
+        result =
+            MeType.PipeLine
+                (MeType.VarName "newElements")
+                [ MeList.map MeList.singleton
+                , MeList.map
+                    (MeType.LambdaRight (MeType.VarName "startList") MeList.plus "x")
+                ]
+
+        fBody =
+            MeType.LetIn
+                [ ( "startList", startList )
+                , ( "newElements", newElements )
+                ]
+                result
+
         f =
-            MeType.UserFunction "permuteFloats" [ "lst" ] pipeline
+            MeType.UserFunction "permuteFloats" [ "lst" ] fBody
     in
     MeType.FunctionCall f
         [ ( "lst", testList )

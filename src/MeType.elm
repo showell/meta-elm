@@ -37,6 +37,7 @@ type Expr
     | PipeLine Expr (List Expr)
     | LambdaLeft String Expr Expr
     | LambdaRight Expr Expr String
+    | LetIn Context Expr
 
 
 type alias Context =
