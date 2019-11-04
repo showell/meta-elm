@@ -9,44 +9,40 @@ import MeRepr
 import MeRunTime
 import MeTuple
 import MeType
+    exposing
+        ( Expr(..)
+        )
 
 
-permuteFloats : MeType.Expr -> MeType.Expr
+permuteFloats : Expr -> Expr
 permuteFloats testList =
     let
-        lst =
-            MeType.VarName "lst"
-
         startList =
-            MeType.PipeLine lst [ MeList.map MeInt.toFloat ]
+            PipeLine (VarName "lst") [ MeList.map MeInt.toFloat ]
 
         newElements =
-            MeType.PipeLine
-                (MeType.VarName "startList")
+            PipeLine
+                (VarName "startList")
                 [ MeList.sortFloat
-                , MeList.map <| MeType.LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5)
-                , MeType.LambdaRight (MeFloat.init 0.5) MeList.cons "items"
+                , MeList.map <| LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5)
+                , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
-
-        result =
-            MeType.PipeLine
-                (MeType.VarName "newElements")
-                [ MeList.map MeList.singleton
-                , MeList.map
-                    (MeType.LambdaRight (MeType.VarName "startList") MeList.plus "x")
-                ]
-
-        fBody =
-            MeType.LetIn
-                [ ( "startList", startList )
-                , ( "newElements", newElements )
-                ]
-                result
 
         f =
-            MeType.UserFunction "permuteFloats" [ "lst" ] fBody
+            UserFunction "permuteFloats" [ "lst" ] <|
+                LetIn
+                    [ ( "startList", startList )
+                    , ( "newElements", newElements )
+                    ]
+                    (PipeLine
+                        (VarName "newElements")
+                        [ MeList.map MeList.singleton
+                        , MeList.map
+                            (LambdaRight (VarName "startList") MeList.plus "x")
+                        ]
+                    )
     in
-    MeType.FunctionCall f
+    FunctionCall f
         [ ( "lst", testList )
         ]
 
@@ -77,28 +73,23 @@ permuteFloatStrings =
     ]
 
 
-normalize : MeType.Expr -> MeType.Expr
+normalize : Expr -> Expr
 normalize testList =
     let
-        lst =
-            MeType.VarName "lst"
-
-        pipeline =
-            MeType.PipeLine
-                lst
-                [ MeList.indexedMap MeTuple.pair
-                , MeList.sortByInt MeTuple.second
-                , MeList.map MeTuple.first
-                , MeList.indexedMap MeTuple.pair
-                , MeList.sortByInt MeTuple.second
-                , MeList.map MeTuple.first
-                , MeList.map <| MeType.LambdaLeft "n" MeNumber.plus (MeInt.init 1)
-                ]
-
         f =
-            MeType.UserFunction "normalize" [ "lst" ] pipeline
+            UserFunction "normalize" [ "lst" ] <|
+                PipeLine
+                    (VarName "lst")
+                    [ MeList.indexedMap MeTuple.pair
+                    , MeList.sortByInt MeTuple.second
+                    , MeList.map MeTuple.first
+                    , MeList.indexedMap MeTuple.pair
+                    , MeList.sortByInt MeTuple.second
+                    , MeList.map MeTuple.first
+                    , MeList.map <| LambdaLeft "n" MeNumber.plus (MeInt.init 1)
+                    ]
     in
-    MeType.FunctionCall f
+    FunctionCall f
         [ ( "lst", testList )
         ]
 

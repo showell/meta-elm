@@ -1,4 +1,4 @@
-**2019-11-01**
+**2019-11-04**
 
 Welcome to **MetaElm**!
 
@@ -74,31 +74,25 @@ Here is an example of the AST (i.e. MetaElm or Expr Space).  Note
 that the code looks like Elm, because it is **just Elm**.
 
 ```elm
-normalize : MeType.Expr -> MeType.Expr
+normalize : Expr -> Expr
 normalize testList =
     let
-        lst =
-            MeType.VarName "lst"
-
-        pipeline =
-            MeType.PipeLine
-                lst
-                [ MeList.indexedMap MeTuple.pair
-                , MeList.sortByInt MeTuple.second
-                , MeList.map MeTuple.first
-                , MeList.indexedMap MeTuple.pair
-                , MeList.sortByInt MeTuple.second
-                , MeList.map MeTuple.first
-                , MeList.map <| MeType.LambdaLeft "n" MeNumber.plus (MeInt.init 1)
-                ]
-
         f =
-            MeType.UserFunction "normalize" [ "lst" ] pipeline
+            UserFunction "normalize" [ "lst" ] <|
+                PipeLine
+                    (VarName "lst")
+                    [ MeList.indexedMap MeTuple.pair
+                    , MeList.sortByInt MeTuple.second
+                    , MeList.map MeTuple.first
+                    , MeList.indexedMap MeTuple.pair
+                    , MeList.sortByInt MeTuple.second
+                    , MeList.map MeTuple.first
+                    , MeList.map <| LambdaLeft "n" MeNumber.plus (MeInt.init 1)
+                    ]
     in
-    MeType.FunctionCall f
+    FunctionCall f
         [ ( "lst", testList )
         ]
-
 ```
 
 This AST is roughly equivalent to the Elm code below, but
@@ -176,7 +170,7 @@ MetaElm everything literally is in a type called `Expr`.
 
 My current version of the `Expr` type is pretty small.
 
-Here's the current version (as of 2019-11-01):
+Here's the current version (as of 2019-11-04):
 
 ```elm
 type Expr
@@ -193,6 +187,7 @@ type Expr
     | PipeLine Expr (List Expr)
     | LambdaLeft String Expr Expr
     | LambdaRight Expr Expr String
+    | LetIn Context Expr
 ```
 
 The `Expr` type **is** the AST.  You can either evaluate
@@ -339,32 +334,42 @@ to being pure Elm, but just a little bit abstracted.  Here's another
 example of user-generated MetaElm:
 
 ``` elm
-permuteFloats : MeType.Expr -> MeType.Expr
+permuteFloats : Expr -> Expr
 permuteFloats testList =
     let
-        lst =
-            MeType.VarName "lst"
+        startList =
+            PipeLine (VarName "lst") [ MeList.map MeInt.toFloat ]
 
-        pipeline =
-            MeType.PipeLine
-                lst
-                [ MeList.sortInt
-                , MeList.map MeInt.toFloat
-                , MeList.map <| MeType.LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5)
-                , MeType.LambdaRight (MeFloat.init 0.5) MeList.cons "items"
+        newElements =
+            PipeLine
+                (VarName "startList")
+                [ MeList.sortFloat
+                , MeList.map <| LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5)
+                , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
 
         f =
-            MeType.UserFunction "permuteFloats" [ "lst" ] pipeline
+            UserFunction "permuteFloats" [ "lst" ] <|
+                LetIn
+                    [ ( "startList", startList )
+                    , ( "newElements", newElements )
+                    ]
+                    (PipeLine
+                        (VarName "newElements")
+                        [ MeList.map MeList.singleton
+                        , MeList.map
+                            (LambdaRight (VarName "startList") MeList.plus "x")
+                        ]
+                    )
     in
-    MeType.FunctionCall f
+    FunctionCall f
         [ ( "lst", testList )
         ]
 ```
 
-The above code doesn't require any custom type checks.
+The above code doesn't require any spcial type checks.
 
-And you can execute from normal Elm Space using `computeVal`.
+And you can execute it from normal Elm Space using `computeVal`.
 
 (For more context on the above example, see
 [MeExample.elm](https://github.com/showell/MetaElm/blob/master/src/MeExample.elm).)
