@@ -5,6 +5,7 @@ import MeFloat
 import MeInt
 import MeList
 import MeNumber
+import MeParser
 import MeRepr
 import MeRunTime
 import MeTuple
@@ -98,11 +99,11 @@ normalizeStrings : List String
 normalizeStrings =
     let
         inData =
-            [ 99, 98, 97, 100, 101, 44, 42, 41 ]
+            "[ 99, 98, 97, 100, 101, 44, 42, 41 ]"
 
         inExpr =
             inData
-                |> MeList.initInts
+                |> MeParser.toExpr
 
         code =
             inExpr
@@ -115,7 +116,7 @@ normalizeStrings =
                 |> MeRunTime.computeVal
     in
     [ code
-    , inExpr |> MeRepr.fromExpr
+    , inData
     , outVal |> MeRepr.fromVal
     ]
 

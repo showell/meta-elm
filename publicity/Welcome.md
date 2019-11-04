@@ -47,7 +47,6 @@ It has the following features:
 Let me elaborate on the last point.  This system is **just Elm**.  There
 are very few moving parts:
 
-* no parser
 * no preprocessor
 * no postprocesor
 * no shelling out to Haskell
@@ -56,6 +55,7 @@ are very few moving parts:
 * no hacking into Elm.Kernel
 * no opcodes
 * no custom-written list/dict types
+* no parsing required
 
 It's really **just Elm**.
 
