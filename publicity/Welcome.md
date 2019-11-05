@@ -366,7 +366,7 @@ The above code doesn't require any spcial type checks.
 And you can execute it from normal Elm Space using `computeVal`.
 
 (For more context on the above example, see
-[MeExample.elm](https://github.com/showell/MetaElm/blob/master/src/MeExample.elm).)
+[MeSnippet.elm](https://github.com/showell/MetaElm/blob/master/src/MeSnippet.elm).)
 
 ##### Wrapped functions in repo
 
