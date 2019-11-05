@@ -4,6 +4,7 @@ module MeRunTime exposing
     , error
     , getFinalValue
     , getFuncV
+    , getFuncVV
     , getValue
     )
 
@@ -150,6 +151,23 @@ compute context expr =
 
         _ ->
             error "cannot evaluate this type as a value yet"
+
+
+getFuncVV : Context -> Expr -> FVV
+getFuncVV c expr =
+    case getFuncV c expr of
+        Ok fv1 ->
+            \_ e1 e2 ->
+                case fv1 c e1 of
+                    ComputedFunc fv2 ->
+                        fv2 c e2
+
+                    _ ->
+                        error "could not compute function with two args"
+
+        Err s ->
+            \_ _ _ ->
+                error s
 
 
 getFuncV : Context -> Expr -> Result String FV

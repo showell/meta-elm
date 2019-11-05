@@ -60,35 +60,27 @@ toList getItem listValue =
 indexedMap : Expr
 indexedMap =
     let
-        happyPath : Context -> List Expr -> FV -> Expr
-        happyPath c lst mapper =
+        indexedMap2 : List Expr -> (Expr -> Expr -> Expr) -> V
+        indexedMap2 lst mapper =
             let
                 wrapped_mapper idx item =
                     let
                         idxExpr =
                             ComputedValue (VInt idx)
-
-                        mapper1 =
-                            mapper c idxExpr
                     in
-                    case getFuncV c mapper1 of
-                        Ok mapper2 ->
-                            mapper2 c item
-
-                        Err s ->
-                            error ("bad mapper: " ++ s)
+                    mapper idxExpr item
             in
             lst
                 |> List.indexedMap wrapped_mapper
                 |> VList
-                |> ComputedValue
 
-        indexedMap1 : FV -> FV
+        indexedMap1 : FVV -> FV
         indexedMap1 mapper =
             \c lstExpr ->
                 case getValue c lstExpr of
                     VList lst ->
-                        happyPath c lst mapper
+                        indexedMap2 lst (mapper c)
+                            |> ComputedValue
 
                     VError s ->
                         error ("bad list in indexedMap: " ++ s)
@@ -98,13 +90,8 @@ indexedMap =
 
         indexedMap0 : FV
         indexedMap0 c mapperExpr =
-            case getFuncV c mapperExpr of
-                Ok mapper ->
-                    indexedMap1 mapper
-                        |> ComputedFunc
-
-                Err s ->
-                    error ("bad mapper: " ++ s)
+            indexedMap1 (getFuncVV c mapperExpr)
+                |> ComputedFunc
     in
     NamedFunc "List.indexedMap" indexedMap0
 
