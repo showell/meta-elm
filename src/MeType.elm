@@ -34,7 +34,6 @@ type Expr
     | Call String Context
     | FuncCall Context String Context
     | BinOp String FVV
-    | FunctionVV String FVV
     | PipeLine Expr (List Expr)
     | F1 Expr Expr
     | F2 Expr Expr Expr

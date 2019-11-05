@@ -36,9 +36,23 @@ second =
 pair : Expr
 pair =
     let
-        f : FVV
-        f _ expr1 expr2 =
-            VTuple (Tuple.pair expr1 expr2)
-                |> ComputedValue
+        pair1 : Expr -> FV
+        pair1 left =
+            \c rightExpr ->
+                let
+                    right =
+                        compute c rightExpr
+                in
+                VTuple (Tuple.pair left right)
+                    |> ComputedValue
+
+        pair0 : FV
+        pair0 c leftExpr =
+            let
+                left =
+                    compute c leftExpr
+            in
+            pair1 leftExpr
+                |> ComputedFunc
     in
-    FunctionVV "Tuple.pair" f
+    NamedFunc "Tuple.pair" pair0

@@ -113,9 +113,6 @@ toElmCode topExpr =
                         |> List.map (toCode withoutParens)
                         |> String.join "\n    |> "
 
-                FunctionVV name _ ->
-                    name
-
                 BinOp opname _ ->
                     "(" ++ opname ++ ")"
 

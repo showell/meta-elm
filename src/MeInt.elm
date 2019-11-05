@@ -1,6 +1,5 @@
 module MeInt exposing
-    ( div
-    , eq
+    ( eq
     , init
     , toFloat
     , toInt
@@ -13,28 +12,6 @@ import MeRunTime
         , getValue
         )
 import MeType exposing (..)
-
-
-fMap2 : (Int -> Int -> Int) -> String -> Expr
-fMap2 rawF name =
-    let
-        f : FVV
-        f c expr1 expr2 =
-            case ( getValue c expr1, getValue c expr2 ) of
-                ( VInt a, VInt b ) ->
-                    VInt (rawF a b)
-                        |> ComputedValue
-
-                ( VError s, _ ) ->
-                    error (s ++ " (first arg)")
-
-                ( _, VError s ) ->
-                    error (s ++ " (second arg)")
-
-                _ ->
-                    error "need ints here"
-    in
-    FunctionVV name f
 
 
 toFloat : Expr
@@ -51,16 +28,6 @@ toFloat =
                     error "need int in toFloat"
     in
     NamedFunc "toFloat" f
-
-
-div : Expr
-div =
-    let
-        f : Int -> Int -> Int
-        f a b =
-            a // b
-    in
-    fMap2 f "(//)"
 
 
 init : Int -> Expr

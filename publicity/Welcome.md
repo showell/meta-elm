@@ -178,7 +178,6 @@ type Expr
     | Call String Context
     | FuncCall Context String Context
     | BinOp String FVV
-    | FunctionVV String FVV
     | PipeLine Expr (List Expr)
     | F1 Expr Expr
     | F2 Expr Expr Expr
@@ -264,7 +263,7 @@ there's no `Any` type in Elm, so we kinda fake it.)
 
 ##### Examples
 
-Here is a simple example of `MeTuple.pair` wrapping
+Here is an example of `MeTuple.pair` wrapping
 `Tuple.pair`:
 
 ```elm
@@ -273,11 +272,26 @@ Here is a simple example of `MeTuple.pair` wrapping
 pair : Expr
 pair =
     let
-        f : FVV
-        f _ expr1 expr2 =
-            VTuple (Tuple.pair expr1 expr2)
+        pair1 : Expr -> FV
+        pair1 left =
+            \c rightExpr ->
+                let
+                    right =
+                        compute c rightExpr
+                in
+                VTuple (Tuple.pair left right)
+                    |> ComputedValue
+
+        pair0 : FV
+        pair0 c leftExpr =
+            let
+                left =
+                    compute c leftExpr
+            in
+            pair1 leftExpr
+                |> ComputedFunc
     in
-    FunctionVV "Tuple.pair" f
+    NamedFunc "Tuple.pair" pair0
 ```
 
 Note that `MeTuple.pair` is just a function, because
@@ -290,10 +304,7 @@ is truly a function in the most prosaic sense.
 don't need to do any
 runtime checking of types.  Every `MeTuple` is of type
 (`Expr`, `Expr`), and everything we'd pass it is an
-`Expr`, so we just plop them into a tuple.  (Note that
-we could say ` (expr1, expr2) ` instead of
-`Tuple.pair expr1 expr2` here, but the code example
-emphasizes the wrapper nature.
+`Expr`, so we just plop them into a tuple.
 
 Here's a more complicated wrapper:
 

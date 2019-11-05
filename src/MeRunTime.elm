@@ -4,7 +4,6 @@ module MeRunTime exposing
     , error
     , getFinalValue
     , getFuncV
-    , getFuncVV
     , getValue
     )
 
@@ -192,19 +191,6 @@ getFuncV context expr =
 
                 _ ->
                     Err "lambda right needs a binary operator"
-
-        _ ->
-            Err "not a function"
-
-
-getFuncVV : Context -> Expr -> Result String FVV
-getFuncVV _ expr =
-    case expr of
-        FunctionVV _ fvv ->
-            Ok fvv
-
-        BinOp _ fvv ->
-            Ok fvv
 
         _ ->
             Err "not a function"
