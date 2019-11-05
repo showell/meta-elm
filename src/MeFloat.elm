@@ -3,6 +3,10 @@ module MeFloat exposing
     , toFloat
     )
 
+import MeRunTime
+    exposing
+        ( getFinalValue
+        )
 import MeType exposing (..)
 
 
@@ -13,9 +17,9 @@ init num =
         |> SimpleValue
 
 
-toFloat : V -> Result String Float
-toFloat v =
-    case v of
+toFloat : Expr -> Result String Float
+toFloat vExpr =
+    case getFinalValue vExpr of
         VFloat n ->
             Ok n
 

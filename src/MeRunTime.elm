@@ -1,22 +1,42 @@
 module MeRunTime exposing
     ( computeV
     , computeVal
+    , error
     , getFinalValue
     , getFuncV
     , getFuncVV
+    , getValue
     )
 
 import List.Extra
 import MeType exposing (..)
 
 
-computeVal : Expr -> V
+computeVal : Expr -> Expr
 computeVal expr =
     let
         context =
             []
     in
     computeV context expr
+
+
+error : String -> Expr
+error s =
+    ComputedValue (VError s)
+
+
+getValue : Context -> Expr -> V
+getValue context expr =
+    case computeV context expr of
+        ComputedValue v ->
+            v
+
+        SimpleValue v ->
+            v
+
+        _ ->
+            VError "trying to use uncomputed value"
 
 
 computeV : FV
@@ -38,13 +58,13 @@ computeV context expr =
                     computeV context v
 
                 Nothing ->
-                    VError ("cannot find " ++ vname)
+                    error ("cannot find " ++ vname)
 
         ComputedValue v ->
-            v
+            ComputedValue v
 
         SimpleValue v ->
-            v
+            SimpleValue v
 
         PipeLine topExpr lst ->
             evalPipeLine context topExpr lst
@@ -59,7 +79,7 @@ computeV context expr =
                     args
                         |> List.map
                             (\( n, arg ) ->
-                                ( n, ComputedValue <| computeV context arg )
+                                ( n, computeV context arg )
                             )
             in
             case funcImpl of
@@ -67,7 +87,7 @@ computeV context expr =
                     computeV (computedArgs ++ context) impl
 
                 Nothing ->
-                    VError ("cannot find name in module: " ++ funcName)
+                    error ("cannot find name in module: " ++ funcName)
 
         FuncCall ns funcName args ->
             let
@@ -83,10 +103,10 @@ computeV context expr =
                     computeV (args ++ ns) impl
 
                 Nothing ->
-                    VError ("cannot find name in module: " ++ funcName)
+                    error ("cannot find name in module: " ++ funcName)
 
         IfElse cond ifExpr elseExpr ->
-            case computeV context cond of
+            case getValue context cond of
                 VBool b ->
                     if b then
                         computeV context ifExpr
@@ -95,10 +115,10 @@ computeV context expr =
                         computeV context elseExpr
 
                 VError s ->
-                    VError ("error with if conditional: " ++ s)
+                    error ("error with if conditional: " ++ s)
 
                 _ ->
-                    VError "if needs a conditional"
+                    error "if needs a conditional"
 
         Infix opLeft binOp opRight ->
             case getFuncVV context binOp of
@@ -106,10 +126,10 @@ computeV context expr =
                     fvv context opLeft opRight
 
                 Err s ->
-                    VError ("infix needs a binary operator: " ++ s)
+                    error ("infix needs a binary operator: " ++ s)
 
         _ ->
-            VError "cannot evaluate this type as a value yet"
+            error "cannot evaluate this type as a value yet"
 
 
 getFuncV : Context -> Expr -> Result String FV
@@ -165,7 +185,7 @@ getFuncVV _ expr =
             Err "not a function"
 
 
-evalPipeLine : Context -> Expr -> List Expr -> V
+evalPipeLine : Context -> Expr -> List Expr -> Expr
 evalPipeLine context v lst =
     case lst of
         [] ->
@@ -178,20 +198,20 @@ evalPipeLine context v lst =
                         newV =
                             f context v
                     in
-                    evalPipeLine context (ComputedValue newV) rest
+                    evalPipeLine context newV rest
 
                 Err s ->
-                    VError ("wanted function in pipeline: " ++ s)
+                    error ("wanted function in pipeline: " ++ s)
 
 
-getFinalValue : Expr -> Result String V
+getFinalValue : Expr -> V
 getFinalValue expr =
     case expr of
         ComputedValue v ->
-            Ok v
+            v
 
         SimpleValue v ->
-            Ok v
+            v
 
         _ ->
-            Err "final values were never computed with computeVal"
+            VError "final values were never computed with computeVal"

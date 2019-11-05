@@ -6,7 +6,8 @@ module MeNumber exposing
 
 import MeRunTime
     exposing
-        ( computeV
+        ( error
+        , getValue
         )
 import MeType exposing (..)
 
@@ -40,27 +41,31 @@ binOp impl name =
     let
         f : FVV
         f c expr1 expr2 =
-            case ( computeV c expr1, computeV c expr2 ) of
+            case ( getValue c expr1, getValue c expr2 ) of
                 ( VInt a, VInt b ) ->
                     VInt (impl.fII a b)
+                        |> ComputedValue
 
                 ( VInt a, VFloat b ) ->
                     VFloat (impl.fIF a b)
+                        |> ComputedValue
 
                 ( VFloat a, VInt b ) ->
                     VFloat (impl.fFI a b)
+                        |> ComputedValue
 
                 ( VFloat a, VFloat b ) ->
                     VFloat (impl.fFF a b)
+                        |> ComputedValue
 
                 ( VError s, _ ) ->
-                    VError (s ++ " (first arg)")
+                    error (s ++ " (first arg)")
 
                 ( _, VError s ) ->
-                    VError (s ++ " (second arg)")
+                    error (s ++ " (second arg)")
 
                 _ ->
-                    VError "need numbers here"
+                    error "need numbers here"
     in
     BinOp name f
 

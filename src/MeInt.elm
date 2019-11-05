@@ -8,7 +8,9 @@ module MeInt exposing
 
 import MeRunTime
     exposing
-        ( computeV
+        ( error
+        , getFinalValue
+        , getValue
         )
 import MeType exposing (..)
 
@@ -18,18 +20,19 @@ fMap2 rawF name =
     let
         f : FVV
         f c expr1 expr2 =
-            case ( computeV c expr1, computeV c expr2 ) of
+            case ( getValue c expr1, getValue c expr2 ) of
                 ( VInt a, VInt b ) ->
                     VInt (rawF a b)
+                        |> ComputedValue
 
                 ( VError s, _ ) ->
-                    VError (s ++ " (first arg)")
+                    error (s ++ " (first arg)")
 
                 ( _, VError s ) ->
-                    VError (s ++ " (second arg)")
+                    error (s ++ " (second arg)")
 
                 _ ->
-                    VError "need ints here"
+                    error "need ints here"
     in
     FunctionVV name f
 
@@ -39,12 +42,13 @@ toFloat =
     let
         f : FV
         f c expr =
-            case computeV c expr of
+            case getValue c expr of
                 VInt a ->
                     VFloat (Basics.toFloat a)
+                        |> ComputedValue
 
                 _ ->
-                    VError "need int in toFloat"
+                    error "need int in toFloat"
     in
     FunctionV "toFloat" f
 
@@ -71,25 +75,26 @@ eq =
     let
         f : FVV
         f c expr1 expr2 =
-            case ( computeV c expr1, computeV c expr2 ) of
+            case ( getValue c expr1, getValue c expr2 ) of
                 ( VInt a, VInt b ) ->
                     VBool (a == b)
+                        |> ComputedValue
 
                 ( VError s, _ ) ->
-                    VError (s ++ " (first arg)")
+                    error (s ++ " (first arg)")
 
                 ( _, VError s ) ->
-                    VError (s ++ " (second arg)")
+                    error (s ++ " (second arg)")
 
                 _ ->
-                    VError "need numbers here"
+                    error "need numbers here"
     in
     BinOp "==" f
 
 
-toInt : V -> Result String Int
-toInt v =
-    case v of
+toInt : Expr -> Result String Int
+toInt vExpr =
+    case getFinalValue vExpr of
         VInt n ->
             Ok n
 

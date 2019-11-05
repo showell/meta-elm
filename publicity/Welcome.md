@@ -21,7 +21,7 @@ It lets you:
 - use helpers like `MeList.initInts` or `MeParser.toExpr` to create AST values
 - use helpers like `MeType.UserFunction` and `MeType.PipeLine` to create AST functions
 - use `MeRunTime.computeVal` to evaluate functions/expressions
-- use `MeRepr.fromVal` and `MeRepr.fromExpr` to serialize AST data to strings
+- use `MeRepr.fromExpr` to serialize AST data to strings
 - use `MeList.toList` and friends to convert wrapped types back to core types.
 - use `MeElmCode.toElmCode` to generate "normal" Elm code
 

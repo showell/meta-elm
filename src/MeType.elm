@@ -17,11 +17,11 @@ type V
 
 
 type alias FV =
-    Context -> Expr -> V
+    Context -> Expr -> Expr
 
 
 type alias FVV =
-    Context -> Expr -> Expr -> V
+    Context -> Expr -> Expr -> Expr
 
 
 type Expr

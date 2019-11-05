@@ -105,7 +105,7 @@ toElmCode topExpr =
                     "(not implemented)"
 
                 SimpleValue v ->
-                    MeRepr.fromVal v
+                    MeRepr.fromExpr expr
 
                 PipeLine a lst ->
                     a

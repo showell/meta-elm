@@ -4,7 +4,7 @@ module MeTuple exposing
     , second
     )
 
-import MeRunTime exposing (computeV)
+import MeRunTime exposing (computeV, error, getValue)
 import MeType exposing (..)
 
 
@@ -13,12 +13,12 @@ fFrom name rawF =
     let
         f : FV
         f c expr =
-            case computeV c expr of
+            case getValue c expr of
                 VTuple tup ->
                     computeV c (rawF tup)
 
                 _ ->
-                    VError "not a tuple"
+                    error "not a tuple"
     in
     FunctionV name f
 
@@ -39,5 +39,6 @@ pair =
         f : FVV
         f _ expr1 expr2 =
             VTuple (Tuple.pair expr1 expr2)
+                |> ComputedValue
     in
     FunctionVV "Tuple.pair" f

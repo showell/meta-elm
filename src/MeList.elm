@@ -25,11 +25,11 @@ toList getItem listValue =
         get : Expr -> Result String a
         get elem =
             case getFinalValue elem of
-                Ok v ->
-                    getItem v
-
-                Err s ->
+                VError s ->
                     Err s
+
+                other ->
+                    getItem other
 
         getItems : List Expr -> Result String (List a)
         getItems items =
@@ -59,7 +59,7 @@ toList getItem listValue =
 indexedMap : Expr -> Expr
 indexedMap mapperExpr =
     let
-        happyPath : List Expr -> (Expr -> Expr -> V) -> V
+        happyPath : List Expr -> (Expr -> Expr -> Expr) -> Expr
         happyPath lst mapper =
             let
                 wrapped_mapper idx item =
@@ -71,19 +71,19 @@ indexedMap mapperExpr =
             in
             lst
                 |> List.indexedMap wrapped_mapper
-                |> List.map ComputedValue
                 |> VList
+                |> ComputedValue
 
         f c v =
-            case ( computeV c v, getFuncVV c mapperExpr ) of
+            case ( getValue c v, getFuncVV c mapperExpr ) of
                 ( VList lst, Ok mapper ) ->
                     happyPath lst (mapper c)
 
                 ( _, Err s ) ->
-                    VError ("bad mapper" ++ s)
+                    error ("bad mapper" ++ s)
 
                 _ ->
-                    VError "indexedMap wants a list"
+                    error "indexedMap wants a list"
     in
     ComposeF "List.indexedMap" mapperExpr f
 
@@ -98,7 +98,7 @@ sortInt =
     sort MeInt.toInt
 
 
-transformSort : FV -> (V -> Result String comparable) -> Context -> List Expr -> V
+transformSort : FV -> (Expr -> Result String comparable) -> Context -> List Expr -> Expr
 transformSort ord unbox c exprLst =
     let
         listOfTups : List Expr -> Result String (List ( comparable, Expr ))
@@ -128,12 +128,13 @@ transformSort ord unbox c exprLst =
                 |> List.sortBy Tuple.first
                 |> List.map Tuple.second
                 |> VList
+                |> ComputedValue
 
         Err s ->
-            VError s
+            error s
 
 
-sort : (V -> Result String comparable) -> Expr
+sort : (Expr -> Result String comparable) -> Expr
 sort unbox =
     let
         ord : FV
@@ -142,12 +143,12 @@ sort unbox =
 
         f : FV
         f c expr =
-            case computeV c expr of
+            case getValue c expr of
                 VList lst ->
                     transformSort ord unbox c lst
 
                 _ ->
-                    VError "sort wants a list"
+                    error "sort wants a list"
     in
     FunctionV "List.sort" f
 
@@ -157,20 +158,20 @@ sortByInt mapper =
     sortBy MeInt.toInt mapper
 
 
-sortBy : (V -> Result String comparable1) -> Expr -> Expr
+sortBy : (Expr -> Result String comparable1) -> Expr -> Expr
 sortBy unbox ordExpr =
     let
         f : FV
         f c expr =
-            case ( computeV c expr, getFuncV c ordExpr ) of
+            case ( getValue c expr, getFuncV c ordExpr ) of
                 ( VList lst, Ok ord ) ->
                     transformSort ord unbox c lst
 
                 ( _, Err s ) ->
-                    VError ("bad mapper" ++ s)
+                    error ("bad mapper" ++ s)
 
                 _ ->
-                    VError "sortBy wants a list"
+                    error "sortBy wants a list"
     in
     ComposeF "List.sortBy" ordExpr f
 
@@ -178,23 +179,23 @@ sortBy unbox ordExpr =
 map : Expr -> Expr
 map mapperExpr =
     let
-        happyPath : List Expr -> (Expr -> V) -> V
+        happyPath : List Expr -> (Expr -> Expr) -> Expr
         happyPath lst mapper =
             lst
                 |> List.map mapper
-                |> List.map ComputedValue
                 |> VList
+                |> ComputedValue
 
         f c expr =
-            case ( computeV c expr, getFuncV c mapperExpr ) of
+            case ( getValue c expr, getFuncV c mapperExpr ) of
                 ( VList lst, Ok mapper ) ->
                     happyPath lst (mapper c)
 
                 ( _, Err s ) ->
-                    VError ("bad mapper: " ++ s)
+                    error ("bad mapper: " ++ s)
 
                 _ ->
-                    VError "map wants a list"
+                    error "map wants a list"
     in
     ComposeF "List.map" mapperExpr f
 
@@ -204,8 +205,9 @@ singleton =
     let
         f : FV
         f c expr =
-            [ ComputedValue (computeV c expr) ]
+            [ ComputedValue (getValue c expr) ]
                 |> VList
+                |> ComputedValue
     in
     FunctionV "List.singleton" f
 
@@ -215,15 +217,16 @@ cons =
     let
         f : FVV
         f c expr1 expr2 =
-            case ( computeV c expr1, computeV c expr2 ) of
+            case ( getValue c expr1, getValue c expr2 ) of
                 ( VError s, _ ) ->
-                    VError ("bad arg to :: - " ++ s)
+                    error ("bad arg to :: - " ++ s)
 
                 ( h, VList lst ) ->
                     VList (ComputedValue h :: lst)
+                        |> ComputedValue
 
                 ( _, _ ) ->
-                    VError "need list to cons to"
+                    error "need list to cons to"
     in
     BinOp "::" f
 
@@ -233,12 +236,13 @@ plus =
     let
         f : FVV
         f c expr1 expr2 =
-            case ( computeV c expr1, computeV c expr2 ) of
+            case ( getValue c expr1, getValue c expr2 ) of
                 ( VList lst1, VList lst2 ) ->
                     VList (lst1 ++ lst2)
+                        |> ComputedValue
 
                 ( _, _ ) ->
-                    VError "need lists in ++"
+                    error "need lists in ++"
     in
     BinOp "++" f
 

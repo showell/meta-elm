@@ -97,7 +97,7 @@ helper ns funcName argName inString =
         outString =
             FuncCall ns funcName [ ( argName, inExpr ) ]
                 |> MeRunTime.computeVal
-                |> MeRepr.fromVal
+                |> MeRepr.fromExpr
     in
     [ code
     , inString

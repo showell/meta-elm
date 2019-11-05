@@ -1,7 +1,4 @@
-module MeRepr exposing
-    ( fromExpr
-    , fromVal
-    )
+module MeRepr exposing (fromExpr)
 
 import MeRunTime
 import MeType
@@ -11,49 +8,39 @@ import MeType
         )
 
 
-fromVal : V -> String
-fromVal v =
-    fromExpr (ComputedValue v)
-
-
 fromExpr : Expr -> String
 fromExpr expr =
     case MeRunTime.getFinalValue expr of
-        Ok v ->
-            case v of
-                VList lst ->
-                    let
-                        items =
-                            lst
-                                |> List.map fromExpr
-                    in
-                    "["
-                        ++ String.join ", " items
-                        ++ "]"
-                        |> String.replace "], " "]\n,"
+        VList lst ->
+            let
+                items =
+                    lst
+                        |> List.map fromExpr
+            in
+            "["
+                ++ String.join ", " items
+                ++ "]"
+                |> String.replace "], " "]\n,"
 
-                VTuple ( a, b ) ->
-                    "("
-                        ++ fromExpr a
-                        ++ ", "
-                        ++ fromExpr b
-                        ++ ")"
+        VTuple ( a, b ) ->
+            "("
+                ++ fromExpr a
+                ++ ", "
+                ++ fromExpr b
+                ++ ")"
 
-                VBool b ->
-                    if b then
-                        "true"
+        VBool b ->
+            if b then
+                "true"
 
-                    else
-                        "false"
+            else
+                "false"
 
-                VInt n ->
-                    String.fromInt n
+        VInt n ->
+            String.fromInt n
 
-                VFloat n ->
-                    String.fromFloat n
+        VFloat n ->
+            String.fromFloat n
 
-                VError s ->
-                    "error: " ++ s
-
-        Err s ->
+        VError s ->
             "error: " ++ s
