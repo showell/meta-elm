@@ -121,24 +121,24 @@ compute context expr =
                     error "if needs a conditional"
 
         Infix opLeft binOp opRight ->
-            case getFuncVV context binOp of
-                Ok fvv ->
+            case binOp of
+                BinOp _ fvv ->
                     fvv context opLeft opRight
 
-                Err s ->
-                    error ("infix needs a binary operator: " ++ s)
+                _ ->
+                    error "infix needs a binary operator: "
 
         F2 fv arg1 arg2 ->
-            computeV context (F1 (F1 fv arg1) arg2)
+            compute context (F1 (F1 fv arg1) arg2)
 
         F1 fv arg1 ->
             case fv of
                 F1 _ _ ->
                     let
                         newFv =
-                            computeV context fv
+                            compute context fv
                     in
-                    computeV context (F1 newFv arg1)
+                    compute context (F1 newFv arg1)
 
                 ComputedFunc f ->
                     f context arg1
@@ -170,28 +170,28 @@ getFuncV context expr =
             Ok f
 
         LambdaLeft _ binOp opRight ->
-            case getFuncVV context binOp of
-                Ok fvv ->
+            case binOp of
+                BinOp _ fvv ->
                     let
                         fv c opLeft =
                             fvv c opLeft opRight
                     in
                     Ok fv
 
-                Err s ->
-                    Err ("lambda left needs a function: " ++ s)
+                _ ->
+                    Err "lambda left needs a binary operator"
 
         LambdaRight opLeft binOp _ ->
-            case getFuncVV context binOp of
-                Ok fvv ->
+            case binOp of
+                BinOp _ fvv ->
                     let
                         fv c opRight =
                             fvv c opLeft opRight
                     in
                     Ok fv
 
-                Err s ->
-                    Err ("lambda left needs a function: " ++ s)
+                _ ->
+                    Err "lambda right needs a binary operator"
 
         _ ->
             Err "not a function"
