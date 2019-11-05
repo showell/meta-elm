@@ -155,25 +155,34 @@ compute context expr =
 
 getFuncVV : Context -> Expr -> FVV
 getFuncVV c expr =
-    case getFuncV c expr of
-        Ok fv1 ->
-            \_ e1 e2 ->
-                case fv1 c e1 of
-                    ComputedFunc fv2 ->
-                        fv2 c e2
+    case expr of
+        BinOp _ fvv ->
+            fvv
 
-                    _ ->
-                        error "could not compute function with two args"
+        _ ->
+            case getFuncV c expr of
+                Ok fv1 ->
+                    \_ e1 e2 ->
+                        case fv1 c e1 of
+                            ComputedFunc fv2 ->
+                                fv2 c e2
 
-        Err s ->
-            \_ _ _ ->
-                error s
+                            _ ->
+                                error "could not compute function with two args"
+
+                Err s ->
+                    \_ _ _ ->
+                        error s
 
 
 getFuncV : Context -> Expr -> Result String FV
 getFuncV context expr =
     case expr of
         F1 _ _ ->
+            compute context expr
+                |> getFuncV context
+
+        F2 _ _ _ ->
             compute context expr
                 |> getFuncV context
 

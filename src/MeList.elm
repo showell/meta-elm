@@ -1,5 +1,6 @@
 module MeList exposing
     ( cons
+    , foldl
     , indexedMap
     , initInts
     , map
@@ -194,6 +195,36 @@ sortBy unbox =
                     error ("bad ord for sortBy: " ++ s)
     in
     NamedFunc "List.sortBy" sortBy0
+
+
+foldl : Expr
+foldl =
+    let
+        foldl2 : FVV -> Expr -> FV
+        foldl2 accum startVal =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        List.foldl (accum c) startVal lst
+
+                    VError s ->
+                        error ("bad list in foldl: " ++ s)
+
+                    _ ->
+                        error "need list in foldl"
+
+        foldl1 : FVV -> FV
+        foldl1 accum =
+            \c startVal ->
+                foldl2 accum (compute c startVal)
+                    |> ComputedFunc
+
+        fold0 : FV
+        fold0 c accumExpr =
+            foldl1 (getFuncVV c accumExpr)
+                |> ComputedFunc
+    in
+    NamedFunc "List.foldl" fold0
 
 
 map : Expr
