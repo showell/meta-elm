@@ -171,15 +171,18 @@ Here's the current version (as of 2019-11-05):
 type Expr
     = SimpleValue V
     | ComputedValue V
+    | ComputedFunc (Context -> Expr -> Expr)
+    | NamedFunc String (Context -> Expr -> Expr)
     | VarName String
     | Var String Expr
     | Call String Context
     | FuncCall Context String Context
     | FunctionV String FV
-    | ComposeF String Expr FV
     | BinOp String FVV
     | FunctionVV String FVV
     | PipeLine Expr (List Expr)
+    | F1 Expr Expr
+    | F2 Expr Expr Expr
     | Infix Expr Expr Expr
     | LambdaLeft String Expr Expr
     | LambdaRight Expr Expr String
@@ -298,31 +301,47 @@ Here's a more complicated wrapper:
 ```elm
 -- MeList.elm
 
-map : Expr -> Expr
-map mapperExpr =
+map : Expr
+map =
     let
-        happyPath : List Expr -> (Expr -> Expr) -> Expr
-        happyPath lst mapper =
+        happyPath : Context -> List Expr -> FV -> Expr
+        happyPath c lst mapper =
             lst
-                |> List.map mapper
+                |> List.map (mapper c)
                 |> VList
                 |> ComputedValue
 
-        f c expr =
-            case ( getValue c expr, getFuncV c mapperExpr ) of
-                ( VList lst, Ok mapper ) ->
-                    happyPath lst (mapper c)
+        map1 : FV -> FV
+        map1 mapper =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        happyPath c lst mapper
 
-                ( _, Err s ) ->
+                    VError s ->
+                        error ("bad list in map: " ++ s)
+
+                    _ ->
+                        error "need list in map"
+
+        map0 : FV
+        map0 c mapperExpr =
+            case getFuncV c mapperExpr of
+                Ok mapper ->
+                    map1 mapper
+                        |> ComputedFunc
+
+                Err s ->
                     error ("bad mapper: " ++ s)
-
-                _ ->
-                    error "map wants a list"
     in
-    ComposeF "List.map" mapperExpr f
+    NamedFunc "List.map" map0
 ```
 
-So the above example is kind of gnarly, but don't panic yet.
+So the function is best understood as follows:
+    
+- MeList.map is an Expr wrapping map0
+- compute (F1 meList.map mapper) wraps map1
+- compute (F2 meList.map wrapper lst) calls happyPath
 
 ##### Discussion
 
@@ -335,13 +354,16 @@ permuteFloats : Context
 permuteFloats =
     let
         startList =
-            PipeLine (VarName "lst") [ MeList.map MeInt.toFloat ]
+            PipeLine
+                (VarName "lst")
+                [ F1 MeList.map MeInt.toFloat
+                ]
 
         newElements =
             PipeLine
                 (VarName "startList")
                 [ MeList.sortFloat
-                , MeList.map <| LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5)
+                , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
                 , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
 
@@ -352,8 +374,8 @@ permuteFloats =
                 ]
                 (PipeLine
                     (VarName "newElements")
-                    [ MeList.map MeList.singleton
-                    , MeList.map
+                    [ F1 MeList.map MeList.singleton
+                    , F1 MeList.map
                         (LambdaRight (VarName "startList") MeList.plus "x")
                     ]
                 )
@@ -361,7 +383,7 @@ permuteFloats =
     [ ( "permuteFloats", f ) ]
 ```
 
-The above code doesn't require any spcial type checks.
+The above code doesn't require any special type checks.
 
 And you can execute it from normal Elm Space using `compute`.
 
@@ -387,45 +409,6 @@ directory of the project.  Examples are:
 
 I hope to have MeString and MeDict versions soon.  And, of course,
 anyone can contribute extensions here.
-
-##### Structure
-
-Let's focus more specifically on `MeList.map` from a structural
-standpoint.  Here is the code again (with some details obviously
-omitted):
-
-
-```elm
--- MeList.elm
-
-map : Expr -> Expr
-map mapperExpr =
-    let
-        -- some details omitted for brevity
-
-        f c expr =
-            case -- ...
-                ( VList lst, Ok mapper ) ->
-                    happy_path lst (mapper c)
-
-                -- ...
-    in
-    ComposeF "List.map" mapperExpr f
-```
-
-When you call `MeList.map` you actually get back an `Expr`:
-
-```elm
-ComposeF "List.map" mapperExpr f
-```
-
-And then the `f` that actually wraps the **actual** `List.map`
-is "inside" the `ComposeF` value.
-
-So how we do actually execute `f`?
-
-This is a segue into the execution model...
-
 
 #### Execution model
 
@@ -470,7 +453,8 @@ The more interesting subtypes are expressions combining functions
 and values
 
 * PipeLine - maps roughly to `22 |> incr |> double`
-* FuncCall - maps roughly to `someFunction 15`
+* F1 - maps roughly to `someFunction 15`
+* F2 - maps roughly to `someFunction 15 30`
 
 Everything basically works on recursive descent, as you can
 see from the code below:
@@ -506,19 +490,10 @@ You can see that `evalPipeLine` calls three other functions:
 The `getFuncV` function looks for function subtypes.  Examples
 include:
 
+- F1
 - FunctionV
-- ComposeF
 - LambdaLeft
 - LambdaRight
-
-You'll recall from earlier that `MeList.map` returns this:
-
-```elm
-ComposeF "List.map" mapperExpr f
-```
-
-And we asked when does `f` actually get called?  The answer is
-that functions like `evalPipeLine` call them.
 
 ### Conclusion
 
