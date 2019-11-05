@@ -184,12 +184,6 @@ toElmCode topExpr =
                         _ ->
                             "?"
 
-                ComposeF name exprF _ ->
-                    name
-                        ++ " "
-                        ++ toCode withParens exprF
-                        |> parenWrapper
-
                 _ ->
                     "?"
     in

@@ -48,13 +48,16 @@ permuteFloats : Context
 permuteFloats =
     let
         startList =
-            PipeLine (VarName "lst") [ MeList.map MeInt.toFloat ]
+            PipeLine
+                (VarName "lst")
+                [ F1 MeList.map MeInt.toFloat
+                ]
 
         newElements =
             PipeLine
                 (VarName "startList")
                 [ MeList.sortFloat
-                , MeList.map <| LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5)
+                , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
                 , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
 
@@ -65,8 +68,8 @@ permuteFloats =
                 ]
                 (PipeLine
                     (VarName "newElements")
-                    [ MeList.map MeList.singleton
-                    , MeList.map
+                    [ F1 MeList.map MeList.singleton
+                    , F1 MeList.map
                         (LambdaRight (VarName "startList") MeList.plus "x")
                     ]
                 )
@@ -80,13 +83,13 @@ normalize =
         f =
             PipeLine
                 (VarName "lst")
-                [ MeList.indexedMap MeTuple.pair
-                , MeList.sortByInt MeTuple.second
-                , MeList.map MeTuple.first
-                , MeList.indexedMap MeTuple.pair
-                , MeList.sortByInt MeTuple.second
-                , MeList.map MeTuple.first
-                , MeList.map <| LambdaLeft "n" MeNumber.plus (MeInt.init 1)
+                [ F1 MeList.indexedMap MeTuple.pair
+                , F1 MeList.sortByInt MeTuple.second
+                , F1 MeList.map MeTuple.first
+                , F1 MeList.indexedMap MeTuple.pair
+                , F1 MeList.sortByInt MeTuple.second
+                , F1 MeList.map MeTuple.first
+                , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
                 ]
     in
     [ ( "normalize", f ) ]

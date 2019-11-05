@@ -57,36 +57,48 @@ toList getItem listValue =
             Err "this is not a list value"
 
 
-indexedMap : Expr -> Expr
-indexedMap mapperExpr =
+indexedMap : Expr
+indexedMap =
     let
-        happyPath : List Expr -> (Expr -> Expr -> Expr) -> Expr
-        happyPath lst mapper =
+        happyPath : Context -> List Expr -> FVV -> Expr
+        happyPath c lst mapper =
             let
                 wrapped_mapper idx item =
                     let
                         idxExpr =
                             ComputedValue (VInt idx)
                     in
-                    mapper idxExpr item
+                    mapper c idxExpr item
             in
             lst
                 |> List.indexedMap wrapped_mapper
                 |> VList
                 |> ComputedValue
 
-        f c v =
-            case ( getValue c v, getFuncVV c mapperExpr ) of
-                ( VList lst, Ok mapper ) ->
-                    happyPath lst (mapper c)
+        indexedMap1 : FVV -> FV
+        indexedMap1 mapper =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        happyPath c lst mapper
 
-                ( _, Err s ) ->
-                    error ("bad mapper" ++ s)
+                    VError s ->
+                        error ("bad list in indexedMap: " ++ s)
 
-                _ ->
-                    error "indexedMap wants a list"
+                    _ ->
+                        error "need list in indexedMap"
+
+        indexedMap0 : FV
+        indexedMap0 c mapperExpr =
+            case getFuncVV c mapperExpr of
+                Ok mapper ->
+                    indexedMap1 mapper
+                        |> ComputedFunc
+
+                Err s ->
+                    error ("bad mapper: " ++ s)
     in
-    ComposeF "List.indexedMap" mapperExpr f
+    NamedFunc "List.indexedMap" indexedMap0
 
 
 sortFloat : Expr
@@ -154,51 +166,74 @@ sort unbox =
     FunctionV "List.sort" f
 
 
-sortByInt : Expr -> Expr
-sortByInt mapper =
-    sortBy MeInt.toInt mapper
+sortByInt : Expr
+sortByInt =
+    sortBy MeInt.toInt
 
 
-sortBy : (Expr -> Result String comparable1) -> Expr -> Expr
-sortBy unbox ordExpr =
+sortBy : (Expr -> Result String comparable1) -> Expr
+sortBy unbox =
     let
-        f : FV
-        f c expr =
-            case ( getValue c expr, getFuncV c ordExpr ) of
-                ( VList lst, Ok ord ) ->
-                    transformSort ord unbox c lst
+        sortBy1 : FV -> FV
+        sortBy1 ord =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        transformSort ord unbox c lst
 
-                ( _, Err s ) ->
-                    error ("bad mapper" ++ s)
+                    VError s ->
+                        error ("bad list in sortBy: " ++ s)
 
-                _ ->
-                    error "sortBy wants a list"
+                    _ ->
+                        error "need list in sortBy"
+
+        sortBy0 : FV
+        sortBy0 c ordExpr =
+            case getFuncV c ordExpr of
+                Ok ord ->
+                    sortBy1 ord
+                        |> ComputedFunc
+
+                Err s ->
+                    error ("bad ord for sortBy: " ++ s)
     in
-    ComposeF "List.sortBy" ordExpr f
+    NamedFunc "List.sortBy" sortBy0
 
 
-map : Expr -> Expr
-map mapperExpr =
+map : Expr
+map =
     let
-        happyPath : List Expr -> (Expr -> Expr) -> Expr
-        happyPath lst mapper =
+        happyPath : Context -> List Expr -> FV -> Expr
+        happyPath c lst mapper =
             lst
-                |> List.map mapper
+                |> List.map (mapper c)
                 |> VList
                 |> ComputedValue
 
-        f c expr =
-            case ( getValue c expr, getFuncV c mapperExpr ) of
-                ( VList lst, Ok mapper ) ->
-                    happyPath lst (mapper c)
+        map1 : FV -> FV
+        map1 mapper =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        happyPath c lst mapper
 
-                ( _, Err s ) ->
+                    VError s ->
+                        error ("bad list in map: " ++ s)
+
+                    _ ->
+                        error "need list in map"
+
+        map0 : FV
+        map0 c mapperExpr =
+            case getFuncV c mapperExpr of
+                Ok mapper ->
+                    map1 mapper
+                        |> ComputedFunc
+
+                Err s ->
                     error ("bad mapper: " ++ s)
-
-                _ ->
-                    error "map wants a list"
     in
-    ComposeF "List.map" mapperExpr f
+    NamedFunc "List.map" map0
 
 
 range : Expr

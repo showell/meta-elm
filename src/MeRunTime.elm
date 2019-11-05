@@ -160,13 +160,17 @@ compute context expr =
 getFuncV : Context -> Expr -> Result String FV
 getFuncV context expr =
     case expr of
+        F1 _ _ ->
+            compute context expr
+                |> getFuncV context
+
         Var _ v ->
             getFuncV context v
 
         FunctionV _ f ->
             Ok f
 
-        ComposeF _ _ f ->
+        ComputedFunc f ->
             Ok f
 
         LambdaLeft _ binOp opRight ->
