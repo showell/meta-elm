@@ -177,7 +177,6 @@ type Expr
     | Var String Expr
     | Call String Context
     | FuncCall Context String Context
-    | FunctionV String FV
     | BinOp String FVV
     | FunctionVV String FVV
     | PipeLine Expr (List Expr)
@@ -491,7 +490,7 @@ The `getFuncV` function looks for function subtypes.  Examples
 include:
 
 - F1
-- FunctionV
+- NamedFunc
 - LambdaLeft
 - LambdaRight
 

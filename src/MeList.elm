@@ -154,16 +154,17 @@ sort unbox =
         ord c expr =
             compute c expr
 
-        f : FV
-        f c expr =
-            case getValue c expr of
-                VList lst ->
-                    transformSort ord unbox c lst
+        sort0 : FV
+        sort0 =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        transformSort ord unbox c lst
 
-                _ ->
-                    error "sort wants a list"
+                    _ ->
+                        error "sort wants a list"
     in
-    FunctionV "List.sort" f
+    NamedFunc "List.sort" sort0
 
 
 sortByInt : Expr
@@ -275,7 +276,7 @@ singleton =
                 |> VList
                 |> ComputedValue
     in
-    FunctionV "List.singleton" f
+    NamedFunc "List.singleton" f
 
 
 cons : Expr

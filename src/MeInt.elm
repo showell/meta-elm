@@ -50,7 +50,7 @@ toFloat =
                 _ ->
                     error "need int in toFloat"
     in
-    FunctionV "toFloat" f
+    NamedFunc "toFloat" f
 
 
 div : Expr

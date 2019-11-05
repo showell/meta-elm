@@ -20,7 +20,7 @@ fFrom name rawF =
                 _ ->
                     error "not a tuple"
     in
-    FunctionV name f
+    NamedFunc name f
 
 
 first : Expr

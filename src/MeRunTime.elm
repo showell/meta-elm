@@ -147,10 +147,6 @@ compute context expr =
                     f context arg1
 
                 _ ->
-                    let
-                        x =
-                            Debug.log "fred" fv
-                    in
                     error "F1 needs a function"
 
         _ ->
@@ -167,7 +163,7 @@ getFuncV context expr =
         Var _ v ->
             getFuncV context v
 
-        FunctionV _ f ->
+        NamedFunc _ f ->
             Ok f
 
         ComputedFunc f ->
