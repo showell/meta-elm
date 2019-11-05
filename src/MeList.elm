@@ -139,7 +139,7 @@ sort unbox =
     let
         ord : FV
         ord c expr =
-            computeV c expr
+            compute c expr
 
         f : FV
         f c expr =

@@ -4,7 +4,7 @@ module MeTuple exposing
     , second
     )
 
-import MeRunTime exposing (computeV, error, getValue)
+import MeRunTime exposing (compute, error, getValue)
 import MeType exposing (..)
 
 
@@ -15,7 +15,7 @@ fFrom name rawF =
         f c expr =
             case getValue c expr of
                 VTuple tup ->
-                    computeV c (rawF tup)
+                    compute c (rawF tup)
 
                 _ ->
                     error "not a tuple"

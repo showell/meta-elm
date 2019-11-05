@@ -1,4 +1,4 @@
-**2019-11-04**
+**2019-11-05**
 
 Welcome to **MetaElm**!
 
@@ -20,7 +20,7 @@ It lets you:
 
 - use helpers like `MeList.initInts` or `MeParser.toExpr` to create AST values
 - use helpers like `MeType.UserFunction` and `MeType.PipeLine` to create AST functions
-- use `MeRunTime.computeVal` to evaluate functions/expressions
+- use `MeRunTime.computeExpr` to evaluate functions/expressions
 - use `MeRepr.fromExpr` to serialize AST data to strings
 - use `MeList.toList` and friends to convert wrapped types back to core types.
 - use `MeElmCode.toElmCode` to generate "normal" Elm code
@@ -94,7 +94,7 @@ normalize =
 
 This AST is roughly equivalent to the Elm code below, but
 we do **not** actually have a translation step.  The
-above AST is interpreted directly by `computeVal`.  The
+above AST is interpreted directly by `computeExpr`.  The
 below code is just a valid Elm representation of the AST (which
 you can produce using `toElmCode` for educational use cases).
 
@@ -165,7 +165,7 @@ MetaElm everything literally is in a type called `Expr`.
 
 ##### Expr
 
-Here's the current version (as of 2019-11-04):
+Here's the current version (as of 2019-11-05):
 
 ```elm
 type Expr
@@ -301,23 +301,23 @@ Here's a more complicated wrapper:
 map : Expr -> Expr
 map mapperExpr =
     let
-        happy_path : List Expr -> (Expr -> V) -> V
-        happy_path lst mapper =
+        happyPath : List Expr -> (Expr -> Expr) -> Expr
+        happyPath lst mapper =
             lst
                 |> List.map mapper
-                |> List.map ComputedValue
                 |> VList
+                |> ComputedValue
 
         f c expr =
-            case ( computeV c expr, getFuncV c mapperExpr ) of
+            case ( getValue c expr, getFuncV c mapperExpr ) of
                 ( VList lst, Ok mapper ) ->
-                    happy_path lst (mapper c)
+                    happyPath lst (mapper c)
 
                 ( _, Err s ) ->
-                    VError ("bad mapper" ++ s)
+                    error ("bad mapper: " ++ s)
 
                 _ ->
-                    VError "map wants a list"
+                    error "map wants a list"
     in
     ComposeF "List.map" mapperExpr f
 ```
@@ -363,7 +363,7 @@ permuteFloats =
 
 The above code doesn't require any spcial type checks.
 
-And you can execute it from normal Elm Space using `computeVal`.
+And you can execute it from normal Elm Space using `compute`.
 
 (For more context on the above example, see
 [MeSnippet.elm](https://github.com/showell/MetaElm/blob/master/src/MeSnippet.elm).)
@@ -437,26 +437,26 @@ Let's quickly review the prior few sections of this article
 We have also briefly mentioned things like `UserFunction`.
 
 In order to evaluate an expression (for example, turn 2+3
-into 5), we need to call `MeRunTime.computeVal`.
+into 5), we need to call `MeRunTime.computeExpr`.
 
-Then `computeVal` just sets up an empty `context` for
-`computeV`:
+Then `computeExpr` just sets up an empty `context` for
+`compute`:
 
 ```elm
-computeVal : Expr -> V
-computeVal expr =
+computeExpr : Expr -> V
+computeExpr expr =
     let
         context =
             []
     in
-    computeV context expr
+    compute context expr
 ```
 
 The `context` is just a list of variables.  It's empty
 by default, but it can be populated by when we evaluate
 `FunctionCall` values.
 
-The `computeV` function is the heart of MetaElm, and it's
+The `compute` function is the heart of MetaElm, and it's
 just a large `case` statement that works through all
 the subtypes of `Expr`.
 
@@ -482,7 +482,7 @@ evalPipeLine : Context -> Expr -> List Expr -> V
 evalPipeLine context v lst =
     case lst of
         [] ->
-            computeV context v
+            compute context v
 
         head :: rest ->
             case getFuncV context head of
@@ -499,7 +499,7 @@ evalPipeLine context v lst =
 
 You can see that `evalPipeLine` calls three other functions:
 
-- computeV
+- compute
 - getFuncV
 - evalPipeLine (itself)
 
@@ -535,7 +535,7 @@ in my [MetaElm repo](https://github.com/showell/MetaElm).
 
 My immediate goals are to just translate some more real
 Elm code into MetaElm snippets, and that will help me
-flesh out the core pieces like `computeVal` and
+flesh out the core pieces like `compute` and
 other stuff in `MeRunTime`.
 
 There is also the somewhat tedious work of writing wrappers.

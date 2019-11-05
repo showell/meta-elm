@@ -1,6 +1,6 @@
 module MeRunTime exposing
-    ( computeV
-    , computeVal
+    ( compute
+    , computeExpr
     , error
     , getFinalValue
     , getFuncV
@@ -12,13 +12,13 @@ import List.Extra
 import MeType exposing (..)
 
 
-computeVal : Expr -> Expr
-computeVal expr =
+computeExpr : Expr -> Expr
+computeExpr expr =
     let
         context =
             []
     in
-    computeV context expr
+    compute context expr
 
 
 error : String -> Expr
@@ -28,7 +28,7 @@ error s =
 
 getValue : Context -> Expr -> V
 getValue context expr =
-    case computeV context expr of
+    case compute context expr of
         ComputedValue v ->
             v
 
@@ -39,14 +39,14 @@ getValue context expr =
             VError "trying to use uncomputed value"
 
 
-computeV : FV
-computeV context expr =
+compute : FV
+compute context expr =
     case expr of
         LetIn c resultExpr ->
-            computeV (c ++ context) resultExpr
+            compute (c ++ context) resultExpr
 
         Var _ v ->
-            computeV context v
+            compute context v
 
         VarName vname ->
             let
@@ -55,7 +55,7 @@ computeV context expr =
             in
             case tup of
                 Just ( _, v ) ->
-                    computeV context v
+                    compute context v
 
                 Nothing ->
                     error ("cannot find " ++ vname)
@@ -79,12 +79,12 @@ computeV context expr =
                     args
                         |> List.map
                             (\( n, arg ) ->
-                                ( n, computeV context arg )
+                                ( n, compute context arg )
                             )
             in
             case funcImpl of
                 Just impl ->
-                    computeV (computedArgs ++ context) impl
+                    compute (computedArgs ++ context) impl
 
                 Nothing ->
                     error ("cannot find name in module: " ++ funcName)
@@ -100,7 +100,7 @@ computeV context expr =
                     -- there's no type check here, we just populate
                     -- the namespace assuming funcImpl will ask for
                     -- the right names via VarName
-                    computeV (args ++ ns) impl
+                    compute (args ++ ns) impl
 
                 Nothing ->
                     error ("cannot find name in module: " ++ funcName)
@@ -109,10 +109,10 @@ computeV context expr =
             case getValue context cond of
                 VBool b ->
                     if b then
-                        computeV context ifExpr
+                        compute context ifExpr
 
                     else
-                        computeV context elseExpr
+                        compute context elseExpr
 
                 VError s ->
                     error ("error with if conditional: " ++ s)
@@ -189,7 +189,7 @@ evalPipeLine : Context -> Expr -> List Expr -> Expr
 evalPipeLine context v lst =
     case lst of
         [] ->
-            computeV context v
+            compute context v
 
         head :: rest ->
             case getFuncV context head of
@@ -214,4 +214,4 @@ getFinalValue expr =
             v
 
         _ ->
-            VError "final values were never computed with computeVal"
+            VError "final values were never computed with computeExpr"
