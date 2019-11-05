@@ -35,6 +35,15 @@ factorial =
     [ ( "factorial", f ) ]
 
 
+range : Context
+range =
+    let
+        f =
+            F2 MeList.range (MeInt.init 1) (VarName "n")
+    in
+    [ ( "range", f ) ]
+
+
 permuteFloats : Context
 permuteFloats =
     let
@@ -108,6 +117,7 @@ helper ns funcName argName inString =
 testData : List (List String)
 testData =
     [ helper factorial "factorial" "n" "17"
+    , helper range "range" "n" "11"
     , helper normalize "normalize" "lst" "[ 99, 98, 97, 100, 101, 44, 42, 41 ]"
     , helper permuteFloats "permuteFloats" "lst" "[ 4, 3, 2, 5, 1 ]"
     ]

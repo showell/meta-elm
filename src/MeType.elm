@@ -27,6 +27,8 @@ type alias FVV =
 type Expr
     = SimpleValue V
     | ComputedValue V
+    | ComputedFunc (Context -> Expr -> Expr)
+    | NamedFunc String (Context -> Expr -> Expr)
     | VarName String
     | Var String Expr
     | Call String Context
@@ -36,6 +38,8 @@ type Expr
     | BinOp String FVV
     | FunctionVV String FVV
     | PipeLine Expr (List Expr)
+    | F1 Expr Expr
+    | F2 Expr Expr Expr
     | Infix Expr Expr Expr
     | LambdaLeft String Expr Expr
     | LambdaRight Expr Expr String

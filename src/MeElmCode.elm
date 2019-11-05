@@ -122,6 +122,23 @@ toElmCode topExpr =
                 BinOp opname _ ->
                     "(" ++ opname ++ ")"
 
+                NamedFunc name _ ->
+                    name
+
+                F1 f arg1 ->
+                    toCode withParens f
+                        ++ " "
+                        ++ toCode withParens arg1
+                        |> parenWrapper
+
+                F2 f arg1 arg2 ->
+                    toCode withParens f
+                        ++ " "
+                        ++ toCode withParens arg1
+                        ++ " "
+                        ++ toCode withParens arg2
+                        |> parenWrapper
+
                 Infix argLeft opExpr argRight ->
                     case opExpr of
                         BinOp opName _ ->

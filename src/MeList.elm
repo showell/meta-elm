@@ -4,6 +4,7 @@ module MeList exposing
     , initInts
     , map
     , plus
+    , range
     , singleton
     , sort
     , sortBy
@@ -198,6 +199,36 @@ map mapperExpr =
                     error "map wants a list"
     in
     ComposeF "List.map" mapperExpr f
+
+
+range : Expr
+range =
+    let
+        range1 : Int -> (Context -> Expr -> Expr)
+        range1 lo =
+            \c hiExpr ->
+                case getValue c hiExpr of
+                    VInt hi ->
+                        List.range lo hi
+                            |> List.map VInt
+                            |> List.map ComputedValue
+                            |> VList
+                            |> ComputedValue
+
+                    _ ->
+                        error "high value to range must be integer"
+
+        range0 : Context -> Expr -> Expr
+        range0 c loExpr =
+            case getValue c loExpr of
+                VInt lo ->
+                    range1 lo
+                        |> ComputedFunc
+
+                _ ->
+                    error "low value to range must be integer"
+    in
+    NamedFunc "List.range" range0
 
 
 singleton : Expr

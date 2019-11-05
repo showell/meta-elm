@@ -128,6 +128,31 @@ compute context expr =
                 Err s ->
                     error ("infix needs a binary operator: " ++ s)
 
+        F2 fv arg1 arg2 ->
+            computeV context (F1 (F1 fv arg1) arg2)
+
+        F1 fv arg1 ->
+            case fv of
+                F1 _ _ ->
+                    let
+                        newFv =
+                            computeV context fv
+                    in
+                    computeV context (F1 newFv arg1)
+
+                ComputedFunc f ->
+                    f context arg1
+
+                NamedFunc _ f ->
+                    f context arg1
+
+                _ ->
+                    let
+                        x =
+                            Debug.log "fred" fv
+                    in
+                    error "F1 needs a function"
+
         _ ->
             error "cannot evaluate this type as a value yet"
 
