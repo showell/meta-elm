@@ -59,6 +59,22 @@ fromList tups =
     Dict.fromList tups
 
 
+getArgDict : List Expr -> Expr -> Result String Context
+getArgDict args expr =
+    case expr of
+        Function params _ ->
+            if List.length params == List.length args then
+                List.map2 Tuple.pair params args
+                    |> Dict.fromList
+                    |> Ok
+
+            else
+                Err "wrong number of arguments"
+
+        _ ->
+            Err "you must call a function"
+
+
 compute : FV
 compute context expr =
     case expr of
@@ -95,16 +111,19 @@ compute context expr =
             let
                 newContext =
                     union ns context
-
-                newArgs =
-                    mapValues (compute newContext) args
             in
             case get funcName newContext of
                 Just impl ->
-                    -- there's no type check here, we just populate
-                    -- the namespace assuming funcImpl will ask for
-                    -- the right names via VarName
-                    compute (union newArgs newContext) impl
+                    let
+                        computedArgs =
+                            List.map (compute newContext) args
+                    in
+                    case getArgDict computedArgs impl of
+                        Ok argDict ->
+                            compute (union argDict newContext) impl
+
+                        Err s ->
+                            error ("bad args for " ++ funcName ++ ": " ++ s)
 
                 Nothing ->
                     error ("cannot find name in module: " ++ funcName)

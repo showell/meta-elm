@@ -108,7 +108,6 @@ toElmCode topExpr =
                     let
                         argString =
                             args
-                                |> Dict.values
                                 |> List.map (toCode withParens)
                                 |> String.join " "
                     in

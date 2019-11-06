@@ -27,9 +27,8 @@ factorial =
                 (VarName "n")
                 MeNumber.mult
                 (Call "factorial" <|
-                    Dict.fromList
-                        [ ( "n", Infix (VarName "n") MeNumber.minus (MeInt.init 1) )
-                        ]
+                    [ Infix (VarName "n") MeNumber.minus (MeInt.init 1)
+                    ]
                 )
             )
 
@@ -104,7 +103,7 @@ helper f funcName argName inString =
                 |> MeElmCode.codeFromContext
 
         args =
-            Dict.fromList [ ( argName, inExpr ) ]
+            [ inExpr ]
 
         outString =
             FuncCall ns funcName args

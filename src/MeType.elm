@@ -28,12 +28,12 @@ type alias FVV =
 
 type Expr
     = BinOp String FVV
-    | Call String Context
+    | Call String (List Expr)
     | ComputedFunc FV
     | ComputedValue V
     | F1 Expr Expr
     | F2 Expr Expr Expr
-    | FuncCall Context String Context
+    | FuncCall Context String (List Expr)
     | Function (List String) Expr
     | IfElse Expr Expr Expr
     | Infix Expr Expr Expr
