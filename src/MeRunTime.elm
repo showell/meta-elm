@@ -160,23 +160,27 @@ getFuncVV c expr =
             fvv
 
         _ ->
-            case getFuncV c expr of
-                Ok fv1 ->
-                    \_ e1 e2 ->
-                        case fv1 c e1 of
-                            ComputedFunc fv2 ->
-                                fv2 c e2
+            let
+                fv1 =
+                    getFuncV c expr
+            in
+            \_ e1 e2 ->
+                case fv1 c e1 of
+                    ComputedFunc fv2 ->
+                        fv2 c e2
 
-                            _ ->
-                                error "could not compute function with two args"
-
-                Err s ->
-                    \_ _ _ ->
-                        error s
+                    _ ->
+                        error "could not compute function with two args"
 
 
-getFuncV : Context -> Expr -> Result String FV
+getFuncV : Context -> Expr -> FV
 getFuncV context expr =
+    let
+        err s =
+            \_ _ ->
+                VError s
+                    |> ComputedValue
+    in
     case expr of
         F1 _ _ ->
             compute context expr
@@ -190,10 +194,10 @@ getFuncV context expr =
             getFuncV context v
 
         NamedFunc _ f ->
-            Ok f
+            f
 
         ComputedFunc f ->
-            Ok f
+            f
 
         LambdaLeft _ binOp opRight ->
             case binOp of
@@ -202,10 +206,10 @@ getFuncV context expr =
                         fv c opLeft =
                             fvv c opLeft opRight
                     in
-                    Ok fv
+                    fv
 
                 _ ->
-                    Err "lambda left needs a binary operator"
+                    err "lambda left needs a binary operator"
 
         LambdaRight opLeft binOp _ ->
             case binOp of
@@ -214,13 +218,13 @@ getFuncV context expr =
                         fv c opRight =
                             fvv c opLeft opRight
                     in
-                    Ok fv
+                    fv
 
                 _ ->
-                    Err "lambda right needs a binary operator"
+                    err "lambda right needs a binary operator"
 
         _ ->
-            Err "not a function"
+            err "not a function"
 
 
 evalPipeLine : Context -> Expr -> List Expr -> Expr
@@ -230,16 +234,14 @@ evalPipeLine context v lst =
             compute context v
 
         head :: rest ->
-            case getFuncV context head of
-                Ok f ->
-                    let
-                        newV =
-                            f context v
-                    in
-                    evalPipeLine context newV rest
+            let
+                fv =
+                    getFuncV context head
 
-                Err s ->
-                    error ("wanted function in pipeline: " ++ s)
+                newV =
+                    fv context v
+            in
+            evalPipeLine context newV rest
 
 
 getFinalValue : Expr -> V

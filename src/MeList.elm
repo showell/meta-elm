@@ -186,13 +186,12 @@ sortBy unbox =
 
         sortBy0 : FV
         sortBy0 c ordExpr =
-            case getFuncV c ordExpr of
-                Ok ord ->
-                    sortBy1 ord
-                        |> ComputedFunc
-
-                Err s ->
-                    error ("bad ord for sortBy: " ++ s)
+            let
+                ord =
+                    getFuncV c ordExpr
+            in
+            sortBy1 ord
+                |> ComputedFunc
     in
     NamedFunc "List.sortBy" sortBy0
 
@@ -252,13 +251,12 @@ map =
 
         map0 : FV
         map0 c mapperExpr =
-            case getFuncV c mapperExpr of
-                Ok mapper ->
-                    map1 mapper
-                        |> ComputedFunc
-
-                Err s ->
-                    error ("bad mapper: " ++ s)
+            let
+                mapper =
+                    getFuncV c mapperExpr
+            in
+            map1 mapper
+                |> ComputedFunc
     in
     NamedFunc "List.map" map0
 

@@ -336,13 +336,12 @@ map =
 
         map0 : FV
         map0 c mapperExpr =
-            case getFuncV c mapperExpr of
-                Ok mapper ->
-                    map1 mapper
-                        |> ComputedFunc
-
-                Err s ->
-                    error ("bad mapper: " ++ s)
+            let
+                mapper =
+                    getFuncV c mapperExpr
+            in
+            map1 mapper
+                |> ComputedFunc
     in
     NamedFunc "List.map" map0
 ```
