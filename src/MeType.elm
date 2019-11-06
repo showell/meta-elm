@@ -27,23 +27,23 @@ type alias FVV =
 
 
 type Expr
-    = SimpleValue V
-    | ComputedValue V
-    | ComputedFunc FV
-    | NamedFunc String FV
-    | VarName String
-    | Var String Expr
+    = BinOp String FVV
     | Call String Context
-    | FuncCall Context String Context
-    | BinOp String FVV
-    | PipeLine Expr (List Expr)
+    | ComputedFunc FV
+    | ComputedValue V
     | F1 Expr Expr
     | F2 Expr Expr Expr
+    | FuncCall Context String Context
+    | IfElse Expr Expr Expr
     | Infix Expr Expr Expr
     | LambdaLeft String Expr Expr
     | LambdaRight Expr Expr String
-    | IfElse Expr Expr Expr
     | LetIn (List ( String, Expr )) Expr
+    | NamedFunc String FV
+    | PipeLine Expr (List Expr)
+    | SimpleValue V
+    | Var String Expr
+    | VarName String
 
 
 type alias Context =
