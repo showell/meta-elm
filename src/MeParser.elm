@@ -1,59 +1,40 @@
 module MeParser exposing (toExpr)
 
+import DParser
+    exposing
+        ( D(..)
+        )
 import MeType
     exposing
         ( Expr(..)
         , V(..)
         )
-import Parser
-    exposing
-        ( Parser
-        , Trailing(..)
-        , float
-        , int
-        , lazy
-        , map
-        , oneOf
-        , run
-        , sequence
-        , spaces
-        )
 
 
-parseList : Parser Expr -> Parser Expr
-parseList item =
-    sequence
-        { start = "["
-        , separator = ","
-        , spaces = spaces
-        , end = "]"
-        , item = item
-        , trailing = Optional
-        }
-        |> map (\lst -> SimpleValue (VList lst))
+toExprHelper : D -> Expr
+toExprHelper d =
+    case d of
+        DInt n ->
+            VInt n
+                |> SimpleValue
 
+        DFloat n ->
+            VFloat n
+                |> SimpleValue
 
-parseExpr : Parser Expr
-parseExpr =
-    oneOf
-        [ parseValue
-        , Parser.lazy (\_ -> parseList parseExpr) -- should be parseExpr (not value)
-        ]
-
-
-parseValue : Parser Expr
-parseValue =
-    oneOf
-        [ int |> map (\n -> SimpleValue (VInt n))
-        , float |> map (\n -> SimpleValue (VFloat n))
-        ]
+        DList lst ->
+            lst
+                |> List.map toExprHelper
+                |> VList
+                |> SimpleValue
 
 
 toExpr : String -> Expr
-toExpr s =
-    case run parseExpr s of
-        Ok expr ->
-            expr
+toExpr text =
+    case DParser.parse text of
+        Ok d ->
+            toExprHelper d
 
-        Err _ ->
-            VError "could not parse" |> SimpleValue
+        Err s ->
+            VError s
+                |> SimpleValue
