@@ -182,17 +182,6 @@ getFuncV context expr =
                     |> ComputedValue
     in
     case expr of
-        F1 _ _ ->
-            compute context expr
-                |> getFuncV context
-
-        F2 _ _ _ ->
-            compute context expr
-                |> getFuncV context
-
-        Var _ v ->
-            getFuncV context v
-
         NamedFunc _ f ->
             f
 
@@ -223,8 +212,15 @@ getFuncV context expr =
                 _ ->
                     err "lambda right needs a binary operator"
 
-        _ ->
+        ComputedValue _ ->
             err "not a function"
+
+        SimpleValue _ ->
+            err "not a function"
+
+        _ ->
+            compute context expr
+                |> getFuncV context
 
 
 evalPipeLine : Context -> Expr -> List Expr -> Expr
