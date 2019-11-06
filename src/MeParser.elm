@@ -20,6 +20,7 @@ import Parser
         )
 
 
+parseList : Parser Expr -> Parser Expr
 parseList item =
     sequence
         { start = "["
@@ -32,6 +33,7 @@ parseList item =
         |> map (\lst -> SimpleValue (VList lst))
 
 
+parseExpr : Parser Expr
 parseExpr =
     oneOf
         [ parseValue
@@ -39,6 +41,7 @@ parseExpr =
         ]
 
 
+parseValue : Parser Expr
 parseValue =
     oneOf
         [ int |> map (\n -> SimpleValue (VInt n))
