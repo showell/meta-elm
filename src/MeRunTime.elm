@@ -86,24 +86,22 @@ compute context expr =
             evalPipeLine context topExpr lst
 
         Call funcName args ->
-            let
-                computedArgs =
-                    mapValues (compute context) args
-            in
-            case get funcName context of
-                Just impl ->
-                    compute (union computedArgs context) impl
-
-                Nothing ->
-                    error ("cannot find name in module: " ++ funcName)
+            compute context (FuncCall context funcName args)
 
         FuncCall ns funcName args ->
-            case get funcName ns of
+            let
+                newContext =
+                    union ns context
+
+                newArgs =
+                    mapValues (compute newContext) args
+            in
+            case get funcName newContext of
                 Just impl ->
                     -- there's no type check here, we just populate
                     -- the namespace assuming funcImpl will ask for
                     -- the right names via VarName
-                    compute (union args ns) impl
+                    compute (union newArgs newContext) impl
 
                 Nothing ->
                     error ("cannot find name in module: " ++ funcName)
