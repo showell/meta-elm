@@ -8,7 +8,7 @@ module MeRunTime exposing
     , getValue
     )
 
-import Dict exposing (Dict)
+import Dict
 import MeType exposing (..)
 
 
@@ -47,11 +47,6 @@ union new old =
 get : String -> Context -> Maybe Expr
 get vname context =
     Dict.get vname context
-
-
-mapValues : (Expr -> Expr) -> Context -> Context
-mapValues f context =
-    Dict.map (\k v -> f v) context
 
 
 fromList : List ( String, Expr ) -> Context

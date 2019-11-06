@@ -17,7 +17,7 @@ Elm code that gets generated here, but that would
 require some tooling.
 --}
 
-import Dict exposing (Dict)
+import Dict
 import MeRepr
 import MeType exposing (..)
 

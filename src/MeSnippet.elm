@@ -1,6 +1,6 @@
 module MeSnippet exposing (testData)
 
-import Dict exposing (Dict)
+import Dict
 import MeElmCode
 import MeFloat
 import MeInt
@@ -12,8 +12,7 @@ import MeRunTime
 import MeTuple
 import MeType
     exposing
-        ( Context
-        , Expr(..)
+        ( Expr(..)
         )
 
 
@@ -88,8 +87,8 @@ normalize =
             ]
 
 
-helper : Expr -> String -> String -> String -> List String
-helper f funcName argName inString =
+helper : Expr -> String -> String -> List String
+helper f funcName inString =
     let
         ns =
             Dict.fromList [ ( funcName, f ) ]
@@ -118,8 +117,8 @@ helper f funcName argName inString =
 
 testData : List (List String)
 testData =
-    [ helper factorial "factorial" "n" "17"
-    , helper factorial2 "factorial2" "n" "11"
-    , helper normalize "normalize" "lst" "[ 99, 98, 97, 100, 101, 44, 42, 41 ]"
-    , helper permuteFloats "permuteFloats" "lst" "[ 4, 3, 2, 5, 1 ]"
+    [ helper factorial "factorial" "17"
+    , helper factorial2 "factorial2" "11"
+    , helper normalize "normalize" "[ 99, 98, 97, 100, 101, 44, 42, 41 ]"
+    , helper permuteFloats "permuteFloats" "[ 4, 3, 2, 5, 1 ]"
     ]
