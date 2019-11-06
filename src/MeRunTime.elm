@@ -132,22 +132,7 @@ compute context expr =
             compute context (F1 (F1 fv arg1) arg2)
 
         F1 fv arg1 ->
-            case fv of
-                F1 _ _ ->
-                    let
-                        newFv =
-                            compute context fv
-                    in
-                    compute context (F1 newFv arg1)
-
-                ComputedFunc f ->
-                    f context arg1
-
-                NamedFunc _ f ->
-                    f context arg1
-
-                _ ->
-                    error "F1 needs a function"
+            getFuncV context fv context arg1
 
         _ ->
             error "cannot evaluate this type as a value yet"
