@@ -65,9 +65,19 @@ parseList item =
         |> map DList
 
 
+parseNumber : Parser D
+parseNumber =
+    Parser.number
+        { int = Just DInt
+        , hex = Nothing
+        , octal = Nothing -- 0o0731 is not
+        , binary = Nothing -- 0b1101 is not
+        , float = Just DFloat
+        }
+
+
 parseValue : Parser D
 parseValue =
     oneOf
-        [ int |> map DInt
-        , float |> map DFloat
+        [ parseNumber
         ]
