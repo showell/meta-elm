@@ -68,6 +68,9 @@ compute context expr =
         Var _ v ->
             compute context v
 
+        Function _ v ->
+            compute context v
+
         VarName vname ->
             case get vname context of
                 Just v ->

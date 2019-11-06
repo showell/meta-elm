@@ -19,26 +19,28 @@ import MeType
 
 factorial : Expr
 factorial =
-    IfElse
-        (Infix (VarName "n") MeInt.eq (MeInt.init 0))
-        (MeInt.init 1)
-        (Infix
-            (VarName "n")
-            MeNumber.mult
-            (Call "factorial" <|
-                Dict.fromList
-                    [ ( "n", Infix (VarName "n") MeNumber.minus (MeInt.init 1) )
-                    ]
+    Function [ "n" ] <|
+        IfElse
+            (Infix (VarName "n") MeInt.eq (MeInt.init 0))
+            (MeInt.init 1)
+            (Infix
+                (VarName "n")
+                MeNumber.mult
+                (Call "factorial" <|
+                    Dict.fromList
+                        [ ( "n", Infix (VarName "n") MeNumber.minus (MeInt.init 1) )
+                        ]
+                )
             )
-        )
 
 
 factorial2 : Expr
 factorial2 =
-    PipeLine
-        (F2 MeList.range (MeInt.init 1) (VarName "n"))
-        [ F2 MeList.foldl MeNumber.mult (MeInt.init 1)
-        ]
+    Function [ "n" ] <|
+        PipeLine
+            (F2 MeList.range (MeInt.init 1) (VarName "n"))
+            [ F2 MeList.foldl MeNumber.mult (MeInt.init 1)
+            ]
 
 
 permuteFloats : Expr
@@ -58,31 +60,33 @@ permuteFloats =
                 , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
     in
-    LetIn
-        [ ( "startList", startList )
-        , ( "newElements", newElements )
-        ]
-        (PipeLine
-            (VarName "newElements")
-            [ F1 MeList.map MeList.singleton
-            , F1 MeList.map
-                (LambdaRight (VarName "startList") MeList.plus "x")
+    Function [ "lst" ] <|
+        LetIn
+            [ ( "startList", startList )
+            , ( "newElements", newElements )
             ]
-        )
+            (PipeLine
+                (VarName "newElements")
+                [ F1 MeList.map MeList.singleton
+                , F1 MeList.map
+                    (LambdaRight (VarName "startList") MeList.plus "x")
+                ]
+            )
 
 
 normalize : Expr
 normalize =
-    PipeLine
-        (VarName "lst")
-        [ F1 MeList.indexedMap MeTuple.pair
-        , F1 MeList.sortByInt MeTuple.second
-        , F1 MeList.map MeTuple.first
-        , F1 MeList.indexedMap MeTuple.pair
-        , F1 MeList.sortByInt MeTuple.second
-        , F1 MeList.map MeTuple.first
-        , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
-        ]
+    Function [ "lst" ] <|
+        PipeLine
+            (VarName "lst")
+            [ F1 MeList.indexedMap MeTuple.pair
+            , F1 MeList.sortByInt MeTuple.second
+            , F1 MeList.map MeTuple.first
+            , F1 MeList.indexedMap MeTuple.pair
+            , F1 MeList.sortByInt MeTuple.second
+            , F1 MeList.map MeTuple.first
+            , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
+            ]
 
 
 helper : Expr -> String -> String -> String -> List String

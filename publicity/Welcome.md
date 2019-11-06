@@ -176,6 +176,7 @@ type Expr
     | F1 Expr Expr
     | F2 Expr Expr Expr
     | FuncCall Context String Context
+    | Function (List String) Expr
     | IfElse Expr Expr Expr
     | Infix Expr Expr Expr
     | LambdaLeft String Expr Expr

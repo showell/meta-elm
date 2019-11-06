@@ -35,6 +35,7 @@ codeFromContext ns =
     let
         block ( name, expr ) =
             name
+                ++ paramString expr
                 ++ " =\n"
                 ++ (indent <| toElmCode expr)
     in
@@ -42,6 +43,16 @@ codeFromContext ns =
         |> Dict.toList
         |> List.map block
         |> String.join "\n\n"
+
+
+paramString : Expr -> String
+paramString expr =
+    case expr of
+        Function params _ ->
+            " " ++ String.join " " params
+
+        _ ->
+            ""
 
 
 toElmCode : Expr -> String
@@ -55,6 +66,9 @@ toElmCode topExpr =
 
         toCode parenWrapper expr =
             case expr of
+                Function _ fexpr ->
+                    toCode withoutParens fexpr
+
                 LetIn lets vexpr ->
                     let
                         assign ( name, v ) =
