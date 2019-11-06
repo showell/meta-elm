@@ -8,7 +8,7 @@ module MeRunTime exposing
     , getValue
     )
 
-import List.Extra
+import Dict exposing (Dict)
 import MeType exposing (..)
 
 
@@ -16,7 +16,7 @@ computeExpr : Expr -> Expr
 computeExpr expr =
     let
         context =
-            []
+            Dict.empty
     in
     compute context expr
 
@@ -39,22 +39,38 @@ getValue context expr =
             VError "trying to use uncomputed value"
 
 
+union : Context -> Context -> Context
+union new old =
+    Dict.union new old
+
+
+get : String -> Context -> Maybe Expr
+get vname context =
+    Dict.get vname context
+
+
+mapValues : (Expr -> Expr) -> Context -> Context
+mapValues f context =
+    Dict.map (\k v -> f v) context
+
+
+fromList : List ( String, Expr ) -> Context
+fromList tups =
+    Dict.fromList tups
+
+
 compute : FV
 compute context expr =
     case expr of
         LetIn c resultExpr ->
-            compute (c ++ context) resultExpr
+            compute (union (fromList c) context) resultExpr
 
         Var _ v ->
             compute context v
 
         VarName vname ->
-            let
-                tup =
-                    List.Extra.find (\( n, _ ) -> n == vname) context
-            in
-            case tup of
-                Just ( _, v ) ->
+            case get vname context of
+                Just v ->
                     compute context v
 
                 Nothing ->
@@ -71,36 +87,23 @@ compute context expr =
 
         Call funcName args ->
             let
-                funcImpl =
-                    List.Extra.find (\( n, _ ) -> n == funcName) context
-                        |> Maybe.map Tuple.second
-
                 computedArgs =
-                    args
-                        |> List.map
-                            (\( n, arg ) ->
-                                ( n, compute context arg )
-                            )
+                    mapValues (compute context) args
             in
-            case funcImpl of
+            case get funcName context of
                 Just impl ->
-                    compute (computedArgs ++ context) impl
+                    compute (union computedArgs context) impl
 
                 Nothing ->
                     error ("cannot find name in module: " ++ funcName)
 
         FuncCall ns funcName args ->
-            let
-                funcImpl =
-                    List.Extra.find (\( n, _ ) -> n == funcName) ns
-                        |> Maybe.map Tuple.second
-            in
-            case funcImpl of
+            case get funcName ns of
                 Just impl ->
                     -- there's no type check here, we just populate
                     -- the namespace assuming funcImpl will ask for
                     -- the right names via VarName
-                    compute (args ++ ns) impl
+                    compute (union args ns) impl
 
                 Nothing ->
                     error ("cannot find name in module: " ++ funcName)

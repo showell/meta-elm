@@ -6,6 +6,8 @@ module MeType exposing
     , V(..)
     )
 
+import Dict exposing (Dict)
+
 
 type V
     = VBool Bool
@@ -41,8 +43,8 @@ type Expr
     | LambdaLeft String Expr Expr
     | LambdaRight Expr Expr String
     | IfElse Expr Expr Expr
-    | LetIn Context Expr
+    | LetIn (List ( String, Expr )) Expr
 
 
 type alias Context =
-    List ( String, Expr )
+    Dict String Expr

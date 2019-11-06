@@ -439,12 +439,12 @@ computeExpr : Expr -> V
 computeExpr expr =
     let
         context =
-            []
+            Dict.empty
     in
     compute context expr
 ```
 
-The `context` is just a list of variables.  It's empty
+The `context` is just a dictionary of variables.  It's empty
 by default, but it can be populated by when we evaluate
 `FunctionCall` values.
 

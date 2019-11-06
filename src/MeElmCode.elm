@@ -17,6 +17,7 @@ Elm code that gets generated here, but that would
 require some tooling.
 --}
 
+import Dict exposing (Dict)
 import MeRepr
 import MeType exposing (..)
 
@@ -38,6 +39,7 @@ codeFromContext ns =
                 ++ (indent <| toElmCode expr)
     in
     ns
+        |> Dict.toList
         |> List.map block
         |> String.join "\n\n"
 
@@ -92,7 +94,7 @@ toElmCode topExpr =
                     let
                         argString =
                             args
-                                |> List.map Tuple.second
+                                |> Dict.values
                                 |> List.map (toCode withParens)
                                 |> String.join " "
                     in

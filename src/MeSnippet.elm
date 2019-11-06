@@ -1,5 +1,6 @@
 module MeSnippet exposing (testData)
 
+import Dict exposing (Dict)
 import MeElmCode
 import MeFloat
 import MeInt
@@ -16,38 +17,31 @@ import MeType
         )
 
 
-factorial : Context
+factorial : Expr
 factorial =
-    let
-        f =
-            IfElse
-                (Infix (VarName "n") MeInt.eq (MeInt.init 0))
-                (MeInt.init 1)
-                (Infix
-                    (VarName "n")
-                    MeNumber.mult
-                    (Call "factorial"
-                        [ ( "n", Infix (VarName "n") MeNumber.minus (MeInt.init 1) )
-                        ]
-                    )
-                )
-    in
-    [ ( "factorial", f ) ]
+    IfElse
+        (Infix (VarName "n") MeInt.eq (MeInt.init 0))
+        (MeInt.init 1)
+        (Infix
+            (VarName "n")
+            MeNumber.mult
+            (Call "factorial" <|
+                Dict.fromList
+                    [ ( "n", Infix (VarName "n") MeNumber.minus (MeInt.init 1) )
+                    ]
+            )
+        )
 
 
-factorial2 : Context
+factorial2 : Expr
 factorial2 =
-    let
-        f =
-            PipeLine
-                (F2 MeList.range (MeInt.init 1) (VarName "n"))
-                [ F2 MeList.foldl MeNumber.mult (MeInt.init 1)
-                ]
-    in
-    [ ( "factorial2", f ) ]
+    PipeLine
+        (F2 MeList.range (MeInt.init 1) (VarName "n"))
+        [ F2 MeList.foldl MeNumber.mult (MeInt.init 1)
+        ]
 
 
-permuteFloats : Context
+permuteFloats : Expr
 permuteFloats =
     let
         startList =
@@ -63,44 +57,40 @@ permuteFloats =
                 , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
                 , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
-
-        f =
-            LetIn
-                [ ( "startList", startList )
-                , ( "newElements", newElements )
-                ]
-                (PipeLine
-                    (VarName "newElements")
-                    [ F1 MeList.map MeList.singleton
-                    , F1 MeList.map
-                        (LambdaRight (VarName "startList") MeList.plus "x")
-                    ]
-                )
     in
-    [ ( "permuteFloats", f ) ]
+    LetIn
+        [ ( "startList", startList )
+        , ( "newElements", newElements )
+        ]
+        (PipeLine
+            (VarName "newElements")
+            [ F1 MeList.map MeList.singleton
+            , F1 MeList.map
+                (LambdaRight (VarName "startList") MeList.plus "x")
+            ]
+        )
 
 
-normalize : Context
+normalize : Expr
 normalize =
-    let
-        f =
-            PipeLine
-                (VarName "lst")
-                [ F1 MeList.indexedMap MeTuple.pair
-                , F1 MeList.sortByInt MeTuple.second
-                , F1 MeList.map MeTuple.first
-                , F1 MeList.indexedMap MeTuple.pair
-                , F1 MeList.sortByInt MeTuple.second
-                , F1 MeList.map MeTuple.first
-                , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
-                ]
-    in
-    [ ( "normalize", f ) ]
+    PipeLine
+        (VarName "lst")
+        [ F1 MeList.indexedMap MeTuple.pair
+        , F1 MeList.sortByInt MeTuple.second
+        , F1 MeList.map MeTuple.first
+        , F1 MeList.indexedMap MeTuple.pair
+        , F1 MeList.sortByInt MeTuple.second
+        , F1 MeList.map MeTuple.first
+        , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
+        ]
 
 
-helper : Context -> String -> String -> String -> List String
-helper ns funcName argName inString =
+helper : Expr -> String -> String -> String -> List String
+helper f funcName argName inString =
     let
+        ns =
+            Dict.fromList [ ( funcName, f ) ]
+
         inExpr =
             inString
                 |> MeParser.toExpr
@@ -109,8 +99,11 @@ helper ns funcName argName inString =
             ns
                 |> MeElmCode.codeFromContext
 
+        args =
+            Dict.fromList [ ( argName, inExpr ) ]
+
         outString =
-            FuncCall ns funcName [ ( argName, inExpr ) ]
+            FuncCall ns funcName args
                 |> MeRunTime.computeExpr
                 |> MeRepr.fromExpr
     in
