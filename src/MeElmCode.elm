@@ -104,7 +104,7 @@ toElmCode topExpr =
                 FuncCall _ _ _ ->
                     "(not implemented)"
 
-                SimpleValue v ->
+                SimpleValue _ ->
                     MeRepr.fromExpr expr
 
                 PipeLine a lst ->

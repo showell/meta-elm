@@ -52,7 +52,7 @@ pair =
                 left =
                     compute c leftExpr
             in
-            pair1 leftExpr
+            pair1 left
                 |> ComputedFunc
     in
     NamedFunc "Tuple.pair" pair0
