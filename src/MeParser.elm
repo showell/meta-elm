@@ -1,8 +1,14 @@
 module MeParser exposing (toExpr)
 
-import DParser
+import Json.Decode
     exposing
-        ( D(..)
+        ( decodeString
+        , errorToString
+        )
+import Json.Decode.Generic
+    exposing
+        ( Json(..)
+        , json
         )
 import MeType
     exposing
@@ -11,30 +17,39 @@ import MeType
         )
 
 
-toExprHelper : D -> Expr
+toExprHelper : Json -> Expr
 toExprHelper d =
     case d of
-        DInt n ->
-            VInt n
+        JInt n ->
+            n
+                |> VInt
                 |> SimpleValue
 
-        DFloat n ->
-            VFloat n
+        JFloat n ->
+            n
+                |> VFloat
                 |> SimpleValue
 
-        DList lst ->
+        JArr lst ->
             lst
                 |> List.map toExprHelper
                 |> VList
                 |> SimpleValue
 
+        _ ->
+            "unsupported type"
+                |> VError
+                |> SimpleValue
+
 
 toExpr : String -> Expr
 toExpr text =
-    case DParser.parse text of
+    case decodeString json text of
         Ok d ->
             toExprHelper d
 
-        Err s ->
-            VError s
+        Err error ->
+            error
+                |> errorToString
+                |> VError
                 |> SimpleValue
