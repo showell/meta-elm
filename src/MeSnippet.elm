@@ -103,8 +103,8 @@ helper f funcName inString =
                 |> MeElmCode.codeFromContext
 
         code2 =
-            f
-                |> MeCodeGen.toString
+            ns
+                |> MeCodeGen.fromContext
 
         args =
             [ inExpr ]

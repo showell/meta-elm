@@ -1,24 +1,67 @@
-module MeCodeGen exposing (toString)
+module MeCodeGen exposing
+    ( fromContext
+    , toString
+    )
 
+import Dict
 import Elm.CodeGen as CG
 import Elm.Pretty
 import Elm.Syntax.Expression
 import MeRepr
 import MeType
     exposing
-        ( Expr(..)
+        ( Context
+        , Expr(..)
         )
 import Pretty
 
 
-{-| use Elm.Pretty to print out code
-in nicely formatted style
--}
+pretty x =
+    -- this is narrow due to how I'm displaying them now
+    -- a more typical value is 120
+    x |> Pretty.pretty 45
+
+
+fromContext : Context -> String
+fromContext ns =
+    let
+        paramPatterns expr =
+            case expr of
+                Function params _ ->
+                    params
+                        |> List.map CG.varPattern
+
+                _ ->
+                    []
+
+        block ( name, expr ) =
+            CG.funDecl
+                Nothing
+                Nothing
+                name
+                (paramPatterns expr)
+                (expr |> toCG)
+                |> Elm.Pretty.prettyDeclaration
+                |> pretty
+    in
+    ns
+        |> Dict.toList
+        |> List.map block
+        |> String.join "\n\n"
+
+
+letDecl : ( String, Expr ) -> Elm.Syntax.Expression.LetDeclaration
+letDecl ( name, expr ) =
+    CG.letVal
+        name
+        (expr |> toCG)
+
+
 formatCode : CG.Expression -> String
 formatCode code =
     code
         |> Elm.Pretty.prettyExpression
-        |> Pretty.pretty 35
+        |> pretty
 
 
 binOp expr1 op expr2 =
@@ -31,13 +74,6 @@ toString expr =
     expr
         |> toCG
         |> formatCode
-
-
-letDecl : ( String, Expr ) -> Elm.Syntax.Expression.LetDeclaration
-letDecl ( name, expr ) =
-    CG.letVal
-        name
-        (expr |> toCG)
 
 
 toCG : Expr -> CG.Expression
