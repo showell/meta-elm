@@ -98,7 +98,6 @@ toElmCode topExpr =
                         ++ (indent <| toCode withoutParens expr2)
 
                 Var name _ ->
-                    -- TODO: make let statements
                     name
 
                 VarName name ->

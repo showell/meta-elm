@@ -1,6 +1,7 @@
 module MeSnippet exposing (testData)
 
 import Dict
+import MeCodeGen
 import MeElmCode
 import MeFloat
 import MeInt
@@ -101,6 +102,10 @@ helper f funcName inString =
             ns
                 |> MeElmCode.codeFromContext
 
+        code2 =
+            f
+                |> MeCodeGen.toString
+
         args =
             [ inExpr ]
 
@@ -110,6 +115,7 @@ helper f funcName inString =
                 |> MeRepr.fromExpr
     in
     [ code
+    , code2
     , inString
     , outString
     ]
@@ -119,6 +125,6 @@ testData : List (List String)
 testData =
     [ helper factorial "factorial" "17"
     , helper factorial2 "factorial2" "11"
-    , helper normalize "normalize" "[ 99, 98, 97, 100, 101, 44, 42, 41 ]"
+    , helper normalize "normalize" "[ 40, 31, 59, 12, 27 ]"
     , helper permuteFloats "permuteFloats" "[ 4, 3, 2, 5, 1 ]"
     ]
