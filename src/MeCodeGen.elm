@@ -103,11 +103,13 @@ toCG expr =
                 (expr2 |> toCG)
 
         Call funcName args ->
-            (CG.fun funcName :: List.map toCG args)
+            (funcName |> CG.fun)
+                :: (args |> List.map toCG)
                 |> CG.apply
 
         SimpleValue _ ->
-            MeRepr.fromExpr expr
+            expr
+                |> MeRepr.fromExpr
                 |> CG.val
 
         PipeLine a lst ->
@@ -127,8 +129,8 @@ toCG expr =
 
         BinOp opname _ ->
             opname
+                |> (\s -> "(" ++ s ++ ")")
                 |> CG.val
-                |> CG.parens
 
         Infix argLeft opExpr argRight ->
             case opExpr of
