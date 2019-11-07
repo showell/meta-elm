@@ -8,7 +8,8 @@ This project allows you to write Elm code in a
 DSL that:
 
 - can be evaluated inside Elm
-- can be serialized to simple Elm code
+- can be serialized to simpler Elm code
 
-It's kinda like elm-in-elm.
+It's kinda like elm-in-elm, but it's smaller and
+targeted specifically at running Elm natively in Elm.
 
