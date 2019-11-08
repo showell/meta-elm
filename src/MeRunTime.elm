@@ -90,7 +90,7 @@ getArgDict args expr =
             Err "you must call a function"
 
 
-{-| like computeVal, but you can pass in a context
+{-| like computeExpr, but you can pass in a context
 -}
 compute : FV
 compute context expr =
