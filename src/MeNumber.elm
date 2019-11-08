@@ -1,8 +1,10 @@
-module MeNumber exposing
-    ( minus
-    , mult
-    , plus
-    )
+module MeNumber exposing (plus, minus, mult)
+
+{-| wrappers for numbers
+
+@docs plus, minus, mult
+
+-}
 
 import MeRunTime
     exposing
@@ -70,6 +72,8 @@ binOp impl name =
     BinOp name f
 
 
+{-| wraps `+` for numbers
+-}
 plus : Expr
 plus =
     let
@@ -99,6 +103,8 @@ plus =
     binOp impl "+"
 
 
+{-| wraps `-` for numbers
+-}
 minus : Expr
 minus =
     let
@@ -128,6 +134,8 @@ minus =
     binOp impl "-"
 
 
+{-| wraps `*` for numbers
+-}
 mult : Expr
 mult =
     let

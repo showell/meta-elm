@@ -1,14 +1,31 @@
 module MeType exposing
-    ( Context
-    , Expr(..)
-    , FV
-    , FVV
+    ( Expr(..)
     , V(..)
+    , FV, FVV, Context
     )
+
+{-| The main type here is `Expr`. In MetaElm almost
+every piece of code is represented as an `Expr`.
+
+
+# Expr and V
+
+@docs Expr
+
+@docs V
+
+
+# Helper types
+
+@docs FV, FVV, Context
+
+-}
 
 import Dict exposing (Dict)
 
 
+{-| primitives and basic containers
+-}
 type V
     = VBool Bool
     | VInt Int
@@ -18,14 +35,20 @@ type V
     | VError String
 
 
+{-| function w/one var
+-}
 type alias FV =
     Context -> Expr -> Expr
 
 
+{-| function w/two vars
+-}
 type alias FVV =
     Context -> Expr -> Expr -> Expr
 
 
+{-| AST node for MetaElm code
+-}
 type Expr
     = BinOp String FVV
     | Call String (List Expr)
@@ -47,5 +70,7 @@ type Expr
     | VarName String
 
 
+{-| namespace (maps names to expressions)
+-}
 type alias Context =
     Dict String Expr

@@ -1,7 +1,11 @@
-module MeCodeGen exposing
-    ( fromContext
-    , toString
-    )
+module MeCodeGen exposing (toString, fromContext)
+
+{-| generate code from MetaElm Expr values
+(using Elm.CodeGen to produce the string output)
+
+@docs toString, fromContext
+
+-}
 
 import Dict
 import Elm.CodeGen as CG
@@ -22,6 +26,8 @@ pretty x =
     x |> Pretty.pretty 45
 
 
+{-| produce code from Dict of name -> expression
+-}
 fromContext : Context -> String
 fromContext ns =
     let
@@ -69,6 +75,8 @@ binOp expr1 op expr2 =
     CG.opApply op CG.infixNon expr1 expr2
 
 
+{-| turn Expr into Elm code (w/pretty printing)
+-}
 toString : Expr -> String
 toString expr =
     expr

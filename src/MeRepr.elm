@@ -1,5 +1,11 @@
 module MeRepr exposing (fromExpr)
 
+{-| convert Expr to String
+
+@docs fromExpr
+
+-}
+
 import MeRunTime
 import MeType
     exposing
@@ -8,6 +14,8 @@ import MeType
         )
 
 
+{-| convert Expr to String
+-}
 fromExpr : Expr -> String
 fromExpr expr =
     case MeRunTime.getFinalValue expr of

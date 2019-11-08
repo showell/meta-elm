@@ -1,5 +1,11 @@
 module MeParser exposing (toExpr)
 
+{-| parse JSON -> Expr
+
+@docs toExpr
+
+-}
+
 import Json.Decode
     exposing
         ( decodeString
@@ -42,6 +48,8 @@ toExprHelper d =
                 |> SimpleValue
 
 
+{-| convert JSON to Expr
+-}
 toExpr : String -> Expr
 toExpr text =
     case decodeString json text of

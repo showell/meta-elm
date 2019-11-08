@@ -1,19 +1,33 @@
 module MeList exposing
-    ( cons
-    , foldl
-    , indexedMap
-    , initInts
-    , map
-    , plus
-    , range
-    , singleton
-    , sort
-    , sortBy
-    , sortByInt
-    , sortFloat
-    , sortInt
-    , toList
+    ( initInts
+    , cons, plus
+    , map, indexedMap, sortByInt, foldl
+    , range, singleton, sortInt, sortFloat
     )
+
+{-| wrap List
+
+
+# conversion
+
+@docs initInts
+
+
+# operators
+
+@docs cons, plus
+
+
+# wrappers for functions taking functions
+
+@docs map, indexedMap, sortByInt, foldl
+
+
+# simple wrappers
+
+@docs range, singleton, sortInt, sortFloat
+
+-}
 
 import MeFloat
 import MeInt
@@ -58,6 +72,8 @@ toList getItem listValue =
             Err "this is not a list value"
 
 
+{-| wraps List.indexedMap
+-}
 indexedMap : Expr
 indexedMap =
     let
@@ -97,11 +113,15 @@ indexedMap =
     NamedFunc "List.indexedMap" indexedMap0
 
 
+{-| wraps List.sort for floats
+-}
 sortFloat : Expr
 sortFloat =
     sort MeFloat.toFloat
 
 
+{-| wraps List.sort for ints
+-}
 sortInt : Expr
 sortInt =
     sort MeInt.toInt
@@ -163,6 +183,8 @@ sort unbox =
     NamedFunc "List.sort" sort0
 
 
+{-| wraps List.sortBy for ints
+-}
 sortByInt : Expr
 sortByInt =
     sortBy MeInt.toInt
@@ -196,6 +218,8 @@ sortBy unbox =
     NamedFunc "List.sortBy" sortBy0
 
 
+{-| wraps List.foldl
+-}
 foldl : Expr
 foldl =
     let
@@ -226,6 +250,8 @@ foldl =
     NamedFunc "List.foldl" fold0
 
 
+{-| wraps List.map
+-}
 map : Expr
 map =
     let
@@ -261,6 +287,8 @@ map =
     NamedFunc "List.map" map0
 
 
+{-| wraps List.range
+-}
 range : Expr
 range =
     let
@@ -291,6 +319,8 @@ range =
     NamedFunc "List.range" range0
 
 
+{-| wraps List.singleton
+-}
 singleton : Expr
 singleton =
     let
@@ -303,6 +333,8 @@ singleton =
     NamedFunc "List.singleton" f
 
 
+{-| wraps `::`
+-}
 cons : Expr
 cons =
     let
@@ -322,6 +354,8 @@ cons =
     BinOp "::" f
 
 
+{-| wraps '++' (for lists)
+-}
 plus : Expr
 plus =
     let
@@ -338,6 +372,8 @@ plus =
     BinOp "++" f
 
 
+{-| convert list of ints to an Expr
+-}
 initInts : List Int -> Expr
 initInts nums =
     nums

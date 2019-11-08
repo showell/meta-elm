@@ -1,8 +1,10 @@
-module MeTuple exposing
-    ( first
-    , pair
-    , second
-    )
+module MeTuple exposing (first, second, pair)
+
+{-| wraps Tuple
+
+@docs first, second, pair
+
+-}
 
 import MeRunTime exposing (compute, error, getValue)
 import MeType exposing (..)
@@ -23,16 +25,22 @@ fFrom name rawF =
     NamedFunc name f
 
 
+{-| wraps Tuple.first
+-}
 first : Expr
 first =
     fFrom "Tuple.first" Tuple.first
 
 
+{-| wraps Tuple.second
+-}
 second : Expr
 second =
     fFrom "Tuple.second" Tuple.second
 
 
+{-| wraps Tuple.pair
+-}
 pair : Expr
 pair =
     let

@@ -1,9 +1,21 @@
 module MeInt exposing
-    ( eq
-    , init
-    , toFloat
-    , toInt
+    ( init, toInt
+    , eq, toFloat
     )
+
+{-| helper module for Int types
+
+
+# conversion
+
+@docs init, toInt
+
+
+# expression
+
+@docs eq, toFloat
+
+-}
 
 import MeRunTime
     exposing
@@ -14,6 +26,8 @@ import MeRunTime
 import MeType exposing (..)
 
 
+{-| wraps Basics.toFloat
+-}
 toFloat : Expr
 toFloat =
     let
@@ -30,6 +44,8 @@ toFloat =
     NamedFunc "toFloat" f
 
 
+{-| turn raw Int into an Expr
+-}
 init : Int -> Expr
 init num =
     num
@@ -37,6 +53,8 @@ init num =
         |> SimpleValue
 
 
+{-| wraps `==` for ints
+-}
 eq : Expr
 eq =
     let
@@ -59,6 +77,8 @@ eq =
     BinOp "==" f
 
 
+{-| convert Expr to raw Int (if types match)
+-}
 toInt : Expr -> Result String Int
 toInt vExpr =
     case getFinalValue vExpr of

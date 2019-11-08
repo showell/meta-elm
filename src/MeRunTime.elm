@@ -1,17 +1,32 @@
 module MeRunTime exposing
-    ( compute
-    , computeExpr
-    , error
-    , getFinalValue
-    , getFuncV
-    , getFuncVV
-    , getValue
+    ( computeExpr, compute, getFinalValue
+    , getFuncV, getFuncVV, getValue, error
     )
+
+{-| The MetaElm RunTime (MeRunTime) can evaluate
+AST expressions inside Elm!
+
+
+# main API
+
+@docs computeExpr, compute, getFinalValue
+
+
+# helpers
+
+Helpers are mostly used for wrapping library functions
+like List.map.
+
+@docs getFuncV, getFuncVV, getValue, error
+
+-}
 
 import Dict
 import MeType exposing (..)
 
 
+{-| compute/evaluate an expression
+-}
 computeExpr : Expr -> Expr
 computeExpr expr =
     let
@@ -21,11 +36,16 @@ computeExpr expr =
     compute context expr
 
 
+{-| value representing error in computation
+-}
 error : String -> Expr
 error s =
     ComputedValue (VError s)
 
 
+{-| convert expression to value (or error if it's
+a function
+-}
 getValue : Context -> Expr -> V
 getValue context expr =
     case compute context expr of
@@ -70,6 +90,8 @@ getArgDict args expr =
             Err "you must call a function"
 
 
+{-| like computeVal, but you can pass in a context
+-}
 compute : FV
 compute context expr =
     case expr of
@@ -156,6 +178,8 @@ compute context expr =
             error "cannot evaluate this type as a value yet"
 
 
+{-| get an expression that wraps a function taking two arguments
+-}
 getFuncVV : Context -> Expr -> FVV
 getFuncVV c expr =
     case expr of
@@ -176,6 +200,8 @@ getFuncVV c expr =
                         error "could not compute function with two args"
 
 
+{-| get an expression that wraps a function taking one argument
+-}
 getFuncV : Context -> Expr -> FV
 getFuncV context expr =
     let
@@ -243,6 +269,9 @@ evalPipeLine context v lst =
             evalPipeLine context newV rest
 
 
+{-| get the value of a computed expression (usually
+after a call to `compute`)
+-}
 getFinalValue : Expr -> V
 getFinalValue expr =
     case expr of
