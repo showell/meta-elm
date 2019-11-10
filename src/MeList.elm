@@ -1,16 +1,22 @@
 module MeList exposing
-    ( initInts
+    ( initInts, initFloats
+    , toList, toListInts
     , cons, plus
-    , map, indexedMap, sortByInt, foldl
+    , map, indexedMap, sortByInt, sortByFloat, sortBy, foldl
     , range, singleton, sortInt, sortFloat
     )
 
 {-| wrap List
 
 
-# conversion
+# conversion (in)
 
-@docs initInts
+@docs initInts, initFloats
+
+
+# conversion (out)
+
+@docs toList, toListInts
 
 
 # operators
@@ -20,7 +26,7 @@ module MeList exposing
 
 # wrappers for functions taking functions
 
-@docs map, indexedMap, sortByInt, foldl
+@docs map, indexedMap, sortByInt, sortByFloat, sortBy, foldl
 
 
 # simple wrappers
@@ -33,43 +39,6 @@ import MeFloat
 import MeInt
 import MeRunTime exposing (..)
 import MeType exposing (..)
-
-
-toList : (V -> Result String a) -> V -> Result String (List a)
-toList getItem listValue =
-    let
-        get : Expr -> Result String a
-        get elem =
-            case getFinalValue elem of
-                VError s ->
-                    Err s
-
-                other ->
-                    getItem other
-
-        getItems : List Expr -> Result String (List a)
-        getItems items =
-            case items of
-                [] ->
-                    Ok []
-
-                headV :: restV ->
-                    case ( get headV, getItems restV ) of
-                        ( Ok head, Ok rest ) ->
-                            Ok (head :: rest)
-
-                        ( Err s, _ ) ->
-                            Err ("item is malformed: " ++ s)
-
-                        ( _, Err s ) ->
-                            Err s
-    in
-    case listValue of
-        VList items ->
-            getItems items
-
-        _ ->
-            Err "this is not a list value"
 
 
 {-| wraps List.indexedMap
@@ -190,6 +159,19 @@ sortByInt =
     sortBy MeInt.toInt
 
 
+{-| wraps List.sortBy for floats
+-}
+sortByFloat : Expr
+sortByFloat =
+    sortBy MeFloat.toFloat
+
+
+{-| wraps List.sortBy for general types
+(but needs an unboxer like `MeInt.toInt`)
+
+Often you can just use `sortByInt` or `sortByFloat` for convenience.
+
+-}
 sortBy : (Expr -> Result String comparable1) -> Expr
 sortBy unbox =
     let
@@ -380,3 +362,57 @@ initInts nums =
         |> List.map MeInt.init
         |> VList
         |> SimpleValue
+
+
+{-| convert list of floats to an Expr
+-}
+initFloats : List Float -> Expr
+initFloats nums =
+    nums
+        |> List.map MeFloat.init
+        |> VList
+        |> SimpleValue
+
+
+{-| convert wrapped list to List
+
+You must pass in a converter for the elements. Example:
+
+        expr
+            |> MeRunTime.getFinalValue
+            |> toList MeInt.toInt
+            |> Result.withDefault []
+
+-}
+toList : (Expr -> Result String a) -> V -> Result String (List a)
+toList convert vList =
+    let
+        f lst =
+            case lst of
+                [] ->
+                    Ok []
+
+                head :: rest ->
+                    case ( convert head, f rest ) of
+                        ( Ok h, Ok r ) ->
+                            Ok (h :: r)
+
+                        ( Err s, _ ) ->
+                            Err s
+
+                        ( _, Err s ) ->
+                            Err s
+    in
+    case vList of
+        VList lst ->
+            f lst
+
+        _ ->
+            Err "not a list"
+
+
+{-| convert wrapped list of ints to List Int
+-}
+toListInts : V -> Result String (List Int)
+toListInts vList =
+    toList MeInt.toInt vList
