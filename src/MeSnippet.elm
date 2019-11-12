@@ -88,6 +88,14 @@ normalize =
             ]
 
 
+incr : Expr
+incr =
+    Function [ "n" ] <|
+        F1
+            (LambdaLeft "x" MeNumber.plus (MeInt.init 1))
+            (VarName "n")
+
+
 helper : Expr -> String -> String -> List String
 helper f funcName inString =
     let
@@ -123,7 +131,8 @@ helper f funcName inString =
 
 testData : List (List String)
 testData =
-    [ helper factorial "factorial" "17"
+    [ helper incr "incr" "8"
+    , helper factorial "factorial" "17"
     , helper factorial2 "factorial2" "11"
     , helper normalize "normalize" "[ 40, 31, 59, 12, 27 ]"
     , helper permuteFloats "permuteFloats" "[ 4, 3, 2, 5, 1 ]"
