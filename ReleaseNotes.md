@@ -1,3 +1,5 @@
+- make sort/sortBy generic
+
 2.0.0
 -----
 

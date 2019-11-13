@@ -2,8 +2,8 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, plus
-    , map, indexedMap, sortByInt, sortByFloat, sortBy, foldl
-    , range, singleton, sortInt, sortFloat
+    , map, indexedMap, sortBy, foldl
+    , range, singleton, sort
     )
 
 {-| wrap List
@@ -26,12 +26,12 @@ module MeList exposing
 
 # wrappers for functions taking functions
 
-@docs map, indexedMap, sortByInt, sortByFloat, sortBy, foldl
+@docs map, indexedMap, sortBy, foldl
 
 
 # simple wrappers
 
-@docs range, singleton, sortInt, sortFloat
+@docs range, singleton, sort
 
 -}
 
@@ -82,58 +82,26 @@ indexedMap =
     NamedFunc "List.indexedMap" indexedMap0
 
 
-{-| wraps List.sort for floats
--}
-sortFloat : Expr
-sortFloat =
-    sort MeFloat.toFloat
-
-
-{-| wraps List.sort for ints
--}
-sortInt : Expr
-sortInt =
-    sort MeInt.toInt
-
-
-transformSort : FV -> (Expr -> Result String comparable) -> Context -> List Expr -> Expr
-transformSort ord unbox c exprLst =
+transformSort : FV -> Context -> List Expr -> Expr
+transformSort ord c lst =
     let
-        listOfTups : List Expr -> Result String (List ( comparable, Expr ))
-        listOfTups lst =
-            case lst of
-                [] ->
-                    Ok []
-
-                head :: rest ->
-                    case unbox (ord c head) of
-                        Ok h ->
-                            case listOfTups rest of
-                                Ok others ->
-                                    ( h, head )
-                                        :: others
-                                        |> Ok
-
-                                Err s ->
-                                    Err s
-
-                        Err s ->
-                            Err s
+        comp item1 item2 =
+            compare
+                (Tuple.first item1)
+                (Tuple.first item2)
     in
-    case listOfTups exprLst of
-        Ok tups ->
-            tups
-                |> List.sortBy Tuple.first
-                |> List.map Tuple.second
-                |> VList
-                |> ComputedValue
-
-        Err s ->
-            error s
+    lst
+        |> List.map (\item -> ( ord c item, item ))
+        |> List.sortWith comp
+        |> List.map Tuple.second
+        |> VList
+        |> ComputedValue
 
 
-sort : (Expr -> Result String comparable) -> Expr
-sort unbox =
+{-| wraps sort
+-}
+sort : Expr
+sort =
     let
         ord : FV
         ord c expr =
@@ -144,7 +112,7 @@ sort unbox =
             \c lstExpr ->
                 case getValue c lstExpr of
                     VList lst ->
-                        transformSort ord unbox c lst
+                        transformSort ord c lst
 
                     _ ->
                         error "sort wants a list"
@@ -152,35 +120,17 @@ sort unbox =
     NamedFunc "List.sort" sort0
 
 
-{-| wraps List.sortBy for ints
+{-| wraps List.sortBy
 -}
-sortByInt : Expr
-sortByInt =
-    sortBy MeInt.toInt
-
-
-{-| wraps List.sortBy for floats
--}
-sortByFloat : Expr
-sortByFloat =
-    sortBy MeFloat.toFloat
-
-
-{-| wraps List.sortBy for general types
-(but needs an unboxer like `MeInt.toInt`)
-
-Often you can just use `sortByInt` or `sortByFloat` for convenience.
-
--}
-sortBy : (Expr -> Result String comparable1) -> Expr
-sortBy unbox =
+sortBy : Expr
+sortBy =
     let
         sortBy1 : FV -> FV
         sortBy1 ord =
             \c lstExpr ->
                 case getValue c lstExpr of
                     VList lst ->
-                        transformSort ord unbox c lst
+                        transformSort ord c lst
 
                     VError s ->
                         error ("bad list in sortBy: " ++ s)
@@ -416,3 +366,16 @@ toList convert vList =
 toListInts : V -> Result String (List Int)
 toListInts vList =
     toList MeInt.toInt vList
+
+
+compare : Expr -> Expr -> Order
+compare vExpr1 vExpr2 =
+    case ( getFinalValue vExpr1, getFinalValue vExpr2 ) of
+        ( VInt n1, VInt n2 ) ->
+            Basics.compare n1 n2
+
+        ( VFloat n1, VFloat n2 ) ->
+            Basics.compare n1 n2
+
+        _ ->
+            Basics.EQ

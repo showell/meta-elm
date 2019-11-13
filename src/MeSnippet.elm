@@ -55,7 +55,7 @@ permuteFloats =
         newElements =
             PipeLine
                 (VarName "startList")
-                [ MeList.sortFloat
+                [ MeList.sort
                 , A1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
                 , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
@@ -80,10 +80,10 @@ normalize =
         PipeLine
             (VarName "lst")
             [ A1 MeList.indexedMap MeTuple.pair
-            , A1 MeList.sortByInt MeTuple.second
+            , A1 MeList.sortBy MeTuple.second
             , A1 MeList.map MeTuple.first
             , A1 MeList.indexedMap MeTuple.pair
-            , A1 MeList.sortByInt MeTuple.second
+            , A1 MeList.sortBy MeTuple.second
             , A1 MeList.map MeTuple.first
             , A1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
             ]
