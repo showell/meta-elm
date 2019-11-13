@@ -139,12 +139,12 @@ toCG expr =
                 (a |> toCG)
                 (lst |> List.map toCG)
 
-        F1 f arg1 ->
+        A1 f arg1 ->
             [ f, arg1 ]
                 |> List.map toCG
                 |> CG.apply
 
-        F2 f arg1 arg2 ->
+        A2 f arg1 arg2 ->
             [ f, arg1, arg2 ]
                 |> List.map toCG
                 |> CG.apply

@@ -147,13 +147,13 @@ toElmCode topExpr =
                 NamedFunc name _ ->
                     name
 
-                F1 f arg1 ->
+                A1 f arg1 ->
                     toCode withParens f
                         ++ " "
                         ++ toCode withParens arg1
                         |> parenWrapper
 
-                F2 f arg1 arg2 ->
+                A2 f arg1 arg2 ->
                     toCode withParens f
                         ++ " "
                         ++ toCode withParens arg1

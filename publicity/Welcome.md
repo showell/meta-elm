@@ -1,5 +1,8 @@
 **2019-11-05**
 
+(*editor's note*: This document is out-of-date now in particulars, but
+the basic ideas are still the same.)
+
 Welcome to **MetaElm**!
 
 The code is [here](https://github.com/showell/MetaElm).  This is

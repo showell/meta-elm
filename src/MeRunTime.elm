@@ -186,10 +186,10 @@ compute context expr =
                 _ ->
                     error "infix needs a binary operator: "
 
-        F2 fv arg1 arg2 ->
-            compute context (F1 (F1 fv arg1) arg2)
+        A2 fv arg1 arg2 ->
+            compute context (A1 (A1 fv arg1) arg2)
 
-        F1 fv arg1 ->
+        A1 fv arg1 ->
             getFuncV context fv context arg1
 
         _ ->

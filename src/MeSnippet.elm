@@ -38,8 +38,8 @@ factorial2 : Expr
 factorial2 =
     Function [ "n" ] <|
         PipeLine
-            (F2 MeList.range (MeInt.init 1) (VarName "n"))
-            [ F2 MeList.foldl MeNumber.mult (MeInt.init 1)
+            (A2 MeList.range (MeInt.init 1) (VarName "n"))
+            [ A2 MeList.foldl MeNumber.mult (MeInt.init 1)
             ]
 
 
@@ -49,14 +49,14 @@ permuteFloats =
         startList =
             PipeLine
                 (VarName "lst")
-                [ F1 MeList.map MeInt.toFloat
+                [ A1 MeList.map MeInt.toFloat
                 ]
 
         newElements =
             PipeLine
                 (VarName "startList")
                 [ MeList.sortFloat
-                , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
+                , A1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
                 , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
     in
@@ -67,8 +67,8 @@ permuteFloats =
             ]
             (PipeLine
                 (VarName "newElements")
-                [ F1 MeList.map MeList.singleton
-                , F1 MeList.map
+                [ A1 MeList.map MeList.singleton
+                , A1 MeList.map
                     (LambdaRight (VarName "startList") MeList.plus "x")
                 ]
             )
@@ -79,20 +79,20 @@ normalize =
     Function [ "lst" ] <|
         PipeLine
             (VarName "lst")
-            [ F1 MeList.indexedMap MeTuple.pair
-            , F1 MeList.sortByInt MeTuple.second
-            , F1 MeList.map MeTuple.first
-            , F1 MeList.indexedMap MeTuple.pair
-            , F1 MeList.sortByInt MeTuple.second
-            , F1 MeList.map MeTuple.first
-            , F1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
+            [ A1 MeList.indexedMap MeTuple.pair
+            , A1 MeList.sortByInt MeTuple.second
+            , A1 MeList.map MeTuple.first
+            , A1 MeList.indexedMap MeTuple.pair
+            , A1 MeList.sortByInt MeTuple.second
+            , A1 MeList.map MeTuple.first
+            , A1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
             ]
 
 
 incr : Expr
 incr =
     Function [ "n" ] <|
-        F1
+        A1
             (LambdaLeft "x" MeNumber.plus (MeInt.init 1))
             (VarName "n")
 

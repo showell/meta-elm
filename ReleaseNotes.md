@@ -1,6 +1,7 @@
 
 - add examples
 - eval/emit list/tuples more aggressively
+- rename F1/F2 to A1/A2
 
 1.1.0
 -----

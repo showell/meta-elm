@@ -50,12 +50,12 @@ type alias FVV =
 {-| AST node for MetaElm code
 -}
 type Expr
-    = BinOp String FVV
+    = A1 Expr Expr
+    | A2 Expr Expr Expr
+    | BinOp String FVV
     | Call String (List Expr)
     | ComputedFunc FV
     | ComputedValue V
-    | F1 Expr Expr
-    | F2 Expr Expr Expr
     | FuncCall Context String (List Expr)
     | Function (List String) Expr
     | IfElse Expr Expr Expr
