@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, plus
-    , map, indexedMap, sortBy, foldl
+    , map, indexedMap, sortBy, foldl, foldr
     , range, repeat, singleton, sort
     )
 
@@ -26,7 +26,7 @@ module MeList exposing
 
 # wrappers for functions taking functions
 
-@docs map, indexedMap, sortBy, foldl
+@docs map, indexedMap, sortBy, foldl, foldr
 
 
 # simple wrappers
@@ -174,12 +174,44 @@ foldl =
                 foldl2 accum (compute c startVal)
                     |> ComputedFunc
 
-        fold0 : FV
-        fold0 c accumExpr =
+        foldl0 : FV
+        foldl0 c accumExpr =
             foldl1 (getFuncVV c accumExpr)
                 |> ComputedFunc
     in
-    NamedFunc "List.foldl" fold0
+    NamedFunc "List.foldl" foldl0
+
+
+{-| wraps List.foldr
+-}
+foldr : Expr
+foldr =
+    let
+        foldr2 : FVV -> Expr -> FV
+        foldr2 accum startVal =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        List.foldr (accum c) startVal lst
+
+                    VError s ->
+                        error ("bad list in foldr: " ++ s)
+
+                    _ ->
+                        error "need list in foldr"
+
+        foldr1 : FVV -> FV
+        foldr1 accum =
+            \c startVal ->
+                foldr2 accum (compute c startVal)
+                    |> ComputedFunc
+
+        foldr0 : FV
+        foldr0 c accumExpr =
+            foldr1 (getFuncVV c accumExpr)
+                |> ComputedFunc
+    in
+    NamedFunc "List.foldr" foldr0
 
 
 {-| wraps List.map
