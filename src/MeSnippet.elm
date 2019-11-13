@@ -132,6 +132,14 @@ foldr =
             [ A2 MeList.foldr MeList.cons (MeList.initInts []) ]
 
 
+filter : Expr
+filter =
+    Function [ "lst" ] <|
+        PipeLine
+            (VarName "lst")
+            [ A1 MeList.filter (LambdaLeft "x" MeInt.eq (MeInt.init 4)) ]
+
+
 helper : Expr -> String -> String -> List String
 helper f funcName inString =
     let
@@ -172,6 +180,7 @@ testData =
     , helper incr "incr" "8"
     , helper repeat "repeat" "5"
     , helper foldr "foldr" "[ 1, 2, 3]"
+    , helper filter "filter" "[ 4, 1, 2, 3, 4, 7, 4 ]"
     , helper factorial "factorial" "17"
     , helper factorial2 "factorial2" "11"
     , helper normalize "normalize" "[ 40, 31, 59, 12, 27 ]"

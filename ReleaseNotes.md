@@ -1,5 +1,5 @@
 - make sort/sortBy generic
-- add more List functions (repeat, foldr, ...)
+- add more List functions (repeat, foldr, filter, ...)
 
 2.0.0
 -----

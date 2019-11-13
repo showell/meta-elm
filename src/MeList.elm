@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, plus
-    , map, indexedMap, sortBy, foldl, foldr
+    , map, indexedMap, sortBy, foldl, foldr, filter
     , range, repeat, singleton, sort
     )
 
@@ -26,7 +26,7 @@ module MeList exposing
 
 # wrappers for functions taking functions
 
-@docs map, indexedMap, sortBy, foldl, foldr
+@docs map, indexedMap, sortBy, foldl, foldr, filter
 
 
 # simple wrappers
@@ -212,6 +212,50 @@ foldr =
                 |> ComputedFunc
     in
     NamedFunc "List.foldr" foldr0
+
+
+{-| wraps List.filter
+-}
+filter : Expr
+filter =
+    let
+        filter0 : FV
+        filter0 =
+            \c predExpr ->
+                let
+                    pred =
+                        getFuncV c predExpr
+                in
+                filter1 pred
+                    |> ComputedFunc
+
+        filter1 : FV -> FV
+        filter1 =
+            \pred ->
+                \c lstExpr ->
+                    let
+                        filterer expr =
+                            case getValue c (pred c expr) of
+                                VBool b ->
+                                    b
+
+                                _ ->
+                                    False
+                    in
+                    case getValue c lstExpr of
+                        VList lst ->
+                            lst
+                                |> List.filter filterer
+                                |> VList
+                                |> ComputedValue
+
+                        VError s ->
+                            error ("bad list in filter: " ++ s)
+
+                        _ ->
+                            error "need list in filter"
+    in
+    NamedFunc "List.filter" filter0
 
 
 {-| wraps List.map
