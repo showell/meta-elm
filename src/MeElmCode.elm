@@ -118,8 +118,22 @@ toElmCode topExpr =
                 FuncCall _ _ _ ->
                     "(not implemented)"
 
-                SimpleValue _ ->
-                    MeRepr.fromExpr expr
+                SimpleValue v ->
+                    case v of
+                        VList lst ->
+                            lst
+                                |> List.map toElmCode
+                                |> MeRepr.fromList
+
+                        VTuple ( a, b ) ->
+                            ( a |> toElmCode
+                            , b |> toElmCode
+                            )
+                                |> MeRepr.fromTuple
+
+                        _ ->
+                            expr
+                                |> MeRepr.fromExpr
 
                 PipeLine a lst ->
                     a

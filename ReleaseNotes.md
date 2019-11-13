@@ -1,5 +1,6 @@
 
-- add incr example
+- add examples
+- eval/emit list/tuples more aggressively
 
 1.1.0
 -----

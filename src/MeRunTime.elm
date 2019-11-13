@@ -116,7 +116,22 @@ compute context expr =
             ComputedValue v
 
         SimpleValue v ->
-            SimpleValue v
+            case v of
+                VList lst ->
+                    lst
+                        |> List.map (compute context)
+                        |> VList
+                        |> ComputedValue
+
+                VTuple ( a, b ) ->
+                    ( a |> compute context
+                    , b |> compute context
+                    )
+                        |> VTuple
+                        |> ComputedValue
+
+                _ ->
+                    ComputedValue v
 
         PipeLine topExpr lst ->
             evalPipeLine context topExpr lst
@@ -163,7 +178,10 @@ compute context expr =
         Infix opLeft binOp opRight ->
             case binOp of
                 BinOp _ fvv ->
-                    fvv context opLeft opRight
+                    fvv
+                        context
+                        (opLeft |> compute context)
+                        (opRight |> compute context)
 
                 _ ->
                     error "infix needs a binary operator: "
@@ -282,4 +300,8 @@ getFinalValue expr =
             v
 
         _ ->
+            let
+                _ =
+                    Debug.log "yo" expr
+            in
             VError "final values were never computed with computeExpr"

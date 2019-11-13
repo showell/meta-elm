@@ -1,8 +1,16 @@
-module MeRepr exposing (fromExpr)
+module MeRepr exposing
+    ( fromExpr
+    , fromList, fromTuple
+    )
 
 {-| convert Expr to String
 
 @docs fromExpr
+
+
+# Helpers
+
+@docs fromList, fromTuple
 
 -}
 
@@ -14,28 +22,42 @@ import MeType
         )
 
 
+{-| emit a list of strings
+-}
+fromList : List String -> String
+fromList items =
+    "[ "
+        ++ String.join ", " items
+        ++ " ]"
+        |> String.replace "], " "]\n, "
+
+
+{-| emit a tuple of strings
+-}
+fromTuple : ( String, String ) -> String
+fromTuple ( a, b ) =
+    "( "
+        ++ a
+        ++ ", "
+        ++ b
+        ++ " )"
+
+
 {-| convert Expr to String
 -}
 fromExpr : Expr -> String
 fromExpr expr =
     case MeRunTime.getFinalValue expr of
         VList lst ->
-            let
-                items =
-                    lst
-                        |> List.map fromExpr
-            in
-            "["
-                ++ String.join ", " items
-                ++ "]"
-                |> String.replace "], " "]\n,"
+            lst
+                |> List.map fromExpr
+                |> fromList
 
         VTuple ( a, b ) ->
-            "("
-                ++ fromExpr a
-                ++ ", "
-                ++ fromExpr b
-                ++ ")"
+            ( a |> fromExpr
+            , b |> fromExpr
+            )
+                |> fromTuple
 
         VBool b ->
             if b then

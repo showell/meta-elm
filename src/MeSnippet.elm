@@ -14,6 +14,7 @@ import MeTuple
 import MeType
     exposing
         ( Expr(..)
+        , V(..)
         )
 
 
@@ -96,6 +97,27 @@ incr =
             (VarName "n")
 
 
+basicTupleStuff : Expr
+basicTupleStuff =
+    Function [ "n" ]
+        (( MeInt.init 5, Infix (MeInt.init 2) MeNumber.plus (MeInt.init 4) )
+            |> VTuple
+            |> SimpleValue
+        )
+
+
+basicListStuff : Expr
+basicListStuff =
+    Function [ "n" ]
+        ([ MeInt.init 5
+         , Infix (MeInt.init 2) MeNumber.plus (MeInt.init 4)
+         , Infix (VarName "n") MeNumber.plus (MeInt.init 100)
+         ]
+            |> VList
+            |> SimpleValue
+        )
+
+
 helper : Expr -> String -> String -> List String
 helper f funcName inString =
     let
@@ -131,7 +153,9 @@ helper f funcName inString =
 
 testData : List (List String)
 testData =
-    [ helper incr "incr" "8"
+    [ helper basicTupleStuff "basicTupleStuff" "5"
+    , helper basicListStuff "basicListStuff" "5"
+    , helper incr "incr" "8"
     , helper factorial "factorial" "17"
     , helper factorial2 "factorial2" "11"
     , helper normalize "normalize" "[ 40, 31, 59, 12, 27 ]"

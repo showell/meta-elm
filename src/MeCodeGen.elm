@@ -16,6 +16,7 @@ import MeType
     exposing
         ( Context
         , Expr(..)
+        , V(..)
         )
 import Pretty
 
@@ -115,10 +116,23 @@ toCG expr =
                 :: (args |> List.map toCG)
                 |> CG.apply
 
-        SimpleValue _ ->
-            expr
-                |> MeRepr.fromExpr
-                |> CG.val
+        SimpleValue v ->
+            case v of
+                VList lst ->
+                    lst
+                        |> List.map toCG
+                        |> CG.list
+
+                VTuple ( a, b ) ->
+                    [ a |> toCG
+                    , b |> toCG
+                    ]
+                        |> CG.tuple
+
+                _ ->
+                    expr
+                        |> MeRepr.fromExpr
+                        |> CG.val
 
         PipeLine a lst ->
             CG.pipe
