@@ -118,6 +118,12 @@ basicListStuff =
         )
 
 
+repeat : Expr
+repeat =
+    Function [ "n" ] <|
+        A2 MeList.repeat (VarName "n") (MeInt.init 42)
+
+
 helper : Expr -> String -> String -> List String
 helper f funcName inString =
     let
@@ -156,6 +162,7 @@ testData =
     [ helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
     , helper incr "incr" "8"
+    , helper repeat "repeat" "5"
     , helper factorial "factorial" "17"
     , helper factorial2 "factorial2" "11"
     , helper normalize "normalize" "[ 40, 31, 59, 12, 27 ]"

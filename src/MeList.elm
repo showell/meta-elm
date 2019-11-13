@@ -3,7 +3,7 @@ module MeList exposing
     , toList, toListInts
     , cons, plus
     , map, indexedMap, sortBy, foldl
-    , range, singleton, sort
+    , range, repeat, singleton, sort
     )
 
 {-| wrap List
@@ -31,7 +31,7 @@ module MeList exposing
 
 # simple wrappers
 
-@docs range, singleton, sort
+@docs range, repeat, singleton, sort
 
 -}
 
@@ -217,6 +217,33 @@ map =
                 |> ComputedFunc
     in
     NamedFunc "List.map" map0
+
+
+{-| wraps List.repeat
+-}
+repeat : Expr
+repeat =
+    let
+        repeat1 : Int -> (Context -> Expr -> Expr)
+        repeat1 n =
+            \c vExpr ->
+                vExpr
+                    |> List.repeat n
+                    |> VList
+                    |> ComputedValue
+
+        repeat0 : Context -> Expr -> Expr
+        repeat0 =
+            \c nExpr ->
+                case getValue c nExpr of
+                    VInt n ->
+                        repeat1 n
+                            |> ComputedFunc
+
+                    _ ->
+                        error "first arg to repeat must be an integer"
+    in
+    NamedFunc "List.repeat" repeat0
 
 
 {-| wraps List.range
