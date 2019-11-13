@@ -1,3 +1,5 @@
+2.0.0
+-----
 
 - add examples
 - eval/emit list/tuples more aggressively
