@@ -65,6 +65,7 @@ type Expr
     | LambdaRight Expr Expr String
     | LetIn (List ( String, Expr )) Expr
     | NamedFunc String FV
+    | OpFunc String FV String
     | PipeLine Expr (List Expr)
     | SimpleValue V
     | Var String Expr

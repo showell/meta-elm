@@ -97,6 +97,9 @@ toCG expr =
         NamedFunc name _ ->
             name |> CG.val
 
+        OpFunc name _ _ ->
+            name |> CG.val
+
         Function _ fexpr ->
             fexpr |> toCG
 
@@ -169,6 +172,13 @@ toCG expr =
         LambdaRight argLeft opExpr vname ->
             case opExpr of
                 BinOp opName _ ->
+                    binOp
+                        (argLeft |> toCG)
+                        opName
+                        (vname |> CG.val)
+                        |> CG.lambda [ CG.varPattern vname ]
+
+                OpFunc _ _ opName ->
                     binOp
                         (argLeft |> toCG)
                         opName

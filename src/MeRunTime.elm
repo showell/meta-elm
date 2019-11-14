@@ -238,6 +238,9 @@ getFuncV context expr =
                     |> ComputedValue
     in
     case expr of
+        OpFunc _ f _ ->
+            f
+
         NamedFunc _ f ->
             f
 
@@ -264,6 +267,14 @@ getFuncV context expr =
                             fvv c opLeft opRight
                     in
                     fv
+
+                OpFunc _ fv _ ->
+                    \c opRight ->
+                        let
+                            f1 =
+                                getFuncV c (fv c opLeft)
+                        in
+                        f1 c opRight
 
                 _ ->
                     err "lambda right needs a binary operator"

@@ -187,6 +187,17 @@ toElmCode topExpr =
                                 ++ vname
                                 |> parenWrapper
 
+                        OpFunc _ _ opName ->
+                            "\\"
+                                ++ vname
+                                ++ " -> "
+                                ++ toCode withParens argLeft
+                                ++ " "
+                                ++ opName
+                                ++ " "
+                                ++ vname
+                                |> parenWrapper
+
                         _ ->
                             "?"
 

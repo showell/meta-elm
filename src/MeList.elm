@@ -1,7 +1,7 @@
 module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
-    , cons, colonColon, plusPlus, append
+    , cons, append
     , all, any, filter, foldr, head, indexedMap, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum
     , filterMap, foldl
     )
@@ -21,7 +21,7 @@ module MeList exposing
 
 # operators
 
-@docs cons, colonColon, plusPlus, append
+@docs cons, append
 
 
 # wrappers
@@ -625,28 +625,7 @@ singleton =
     NamedFunc "List.singleton" f
 
 
-{-| wraps `::`
--}
-colonColon : Expr
-colonColon =
-    let
-        f : FVV
-        f c expr1 expr2 =
-            case ( getValue c expr1, getValue c expr2 ) of
-                ( VError s, _ ) ->
-                    error ("bad arg to :: - " ++ s)
-
-                ( h, VList lst ) ->
-                    VList (ComputedValue h :: lst)
-                        |> ComputedValue
-
-                ( _, _ ) ->
-                    error "need list for :: operator"
-    in
-    BinOp "::" f
-
-
-{-| wraps cons
+{-| wraps cons (::)
 -}
 cons : Expr
 cons =
@@ -673,28 +652,10 @@ cons =
                         _ ->
                             error "need list to cons to"
     in
-    NamedFunc "cons" cons0
+    OpFunc "cons" cons0 "::"
 
 
-{-| wraps '++' (for lists)
--}
-plusPlus : Expr
-plusPlus =
-    let
-        f : FVV
-        f c expr1 expr2 =
-            case ( getValue c expr1, getValue c expr2 ) of
-                ( VList lst1, VList lst2 ) ->
-                    VList (lst1 ++ lst2)
-                        |> ComputedValue
-
-                ( _, _ ) ->
-                    error "need lists in ++"
-    in
-    BinOp "++" f
-
-
-{-| wraps append
+{-| wraps append (++)
 -}
 append : Expr
 append =
@@ -723,7 +684,7 @@ append =
                         ( _, _ ) ->
                             error "need lists in append"
     in
-    NamedFunc "List.append" append0
+    OpFunc "List.append" append0 "++"
 
 
 {-| convert list of ints to an Expr

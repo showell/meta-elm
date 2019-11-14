@@ -57,7 +57,7 @@ permuteFloats =
                 (VarName "startList")
                 [ MeList.sort
                 , A1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
-                , LambdaRight (MeFloat.init 0.5) MeList.colonColon "items"
+                , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
     in
     Function [ "lst" ] <|
@@ -69,7 +69,7 @@ permuteFloats =
                 (VarName "newElements")
                 [ A1 MeList.map MeList.singleton
                 , A1 MeList.map
-                    (LambdaRight (VarName "startList") MeList.plusPlus "x")
+                    (LambdaRight (VarName "startList") MeList.append "x")
                 ]
             )
 

@@ -1,5 +1,6 @@
 - make sort/sortBy generic (and removed sortByInt, etc.)
 - added several List functions
+- made cons/append official names for ::/++
 
 2.0.0
 -----
