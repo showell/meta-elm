@@ -1,9 +1,8 @@
 module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
-    , cons, plus
-    , map, indexedMap, sortBy, foldl, foldr, filter, all, any
-    , head, range, repeat, singleton, sort, length, reverse, member, maximum, minimum
+    , all, any, cons, filter, foldl, foldr, head, indexedMap, length, map, maximum, member, repeat, reverse, singleton, sort, sortBy
+    , minimum, plus, range
     )
 
 {-| wrap List
@@ -19,19 +18,9 @@ module MeList exposing
 @docs toList, toListInts
 
 
-# operators
+# wrappers
 
-@docs cons, plus
-
-
-# wrappers for functions taking functions
-
-@docs map, indexedMap, sortBy, foldl, foldr, filter, all, any
-
-
-# simple wrappers
-
-@docs head, range, repeat, singleton, sort, length, reverse, member, maximum, minimum
+@docs all, any, cons, filter, foldl, foldr, head, indexedMap, length, map, maximum, member, minimum plus range, repeat, reverse, singleton, sort, sortBy
 
 -}
 
