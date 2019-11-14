@@ -1,8 +1,8 @@
 module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
-    , all, any, cons, filter, foldl, foldr, head, indexedMap, length, map, maximum, member, repeat, reverse, singleton, sort, sortBy
-    , minimum, plus, range
+    , all, any, cons, filter, foldr, head, indexedMap, length, map, maximum, member, repeat, reverse, singleton, sort, sortBy
+    , filterMap, foldl, minimum, plus, range
     )
 
 {-| wrap List
@@ -20,7 +20,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, cons, filter, foldl, foldr, head, indexedMap, length, map, maximum, member, minimum plus range, repeat, reverse, singleton, sort, sortBy
+@docs all, any, cons, filter, filterMap foldl, foldr, head, indexedMap, length, map, maximum, member, minimum plus range, repeat, reverse, singleton, sort, sortBy
 
 -}
 
@@ -318,6 +318,41 @@ foldr =
                 |> ComputedFunc
     in
     NamedFunc "List.foldr" foldr0
+
+
+{-| wraps List.filterMap
+-}
+filterMap : Expr
+filterMap =
+    let
+        filterMap0 : FV
+        filterMap0 =
+            \c predExpr ->
+                let
+                    pred =
+                        getFuncV c predExpr
+                in
+                filterMap1 pred
+                    |> ComputedFunc
+
+        filterMap1 : FV -> FV
+        filterMap1 =
+            \pred ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            lst
+                                |> List.filter (makePredicate c pred)
+                                |> VList
+                                |> ComputedValue
+
+                        VError s ->
+                            error ("bad list in filterMap: " ++ s)
+
+                        _ ->
+                            error "need list in filterMap"
+    in
+    NamedFunc "List.filterMap" filterMap0
 
 
 {-| wraps List.filter
@@ -677,6 +712,14 @@ makePredicate =
             case getValue c (pred c vExpr) of
                 VBool b ->
                     b
+
+                VMaybe m ->
+                    case m of
+                        Just _ ->
+                            True
+
+                        _ ->
+                            False
 
                 _ ->
                     False

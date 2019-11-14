@@ -194,6 +194,12 @@ minimum =
         A1 MeList.minimum (VarName "lst")
 
 
+filterMap : Expr
+filterMap =
+    Function [ "lst" ] <|
+        A2 MeList.filterMap MeList.head (VarName "lst")
+
+
 helper : Expr -> String -> String -> List String
 helper f funcName inString =
     let
@@ -231,6 +237,7 @@ testData : List (List String)
 testData =
     [ helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
+    , helper filterMap "filterMap" "[ [1], [], [2], [], [3] ]"
     , helper head "head" "[1, 2, 3]"
     , helper head "head" "[]"
     , helper maximum "maximum" "[40, 10, 30, 20]"
