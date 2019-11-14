@@ -1,7 +1,7 @@
 module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
-    , all, any, cons, filter, foldr, head, indexedMap, length, map, maximum, member, repeat, reverse, singleton, sort, sortBy
+    , all, any, cons, filter, foldr, head, indexedMap, length, map, maximum, member, repeat, reverse, singleton, sort, sortBy, sum
     , filterMap, foldl, minimum, plus, range
     )
 
@@ -20,12 +20,13 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, cons, filter, filterMap foldl, foldr, head, indexedMap, length, map, maximum, member, minimum plus range, repeat, reverse, singleton, sort, sortBy
+@docs all, any, cons, filter, filterMap foldl, foldr, head, indexedMap, length, map, maximum, member, minimum plus range, repeat, reverse, singleton, sort, sortBy, sum
 
 -}
 
 import MeFloat
 import MeInt
+import MeNumber
 import MeRunTime exposing (..)
 import MeType exposing (..)
 
@@ -202,6 +203,14 @@ reverse =
                         error "reverse wants a list"
     in
     NamedFunc "List.reverse" reverse0
+
+
+{-| wraps sum
+-}
+sum : Expr
+sum =
+    A2 foldl MeNumber.plus (MeInt.init 0)
+        |> Var "List.sum"
 
 
 {-| wraps sort

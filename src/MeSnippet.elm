@@ -194,6 +194,12 @@ minimum =
         A1 MeList.minimum (VarName "lst")
 
 
+sum : Expr
+sum =
+    Function [ "lst" ] <|
+        A1 MeList.sum (VarName "lst")
+
+
 filterMap : Expr
 filterMap =
     Function [ "lst" ] <|
@@ -237,24 +243,25 @@ testData : List (List String)
 testData =
     [ helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
-    , helper filterMap "filterMap" "[ [1], [], [2], [], [3] ]"
-    , helper head "head" "[1, 2, 3]"
-    , helper head "head" "[]"
-    , helper maximum "maximum" "[40, 10, 30, 20]"
-    , helper maximum "maximum" "[]"
-    , helper minimum "minimum" "[40, 10, 30, 20]"
-    , helper minimum "minimum" "[]"
-    , helper any "any" "[1, 2, 3]"
     , helper all "all" "[1, 1, 1]"
-    , helper member "member" "[41, 42, 43]"
-    , helper length "length" "[1, 2, 3]"
-    , helper reverse "reverse" "[1, 2, 3]"
-    , helper incr "incr" "8"
-    , helper repeat "repeat" "5"
-    , helper foldr "foldr" "[ 1, 2, 3]"
-    , helper filter "filter" "[ 4, 1, 2, 3, 4, 7, 4 ]"
+    , helper any "any" "[1, 2, 3]"
     , helper factorial "factorial" "17"
     , helper factorial2 "factorial2" "11"
+    , helper filter "filter" "[ 4, 1, 2, 3, 4, 7, 4 ]"
+    , helper filterMap "filterMap" "[ [1], [], [2], [], [3] ]"
+    , helper foldr "foldr" "[ 1, 2, 3]"
+    , helper head "head" "[]"
+    , helper head "head" "[1, 2, 3]"
+    , helper incr "incr" "8"
+    , helper length "length" "[1, 2, 3]"
+    , helper maximum "maximum" "[]"
+    , helper maximum "maximum" "[40, 10, 30, 20]"
+    , helper member "member" "[41, 42, 43]"
+    , helper minimum "minimum" "[]"
+    , helper minimum "minimum" "[40, 10, 30, 20]"
     , helper normalize "normalize" "[ 40, 31, 59, 12, 27 ]"
     , helper permuteFloats "permuteFloats" "[ 4, 3, 2, 5, 1 ]"
+    , helper repeat "repeat" "5"
+    , helper reverse "reverse" "[1, 2, 3]"
+    , helper sum "sum" "[1.2, 2.3, 3.8]"
     ]

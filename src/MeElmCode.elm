@@ -66,6 +66,9 @@ toElmCode topExpr =
 
         toCode parenWrapper expr =
             case expr of
+                NamedFunc name _ ->
+                    name
+
                 Function _ fexpr ->
                     toCode withoutParens fexpr
 
@@ -143,9 +146,6 @@ toElmCode topExpr =
 
                 BinOp opname _ ->
                     "(" ++ opname ++ ")"
-
-                NamedFunc name _ ->
-                    name
 
                 A1 f arg1 ->
                     toCode withParens f
