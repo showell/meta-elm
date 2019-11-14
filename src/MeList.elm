@@ -275,19 +275,10 @@ filter =
         filter1 =
             \pred ->
                 \c lstExpr ->
-                    let
-                        filterer expr =
-                            case getValue c (pred c expr) of
-                                VBool b ->
-                                    b
-
-                                _ ->
-                                    False
-                    in
                     case getValue c lstExpr of
                         VList lst ->
                             lst
-                                |> List.filter filterer
+                                |> List.filter (makePredicate c pred)
                                 |> VList
                                 |> ComputedValue
 
@@ -319,19 +310,10 @@ any =
         any1 =
             \pred ->
                 \c lstExpr ->
-                    let
-                        predicate expr =
-                            case getValue c (pred c expr) of
-                                VBool b ->
-                                    b
-
-                                _ ->
-                                    False
-                    in
                     case getValue c lstExpr of
                         VList lst ->
                             lst
-                                |> List.any predicate
+                                |> List.any (makePredicate c pred)
                                 |> VBool
                                 |> ComputedValue
 
@@ -363,19 +345,10 @@ all =
         all1 =
             \pred ->
                 \c lstExpr ->
-                    let
-                        predicate expr =
-                            case getValue c (pred c expr) of
-                                VBool b ->
-                                    b
-
-                                _ ->
-                                    False
-                    in
                     case getValue c lstExpr of
                         VList lst ->
                             lst
-                                |> List.all predicate
+                                |> List.all (makePredicate c pred)
                                 |> VBool
                                 |> ComputedValue
 
@@ -631,6 +604,18 @@ toList convert vList =
 toListInts : V -> Result String (List Int)
 toListInts vList =
     toList MeInt.toInt vList
+
+
+makePredicate : Context -> FV -> (Expr -> Bool)
+makePredicate =
+    \c pred ->
+        \vExpr ->
+            case getValue c (pred c vExpr) of
+                VBool b ->
+                    b
+
+                _ ->
+                    False
 
 
 compare : Expr -> Expr -> Order
