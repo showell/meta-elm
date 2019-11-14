@@ -655,23 +655,22 @@ cons =
         cons0 =
             \c hExpr ->
                 hExpr
-                    |> getValue c
+                    |> compute c
                     |> cons1
                     |> ComputedFunc
 
-        cons1 : V -> FV
+        cons1 : Expr -> FV
         cons1 =
-            \hv ->
+            \h ->
                 \c restExpr ->
-                    case ( hv, getValue c restExpr ) of
-                        ( VError s, _ ) ->
-                            error ("bad arg to cons - " ++ s)
-
-                        ( h, VList rest ) ->
-                            VList (ComputedValue h :: rest)
+                    case getValue c restExpr of
+                        VList rest ->
+                            h
+                                :: rest
+                                |> VList
                                 |> ComputedValue
 
-                        ( _, _ ) ->
+                        _ ->
                             error "need list to cons to"
     in
     NamedFunc "cons" cons0

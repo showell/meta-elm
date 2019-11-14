@@ -135,7 +135,7 @@ foldr =
     Function [ "lst" ] <|
         PipeLine
             (VarName "lst")
-            [ A2 MeList.foldr MeList.colonColon (MeList.initInts []) ]
+            [ A2 MeList.foldr MeList.cons (MeList.initInts []) ]
 
 
 filter : Expr
