@@ -89,6 +89,12 @@ normalize =
             ]
 
 
+isEmpty : Expr
+isEmpty =
+    Function [ "lst" ] <|
+        A1 MeList.isEmpty (VarName "lst")
+
+
 length : Expr
 length =
     Function [ "lst" ] <|
@@ -259,6 +265,8 @@ testData =
     , helper head "head" "[]"
     , helper head "head" "[1, 2, 3]"
     , helper incr "incr" "8"
+    , helper isEmpty "isEmpty" "[]"
+    , helper isEmpty "isEmpty" "[1, 2]"
     , helper length "length" "[1, 2, 3]"
     , helper maximum "maximum" "[]"
     , helper maximum "maximum" "[40, 10, 30, 20]"

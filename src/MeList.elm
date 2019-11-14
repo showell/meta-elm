@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, append
-    , all, any, filter, foldr, head, indexedMap, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum
+    , all, any, filter, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum
     , filterMap, foldl
     )
 
@@ -26,7 +26,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, append, cons, filter, filterMap foldl, foldr, head, indexedMap, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum
+@docs all, any, append, cons, filter, filterMap foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum
 
 -}
 
@@ -171,6 +171,27 @@ head =
                         error "head wants a list"
     in
     NamedFunc "List.head" head0
+
+
+{-| wraps isEmpty
+-}
+isEmpty : Expr
+isEmpty =
+    let
+        isEmpty0 : FV
+        isEmpty0 =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        lst
+                            |> List.isEmpty
+                            |> VBool
+                            |> ComputedValue
+
+                    _ ->
+                        error "isEmpty wants a list"
+    in
+    NamedFunc "List.isEmpty" isEmpty0
 
 
 {-| wraps length
