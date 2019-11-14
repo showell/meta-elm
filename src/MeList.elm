@@ -551,24 +551,26 @@ member =
 repeat : Expr
 repeat =
     let
-        repeat1 : Int -> (Context -> Expr -> Expr)
-        repeat1 n =
-            \c vExpr ->
-                vExpr
-                    |> List.repeat n
-                    |> VList
-                    |> ComputedValue
-
         repeat0 : Context -> Expr -> Expr
         repeat0 =
             \c nExpr ->
                 case getValue c nExpr of
                     VInt n ->
-                        repeat1 n
+                        n
+                            |> repeat1
                             |> ComputedFunc
 
                     _ ->
                         error "first arg to repeat must be an integer"
+
+        repeat1 : Int -> (Context -> Expr -> Expr)
+        repeat1 =
+            \n ->
+                \c vExpr ->
+                    vExpr
+                        |> List.repeat n
+                        |> VList
+                        |> ComputedValue
     in
     NamedFunc "List.repeat" repeat0
 
@@ -578,29 +580,32 @@ repeat =
 range : Expr
 range =
     let
-        range1 : Int -> (Context -> Expr -> Expr)
-        range1 lo =
-            \c hiExpr ->
-                case getValue c hiExpr of
-                    VInt hi ->
-                        List.range lo hi
-                            |> List.map VInt
-                            |> List.map ComputedValue
-                            |> VList
-                            |> ComputedValue
+        range0 : Context -> Expr -> Expr
+        range0 =
+            \c loExpr ->
+                case getValue c loExpr of
+                    VInt lo ->
+                        lo
+                            |> range1
+                            |> ComputedFunc
 
                     _ ->
-                        error "high value to range must be integer"
+                        error "low value to range must be integer"
 
-        range0 : Context -> Expr -> Expr
-        range0 c loExpr =
-            case getValue c loExpr of
-                VInt lo ->
-                    range1 lo
-                        |> ComputedFunc
+        range1 : Int -> (Context -> Expr -> Expr)
+        range1 =
+            \lo ->
+                \c hiExpr ->
+                    case getValue c hiExpr of
+                        VInt hi ->
+                            List.range lo hi
+                                |> List.map VInt
+                                |> List.map ComputedValue
+                                |> VList
+                                |> ComputedValue
 
-                _ ->
-                    error "low value to range must be integer"
+                        _ ->
+                            error "high value to range must be integer"
     in
     NamedFunc "List.range" range0
 
