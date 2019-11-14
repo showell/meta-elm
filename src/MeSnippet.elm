@@ -194,6 +194,12 @@ tail =
         A1 MeList.tail (VarName "lst")
 
 
+drop : Expr
+drop =
+    Function [ "lst" ] <|
+        A2 MeList.drop (MeInt.init 2) (VarName "lst")
+
+
 take : Expr
 take =
     Function [ "lst" ] <|
@@ -269,6 +275,8 @@ testData =
     , helper any "any" "[1, 2, 3]"
     , helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
+    , helper drop "drop" "[]"
+    , helper drop "drop" "[1, 2, 3]"
     , helper factorial "factorial" "17"
     , helper factorial2 "factorial2" "11"
     , helper filter "filter" "[ 4, 1, 2, 3, 4, 7, 4 ]"

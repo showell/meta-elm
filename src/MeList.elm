@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, append
-    , all, any, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+    , all, any, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
     )
 
 {-| wrap List
@@ -25,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, append, cons, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+@docs all, any, append, cons, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
 
 -}
 
@@ -149,6 +149,40 @@ maximum =
                         error "maximum wants a list"
     in
     NamedFunc "List.maximum" maximum0
+
+
+{-| wraps drop
+-}
+drop : Expr
+drop =
+    let
+        drop0 : FV
+        drop0 =
+            \c nExpr ->
+                case getValue c nExpr of
+                    VInt n ->
+                        n
+                            |> drop1
+                            |> ComputedFunc
+
+                    _ ->
+                        error "first arg to drop should be an int"
+
+        drop1 : Int -> FV
+        drop1 =
+            \n ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            lst
+                                |> List.drop n
+                                |> VList
+                                |> ComputedValue
+
+                        _ ->
+                            error "drop wants a list"
+    in
+    NamedFunc "List.drop" drop0
 
 
 {-| wraps take
