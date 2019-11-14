@@ -89,6 +89,12 @@ normalize =
             ]
 
 
+length : Expr
+length =
+    Function [ "lst" ] <|
+        A1 MeList.length (VarName "lst")
+
+
 incr : Expr
 incr =
     Function [ "n" ] <|
@@ -177,6 +183,7 @@ testData : List (List String)
 testData =
     [ helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
+    , helper length "length" "[1, 2, 3]"
     , helper incr "incr" "8"
     , helper repeat "repeat" "5"
     , helper foldr "foldr" "[ 1, 2, 3]"

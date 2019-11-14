@@ -3,7 +3,7 @@ module MeList exposing
     , toList, toListInts
     , cons, plus
     , map, indexedMap, sortBy, foldl, foldr, filter
-    , range, repeat, singleton, sort
+    , range, repeat, singleton, sort, length
     )
 
 {-| wrap List
@@ -31,7 +31,7 @@ module MeList exposing
 
 # simple wrappers
 
-@docs range, repeat, singleton, sort
+@docs range, repeat, singleton, sort, length
 
 -}
 
@@ -96,6 +96,27 @@ transformSort ord c lst =
         |> List.map Tuple.second
         |> VList
         |> ComputedValue
+
+
+{-| wraps length
+-}
+length : Expr
+length =
+    let
+        length0 : FV
+        length0 =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        lst
+                            |> List.length
+                            |> VInt
+                            |> ComputedValue
+
+                    _ ->
+                        error "length wants a list"
+    in
+    NamedFunc "List.length" length0
 
 
 {-| wraps sort
