@@ -188,6 +188,12 @@ head =
         A1 MeList.head (VarName "lst")
 
 
+tail : Expr
+tail =
+    Function [ "lst" ] <|
+        A1 MeList.tail (VarName "lst")
+
+
 maximum : Expr
 maximum =
     Function [ "lst" ] <|
@@ -279,4 +285,6 @@ testData =
     , helper repeat "repeat" "5"
     , helper reverse "reverse" "[1, 2, 3]"
     , helper sum "sum" "[1.2, 2.3, 3.8]"
+    , helper tail "tail" "[]"
+    , helper tail "tail" "[1, 2, 3]"
     ]

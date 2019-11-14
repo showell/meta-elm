@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, append
-    , all, any, filter, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum
+    , all, any, filter, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail
     , filterMap, foldl
     )
 
@@ -26,7 +26,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, append, cons, filter, filterMap foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum
+@docs all, any, append, cons, filter, filterMap foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail
 
 -}
 
@@ -150,6 +150,29 @@ maximum =
                         error "maximum wants a list"
     in
     NamedFunc "List.maximum" maximum0
+
+
+{-| wraps tail
+-}
+tail : Expr
+tail =
+    let
+        tail0 : FV
+        tail0 =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        lst
+                            |> List.tail
+                            |> Maybe.map VList
+                            |> Maybe.map ComputedValue
+                            |> VMaybe
+                            |> ComputedValue
+
+                    _ ->
+                        error "tail wants a list"
+    in
+    NamedFunc "List.tail" tail0
 
 
 {-| wraps head
