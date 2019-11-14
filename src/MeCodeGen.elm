@@ -157,6 +157,13 @@ toCG expr =
                 |> List.map toCG
                 |> CG.apply
 
+        F1 name1 lambdaExpr ->
+            CG.lambda
+                ([ name1 ]
+                    |> List.map CG.varPattern
+                )
+                (lambdaExpr |> toCG)
+
         F3 name1 name2 name3 lambdaExpr ->
             CG.lambda
                 ([ name1, name2, name3 ]
@@ -195,18 +202,6 @@ toCG expr =
                         (argLeft |> toCG)
                         opName
                         (vname |> CG.val)
-                        |> CG.lambda [ CG.varPattern vname ]
-
-                _ ->
-                    CG.val "?"
-
-        LambdaLeft vname opExpr argRight ->
-            case opExpr of
-                BinOp opName _ ->
-                    binOp
-                        (vname |> CG.val)
-                        opName
-                        (argRight |> toCG)
                         |> CG.lambda [ CG.varPattern vname ]
 
                 _ ->

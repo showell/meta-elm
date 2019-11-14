@@ -56,7 +56,8 @@ permuteFloats =
             PipeLine
                 (VarName "startList")
                 [ MeList.sort
-                , A1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
+                , A1 MeList.map
+                    (F1 "n" (Infix (VarName "n") MeNumber.plus (MeFloat.init 0.5)))
                 , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
                 ]
     in
@@ -76,6 +77,11 @@ permuteFloats =
 
 normalize : Expr
 normalize =
+    let
+        nPlusOne =
+            F1 "n"
+                (Infix (VarName "n") MeNumber.plus (MeInt.init 1))
+    in
     Function [ "lst" ] <|
         PipeLine
             (VarName "lst")
@@ -85,7 +91,7 @@ normalize =
             , A1 MeList.indexedMap MeTuple.pair
             , A1 MeList.sortBy MeTuple.second
             , A1 MeList.map MeTuple.first
-            , A1 MeList.map (LambdaLeft "n" MeNumber.plus (MeInt.init 1))
+            , A1 MeList.map nPlusOne
             ]
 
 
@@ -105,7 +111,7 @@ incr : Expr
 incr =
     Function [ "n" ] <|
         A1
-            (LambdaLeft "x" MeNumber.plus (MeInt.init 1))
+            (F1 "x" (Infix (VarName "x") MeNumber.plus (MeInt.init 1)))
             (VarName "n")
 
 
@@ -149,7 +155,7 @@ filter =
     Function [ "lst" ] <|
         PipeLine
             (VarName "lst")
-            [ A1 MeList.filter (LambdaLeft "x" MeInt.eq (MeInt.init 4)) ]
+            [ A1 MeList.filter (F1 "x" (Infix (VarName "x") MeInt.eq (MeInt.init 4))) ]
 
 
 reverse : Expr
@@ -204,7 +210,7 @@ concatMap : Expr
 concatMap =
     Function [ "lst" ] <|
         A2 MeList.concatMap
-            (A1 MeList.map (LambdaLeft "n" MeNumber.mult (MeInt.init 5)))
+            (A1 MeList.map (F1 "n" (Infix (VarName "n") MeNumber.mult (MeInt.init 5))))
             (VarName "lst")
 
 

@@ -277,6 +277,16 @@ getFuncV context expr =
                     |> ComputedValue
     in
     case expr of
+        F1 name1 impl ->
+            \c e1 ->
+                let
+                    argDict =
+                        [ ( name1, compute c e1 )
+                        ]
+                            |> Dict.fromList
+                in
+                compute (union argDict c) impl
+
         OpFunc _ f _ ->
             f
 
@@ -285,18 +295,6 @@ getFuncV context expr =
 
         ComputedFunc f ->
             f
-
-        LambdaLeft _ binOp opRight ->
-            case binOp of
-                BinOp _ fvv ->
-                    let
-                        fv c opLeft =
-                            fvv c opLeft opRight
-                    in
-                    fv
-
-                _ ->
-                    err "lambda left needs a binary operator"
 
         LambdaRight opLeft binOp _ ->
             case binOp of
