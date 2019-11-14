@@ -1,8 +1,8 @@
 module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
-    , all, any, cons, filter, foldr, head, indexedMap, length, map, maximum, member, repeat, reverse, singleton, sort, sortBy, sum
-    , filterMap, foldl, minimum, plus, range
+    , all, any, cons, filter, foldr, head, indexedMap, length, map, maximum, member, minimum, plus, product, range, repeat, reverse, singleton, sort, sortBy, sum
+    , filterMap, foldl
     )
 
 {-| wrap List
@@ -20,7 +20,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, cons, filter, filterMap foldl, foldr, head, indexedMap, length, map, maximum, member, minimum plus range, repeat, reverse, singleton, sort, sortBy, sum
+@docs all, any, cons, filter, filterMap foldl, foldr, head, indexedMap, length, map, maximum, member, minimum, plus, product, range, repeat, reverse, singleton, sort, sortBy, sum
 
 -}
 
@@ -203,6 +203,14 @@ reverse =
                         error "reverse wants a list"
     in
     NamedFunc "List.reverse" reverse0
+
+
+{-| wraps product
+-}
+product : Expr
+product =
+    A2 foldl MeNumber.mult (MeInt.init 1)
+        |> Var "List.product"
 
 
 {-| wraps sum

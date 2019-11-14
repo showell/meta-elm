@@ -194,6 +194,12 @@ minimum =
         A1 MeList.minimum (VarName "lst")
 
 
+product : Expr
+product =
+    Function [ "lst" ] <|
+        A1 MeList.product (VarName "lst")
+
+
 sum : Expr
 sum =
     Function [ "lst" ] <|
@@ -241,10 +247,10 @@ helper f funcName inString =
 
 testData : List (List String)
 testData =
-    [ helper basicTupleStuff "basicTupleStuff" "5"
-    , helper basicListStuff "basicListStuff" "5"
-    , helper all "all" "[1, 1, 1]"
+    [ helper all "all" "[1, 1, 1]"
     , helper any "any" "[1, 2, 3]"
+    , helper basicTupleStuff "basicTupleStuff" "5"
+    , helper basicListStuff "basicListStuff" "5"
     , helper factorial "factorial" "17"
     , helper factorial2 "factorial2" "11"
     , helper filter "filter" "[ 4, 1, 2, 3, 4, 7, 4 ]"
@@ -261,6 +267,7 @@ testData =
     , helper minimum "minimum" "[40, 10, 30, 20]"
     , helper normalize "normalize" "[ 40, 31, 59, 12, 27 ]"
     , helper permuteFloats "permuteFloats" "[ 4, 3, 2, 5, 1 ]"
+    , helper product "product" "[1.2, 2.3, 3.8]"
     , helper repeat "repeat" "5"
     , helper reverse "reverse" "[1, 2, 3]"
     , helper sum "sum" "[1.2, 2.3, 3.8]"
