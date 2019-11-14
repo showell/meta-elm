@@ -3,7 +3,7 @@ module MeList exposing
     , toList, toListInts
     , cons, plus
     , map, indexedMap, sortBy, foldl, foldr, filter
-    , range, repeat, singleton, sort, length
+    , range, repeat, singleton, sort, length, reverse
     )
 
 {-| wrap List
@@ -31,7 +31,7 @@ module MeList exposing
 
 # simple wrappers
 
-@docs range, repeat, singleton, sort, length
+@docs range, repeat, singleton, sort, length, reverse
 
 -}
 
@@ -117,6 +117,27 @@ length =
                         error "length wants a list"
     in
     NamedFunc "List.length" length0
+
+
+{-| wraps reverse
+-}
+reverse : Expr
+reverse =
+    let
+        reverse0 : FV
+        reverse0 =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        lst
+                            |> List.reverse
+                            |> VList
+                            |> ComputedValue
+
+                    _ ->
+                        error "reverse wants a list"
+    in
+    NamedFunc "List.reverse" reverse0
 
 
 {-| wraps sort

@@ -146,6 +146,12 @@ filter =
             [ A1 MeList.filter (LambdaLeft "x" MeInt.eq (MeInt.init 4)) ]
 
 
+reverse : Expr
+reverse =
+    Function [ "lst" ] <|
+        A1 MeList.reverse (VarName "lst")
+
+
 helper : Expr -> String -> String -> List String
 helper f funcName inString =
     let
@@ -184,6 +190,7 @@ testData =
     [ helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
     , helper length "length" "[1, 2, 3]"
+    , helper reverse "reverse" "[1, 2, 3]"
     , helper incr "incr" "8"
     , helper repeat "repeat" "5"
     , helper foldr "foldr" "[ 1, 2, 3]"
