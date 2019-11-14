@@ -3,7 +3,7 @@ module MeList exposing
     , toList, toListInts
     , cons, plus
     , map, indexedMap, sortBy, foldl, foldr, filter
-    , range, repeat, singleton, sort, length, reverse
+    , range, repeat, singleton, sort, length, reverse, member
     )
 
 {-| wrap List
@@ -31,7 +31,7 @@ module MeList exposing
 
 # simple wrappers
 
-@docs range, repeat, singleton, sort, length, reverse
+@docs range, repeat, singleton, sort, length, reverse, member
 
 -}
 
@@ -335,6 +335,38 @@ map =
                 |> ComputedFunc
     in
     NamedFunc "List.map" map0
+
+
+{-| wraps List.member
+-}
+member : Expr
+member =
+    let
+        member0 : FV
+        member0 =
+            \c needle ->
+                needle
+                    |> member1
+                    |> ComputedFunc
+
+        member1 : Expr -> FV
+        member1 =
+            \needle ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            let
+                                eq item =
+                                    compare needle item == EQ
+                            in
+                            List.any eq lst
+                                |> VBool
+                                |> ComputedValue
+
+                        _ ->
+                            error "member needs a list for second arg"
+    in
+    NamedFunc "List.member" member0
 
 
 {-| wraps List.repeat

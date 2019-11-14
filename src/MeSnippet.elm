@@ -152,6 +152,12 @@ reverse =
         A1 MeList.reverse (VarName "lst")
 
 
+member : Expr
+member =
+    Function [ "lst" ] <|
+        A2 MeList.member (MeInt.init 42) (VarName "lst")
+
+
 helper : Expr -> String -> String -> List String
 helper f funcName inString =
     let
@@ -189,6 +195,7 @@ testData : List (List String)
 testData =
     [ helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
+    , helper member "member" "[41, 42, 43]"
     , helper length "length" "[1, 2, 3]"
     , helper reverse "reverse" "[1, 2, 3]"
     , helper incr "incr" "8"
