@@ -664,26 +664,31 @@ append =
         append0 : FV
         append0 =
             \c lstExpr1 ->
-                lstExpr1
-                    |> getValue c
-                    |> append1
-                    |> ComputedFunc
+                case getValue c lstExpr1 of
+                    VList lst ->
+                        lst
+                            |> append1
+                            |> ComputedFunc
 
-        append1 : V -> FV
+                    _ ->
+                        error "first arg to append should be a list"
+
+        append1 : List Expr -> FV
         append1 =
-            \v1 ->
+            \lst1 ->
                 \c lstExpr2 ->
                     let
                         v2 =
                             getValue c lstExpr2
                     in
-                    case ( v1, v2 ) of
-                        ( VList lst1, VList lst2 ) ->
-                            VList (lst1 ++ lst2)
+                    case v2 of
+                        VList lst2 ->
+                            (lst1 ++ lst2)
+                                |> VList
                                 |> ComputedValue
 
-                        ( _, _ ) ->
-                            error "need lists in append"
+                        _ ->
+                            error "second arg to append should be a list"
     in
     OpFunc "List.append" append0 "++"
 
