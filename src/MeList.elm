@@ -3,7 +3,7 @@ module MeList exposing
     , toList, toListInts
     , cons, plus
     , map, indexedMap, sortBy, foldl, foldr, filter, all, any
-    , head, range, repeat, singleton, sort, length, reverse, member
+    , head, range, repeat, singleton, sort, length, reverse, member, maximum, minimum
     )
 
 {-| wrap List
@@ -31,7 +31,7 @@ module MeList exposing
 
 # simple wrappers
 
-@docs head, range, repeat, singleton, sort, length, reverse, member
+@docs head, range, repeat, singleton, sort, length, reverse, member, maximum, minimum
 
 -}
 
@@ -96,6 +96,60 @@ transformSort ord c lst =
         |> List.map Tuple.second
         |> VList
         |> ComputedValue
+
+
+{-| wraps minimum
+-}
+minimum : Expr
+minimum =
+    let
+        minimum0 : FV
+        minimum0 =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        case lst of
+                            x :: xs ->
+                                Just (List.foldl min x xs)
+                                    |> VMaybe
+                                    |> ComputedValue
+
+                            _ ->
+                                Nothing
+                                    |> VMaybe
+                                    |> ComputedValue
+
+                    _ ->
+                        error "minimum wants a list"
+    in
+    NamedFunc "List.minimum" minimum0
+
+
+{-| wraps maximum
+-}
+maximum : Expr
+maximum =
+    let
+        maximum0 : FV
+        maximum0 =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        case lst of
+                            x :: xs ->
+                                Just (List.foldl max x xs)
+                                    |> VMaybe
+                                    |> ComputedValue
+
+                            _ ->
+                                Nothing
+                                    |> VMaybe
+                                    |> ComputedValue
+
+                    _ ->
+                        error "maximum wants a list"
+    in
+    NamedFunc "List.maximum" maximum0
 
 
 {-| wraps head
@@ -637,6 +691,42 @@ makePredicate =
 
                 _ ->
                     False
+
+
+min : Expr -> Expr -> Expr
+min vExpr1 vExpr2 =
+    case ( getFinalValue vExpr1, getFinalValue vExpr2 ) of
+        ( VInt n1, VInt n2 ) ->
+            Basics.min n1 n2
+                |> VInt
+                |> ComputedValue
+
+        ( VFloat n1, VFloat n2 ) ->
+            Basics.min n1 n2
+                |> VFloat
+                |> ComputedValue
+
+        _ ->
+            VError "type not supported by min (yet)"
+                |> ComputedValue
+
+
+max : Expr -> Expr -> Expr
+max vExpr1 vExpr2 =
+    case ( getFinalValue vExpr1, getFinalValue vExpr2 ) of
+        ( VInt n1, VInt n2 ) ->
+            Basics.max n1 n2
+                |> VInt
+                |> ComputedValue
+
+        ( VFloat n1, VFloat n2 ) ->
+            Basics.max n1 n2
+                |> VFloat
+                |> ComputedValue
+
+        _ ->
+            VError "type not supported by max (yet)"
+                |> ComputedValue
 
 
 compare : Expr -> Expr -> Order

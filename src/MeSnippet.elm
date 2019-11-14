@@ -182,6 +182,18 @@ head =
         A1 MeList.head (VarName "lst")
 
 
+maximum : Expr
+maximum =
+    Function [ "lst" ] <|
+        A1 MeList.maximum (VarName "lst")
+
+
+minimum : Expr
+minimum =
+    Function [ "lst" ] <|
+        A1 MeList.minimum (VarName "lst")
+
+
 helper : Expr -> String -> String -> List String
 helper f funcName inString =
     let
@@ -221,6 +233,10 @@ testData =
     , helper basicListStuff "basicListStuff" "5"
     , helper head "head" "[1, 2, 3]"
     , helper head "head" "[]"
+    , helper maximum "maximum" "[40, 10, 30, 20]"
+    , helper maximum "maximum" "[]"
+    , helper minimum "minimum" "[40, 10, 30, 20]"
+    , helper minimum "minimum" "[]"
     , helper any "any" "[1, 2, 3]"
     , helper all "all" "[1, 1, 1]"
     , helper member "member" "[41, 42, 43]"
