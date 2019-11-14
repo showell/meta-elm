@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, append
-    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, map2, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
     )
 
 {-| wrap List
@@ -25,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, append, concat, concatMap, cons, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+@docs all, any, append, concat, concatMap, cons, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, map2, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
 
 -}
 
@@ -588,21 +588,68 @@ all =
     NamedFunc "List.all" all0
 
 
+{-| wraps List.map2
+-}
+map2 : Expr
+map2 =
+    let
+        map2_0 : FV
+        map2_0 =
+            \c mapperExpr ->
+                mapperExpr
+                    |> getFuncVV c
+                    |> map2_1
+                    |> ComputedFunc
+
+        map2_1 : FVV -> FV
+        map2_1 =
+            \mapper ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            map2_2 mapper lst
+                                |> ComputedFunc
+
+                        VError s ->
+                            error ("bad list in map2: " ++ s)
+
+                        _ ->
+                            error "need list in map2"
+
+        map2_2 : FVV -> List Expr -> FV
+        map2_2 =
+            \mapper lst1 ->
+                \c lst2Expr ->
+                    case getValue c lst2Expr of
+                        VList lst2 ->
+                            List.map2 (mapper c) lst1 lst2
+                                |> VList
+                                |> ComputedValue
+
+                        VError s ->
+                            error ("bad list in map2: " ++ s)
+
+                        _ ->
+                            error "need list in map2"
+    in
+    NamedFunc "List.map2" map2_0
+
+
 {-| wraps List.map
 -}
 map : Expr
 map =
     let
-        map0 : FV
-        map0 =
+        map_0 : FV
+        map_0 =
             \c mapperExpr ->
                 mapperExpr
                     |> getFuncV c
-                    |> map1
+                    |> map_1
                     |> ComputedFunc
 
-        map1 : FV -> FV
-        map1 =
+        map_1 : FV -> FV
+        map_1 =
             \mapper ->
                 \c lstExpr ->
                     case getValue c lstExpr of
@@ -622,7 +669,7 @@ map =
                 |> VList
                 |> ComputedValue
     in
-    NamedFunc "List.map" map0
+    NamedFunc "List.map" map_0
 
 
 {-| wraps List.member

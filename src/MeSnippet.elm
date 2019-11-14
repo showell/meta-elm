@@ -208,6 +208,14 @@ concatMap =
             (VarName "lst")
 
 
+map2 : Expr
+map2 =
+    Function [ "lst" ] <|
+        PipeLine
+            (VarName "lst")
+            [ A2 MeList.map2 MeList.range (MeList.initInts [ 1, 2, 3 ]) ]
+
+
 drop : Expr
 drop =
     Function [ "lst" ] <|
@@ -304,6 +312,7 @@ testData =
     , helper isEmpty "isEmpty" "[]"
     , helper isEmpty "isEmpty" "[1, 2]"
     , helper length "length" "[1, 2, 3]"
+    , helper map2 "map2" "[8, 7, 9]"
     , helper maximum "maximum" "[]"
     , helper maximum "maximum" "[40, 10, 30, 20]"
     , helper member "member" "[41, 42, 43]"
