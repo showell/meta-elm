@@ -94,6 +94,15 @@ getArgDict args expr =
 -}
 compute : FV
 compute context expr =
+    let
+        apply : Expr -> Expr -> Expr
+        apply e1 e0 =
+            let
+                fv =
+                    getFuncV context e1
+            in
+            fv context e0
+    in
     case expr of
         LetIn c resultExpr ->
             compute (union (fromList c) context) resultExpr
@@ -186,11 +195,11 @@ compute context expr =
                 _ ->
                     error "infix needs a binary operator: "
 
-        A2 fv arg1 arg2 ->
-            compute context (A1 (A1 fv arg1) arg2)
+        A2 e2 e1 e0 ->
+            apply (apply e2 e1) e0
 
-        A1 fv arg1 ->
-            getFuncV context fv context arg1
+        A1 e1 e0 ->
+            apply e1 e0
 
         _ ->
             error "cannot evaluate this type as a value yet"
