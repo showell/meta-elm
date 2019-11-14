@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, append
-    , all, any, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+    , all, any, concat, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
     )
 
 {-| wrap List
@@ -10,7 +10,7 @@ module MeList exposing
 
 # conversion (in)
 
-@docs initInts, initFloats
+@docs initInts, initFloats, empty
 
 
 # conversion (out)
@@ -25,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, append, cons, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+@docs all, any, append, concat, cons, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
 
 -}
 
@@ -765,6 +765,23 @@ cons =
                             error "need list to cons to"
     in
     OpFunc "cons" cons0 "::"
+
+
+{-| make an empty list
+-}
+empty : Expr
+empty =
+    []
+        |> VList
+        |> ComputedValue
+
+
+{-| wraps concat
+-}
+concat : Expr
+concat =
+    A2 foldr append empty
+        |> Var "List.concat"
 
 
 {-| wraps append (++)

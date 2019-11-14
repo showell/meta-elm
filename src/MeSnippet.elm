@@ -194,6 +194,12 @@ tail =
         A1 MeList.tail (VarName "lst")
 
 
+concat : Expr
+concat =
+    Function [ "lst" ] <|
+        A1 MeList.concat (VarName "lst")
+
+
 drop : Expr
 drop =
     Function [ "lst" ] <|
@@ -275,6 +281,7 @@ testData =
     , helper any "any" "[1, 2, 3]"
     , helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
+    , helper concat "concat" "[ [1,2,3], [4,5,6], [7,8]]"
     , helper drop "drop" "[]"
     , helper drop "drop" "[1, 2, 3]"
     , helper factorial "factorial" "17"
