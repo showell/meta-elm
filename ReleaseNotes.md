@@ -1,3 +1,4 @@
+- added F3 and A3 support
 - make sort/sortBy generic (and removed sortByInt, etc.)
 - added several List functions
 - made cons/append official names for ::/++

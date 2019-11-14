@@ -152,6 +152,18 @@ toCG expr =
                 |> List.map toCG
                 |> CG.apply
 
+        A3 f arg1 arg2 arg3 ->
+            [ f, arg1, arg2, arg3 ]
+                |> List.map toCG
+                |> CG.apply
+
+        F3 name1 name2 name3 lambdaExpr ->
+            CG.lambda
+                ([ name1, name2, name3 ]
+                    |> List.map CG.varPattern
+                )
+                (lambdaExpr |> toCG)
+
         BinOp opname _ ->
             opname
                 |> (\s -> "(" ++ s ++ ")")

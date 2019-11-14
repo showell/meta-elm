@@ -1,6 +1,6 @@
 module MeRunTime exposing
     ( computeExpr, compute, getFinalValue
-    , getFuncV, getFuncVV, getValue, error
+    , getFuncV, getFuncVV, getFuncVVV, getValue, error
     )
 
 {-| The MetaElm RunTime (MeRunTime) can evaluate
@@ -17,7 +17,7 @@ AST expressions inside Elm!
 Helpers are mostly used for wrapping library functions
 like List.map.
 
-@docs getFuncV, getFuncVV, getValue, error
+@docs getFuncV, getFuncVV, getFuncVVV, getValue, error
 
 -}
 
@@ -195,6 +195,9 @@ compute context expr =
                 _ ->
                     error "infix needs a binary operator: "
 
+        A3 e3 e2 e1 e0 ->
+            apply (apply (apply e3 e2) e1) e0
+
         A2 e2 e1 e0 ->
             apply (apply e2 e1) e0
 
@@ -205,7 +208,43 @@ compute context expr =
             error "cannot evaluate this type as a value yet"
 
 
-{-| get an expression that wraps a function taking two arguments
+{-| kinda gets a three-argument function from an expression
+-}
+getFuncVVV : Context -> Expr -> FVVV
+getFuncVVV c expr =
+    case expr of
+        F3 name1 name2 name3 impl ->
+            \_ e1 e2 e3 ->
+                let
+                    argDict =
+                        [ ( name1, compute c e1 )
+                        , ( name2, compute c e2 )
+                        , ( name3, compute c e3 )
+                        ]
+                            |> Dict.fromList
+                in
+                compute (union argDict c) impl
+
+        _ ->
+            let
+                fv1 =
+                    getFuncV c expr
+            in
+            \_ e1 e2 e3 ->
+                case fv1 c e1 of
+                    ComputedFunc fv2 ->
+                        case fv2 c e2 of
+                            ComputedFunc fv3 ->
+                                fv3 c e3
+
+                            _ ->
+                                error "could not compute function with three args"
+
+                    _ ->
+                        error "could not compute function with three args"
+
+
+{-| kinda gets a two-argument function from an expression
 -}
 getFuncVV : Context -> Expr -> FVV
 getFuncVV c expr =
@@ -227,7 +266,7 @@ getFuncVV c expr =
                         error "could not compute function with two args"
 
 
-{-| get an expression that wraps a function taking one argument
+{-| kinda gets a one-argument function from an expression
 -}
 getFuncV : Context -> Expr -> FV
 getFuncV context expr =

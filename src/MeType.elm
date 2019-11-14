@@ -1,7 +1,7 @@
 module MeType exposing
     ( Expr(..)
     , V(..)
-    , FV, FVV, Context
+    , FV, FVV, FVVV, Context
     )
 
 {-| The main type here is `Expr`. In MetaElm almost
@@ -17,7 +17,7 @@ every piece of code is represented as an `Expr`.
 
 # Helper types
 
-@docs FV, FVV, Context
+@docs FV, FVV, FVVV, Context
 
 -}
 
@@ -48,15 +48,23 @@ type alias FVV =
     Context -> Expr -> Expr -> Expr
 
 
+{-| function w/three vars
+-}
+type alias FVVV =
+    Context -> Expr -> Expr -> Expr -> Expr
+
+
 {-| AST node for MetaElm code
 -}
 type Expr
     = A1 Expr Expr
     | A2 Expr Expr Expr
+    | A3 Expr Expr Expr Expr
     | BinOp String FVV
     | Call String (List Expr)
     | ComputedFunc FV
     | ComputedValue V
+    | F3 String String String Expr
     | FuncCall Context String (List Expr)
     | Function (List String) Expr
     | IfElse Expr Expr Expr

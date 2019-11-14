@@ -161,6 +161,28 @@ toElmCode topExpr =
                         ++ toCode withParens arg2
                         |> parenWrapper
 
+                A3 f arg1 arg2 arg3 ->
+                    toCode withParens f
+                        ++ "\n  "
+                        ++ toCode withParens arg1
+                        ++ "\n  "
+                        ++ toCode withParens arg2
+                        ++ "\n  "
+                        ++ toCode withParens arg3
+                        |> parenWrapper
+
+                F3 name1 name2 name3 lambdaExpr ->
+                    ("\\"
+                        ++ name1
+                        ++ " "
+                        ++ name2
+                        ++ " "
+                        ++ name3
+                        ++ " -> "
+                        ++ (lambdaExpr |> toCode withParens)
+                    )
+                        |> parenWrapper
+
                 Infix argLeft opExpr argRight ->
                     case opExpr of
                         BinOp opName _ ->

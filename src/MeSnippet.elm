@@ -208,6 +208,28 @@ concatMap =
             (VarName "lst")
 
 
+xyz : Expr
+xyz =
+    F3 "x" "y" "z" <|
+        Infix
+            (Infix (VarName "x") MeNumber.mult (VarName "y"))
+            MeNumber.plus
+            (VarName "z")
+
+
+map3 : Expr
+map3 =
+    Function [ "lst" ] <|
+        PipeLine
+            (VarName "lst")
+            [ A3
+                MeList.map3
+                xyz
+                (MeList.initInts [ 10, 20, 30 ])
+                (MeList.initInts [ 5, 8, 7 ])
+            ]
+
+
 map2 : Expr
 map2 =
     Function [ "lst" ] <|
@@ -313,6 +335,7 @@ testData =
     , helper isEmpty "isEmpty" "[1, 2]"
     , helper length "length" "[1, 2, 3]"
     , helper map2 "map2" "[8, 7, 9]"
+    , helper map3 "map3" "[8, 7, 9]"
     , helper maximum "maximum" "[]"
     , helper maximum "maximum" "[40, 10, 30, 20]"
     , helper member "member" "[41, 42, 43]"
