@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, append
-    , all, any, concat, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
     )
 
 {-| wrap List
@@ -25,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, append, concat, cons, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+@docs all, any, append, concat, concatMap, cons, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
 
 -}
 
@@ -782,6 +782,51 @@ concat : Expr
 concat =
     A2 foldr append empty
         |> Var "List.concat"
+
+
+{-| wraps concatMap
+-}
+concatMap : Expr
+concatMap =
+    let
+        unBoxList lstExpr =
+            case lstExpr of
+                ComputedValue v ->
+                    case v of
+                        VList lst ->
+                            lst
+
+                        _ ->
+                            []
+
+                _ ->
+                    []
+
+        concatMap0 : FV
+        concatMap0 =
+            \c fExpr ->
+                fExpr
+                    |> getFuncV c
+                    |> concatMap1
+                    |> ComputedFunc
+
+        concatMap1 : FV -> FV
+        concatMap1 =
+            \f ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            lst
+                                |> List.map (f c)
+                                |> List.map unBoxList
+                                |> List.concat
+                                |> VList
+                                |> ComputedValue
+
+                        _ ->
+                            error "was expecting a list"
+    in
+    NamedFunc "List.concatMap" concatMap0
 
 
 {-| wraps append (++)

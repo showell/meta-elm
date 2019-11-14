@@ -200,6 +200,14 @@ concat =
         A1 MeList.concat (VarName "lst")
 
 
+concatMap : Expr
+concatMap =
+    Function [ "lst" ] <|
+        A2 MeList.concatMap
+            (A1 MeList.map (LambdaLeft "n" MeNumber.mult (MeInt.init 5)))
+            (VarName "lst")
+
+
 drop : Expr
 drop =
     Function [ "lst" ] <|
@@ -282,6 +290,7 @@ testData =
     , helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
     , helper concat "concat" "[ [1,2,3], [4,5,6], [7,8]]"
+    , helper concatMap "concatMap" "[ [1,2,3], [4,5,6], [7,8]]"
     , helper drop "drop" "[]"
     , helper drop "drop" "[1, 2, 3]"
     , helper factorial "factorial" "17"
