@@ -176,6 +176,12 @@ all =
             (VarName "lst")
 
 
+head : Expr
+head =
+    Function [ "lst" ] <|
+        A1 MeList.head (VarName "lst")
+
+
 helper : Expr -> String -> String -> List String
 helper f funcName inString =
     let
@@ -213,6 +219,8 @@ testData : List (List String)
 testData =
     [ helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
+    , helper head "head" "[1, 2, 3]"
+    , helper head "head" "[]"
     , helper any "any" "[1, 2, 3]"
     , helper all "all" "[1, 1, 1]"
     , helper member "member" "[41, 42, 43]"

@@ -59,6 +59,14 @@ fromExpr expr =
             )
                 |> fromTuple
 
+        VMaybe m ->
+            case m of
+                Just v ->
+                    "Just " ++ (v |> fromExpr)
+
+                Nothing ->
+                    "Nothing"
+
         VBool b ->
             if b then
                 "true"

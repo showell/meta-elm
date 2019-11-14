@@ -33,6 +33,7 @@ type V
     | VTuple ( Expr, Expr )
     | VList (List Expr)
     | VError String
+    | VMaybe (Maybe Expr)
 
 
 {-| function w/one var

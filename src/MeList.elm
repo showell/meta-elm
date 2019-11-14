@@ -3,7 +3,7 @@ module MeList exposing
     , toList, toListInts
     , cons, plus
     , map, indexedMap, sortBy, foldl, foldr, filter, all, any
-    , range, repeat, singleton, sort, length, reverse, member
+    , head, range, repeat, singleton, sort, length, reverse, member
     )
 
 {-| wrap List
@@ -31,7 +31,7 @@ module MeList exposing
 
 # simple wrappers
 
-@docs range, repeat, singleton, sort, length, reverse, member
+@docs head, range, repeat, singleton, sort, length, reverse, member
 
 -}
 
@@ -96,6 +96,27 @@ transformSort ord c lst =
         |> List.map Tuple.second
         |> VList
         |> ComputedValue
+
+
+{-| wraps head
+-}
+head : Expr
+head =
+    let
+        head0 : FV
+        head0 =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        lst
+                            |> List.head
+                            |> VMaybe
+                            |> ComputedValue
+
+                    _ ->
+                        error "head wants a list"
+    in
+    NamedFunc "List.head" head0
 
 
 {-| wraps length
@@ -580,8 +601,8 @@ toList convert vList =
                 [] ->
                     Ok []
 
-                head :: rest ->
-                    case ( convert head, f rest ) of
+                hExpr :: rExpr ->
+                    case ( convert hExpr, f rExpr ) of
                         ( Ok h, Ok r ) ->
                             Ok (h :: r)
 
