@@ -194,6 +194,12 @@ tail =
         A1 MeList.tail (VarName "lst")
 
 
+take : Expr
+take =
+    Function [ "lst" ] <|
+        A2 MeList.take (MeInt.init 2) (VarName "lst")
+
+
 maximum : Expr
 maximum =
     Function [ "lst" ] <|
@@ -287,4 +293,6 @@ testData =
     , helper sum "sum" "[1.2, 2.3, 3.8]"
     , helper tail "tail" "[]"
     , helper tail "tail" "[1, 2, 3]"
+    , helper take "take" "[]"
+    , helper take "take" "[1, 2, 3]"
     ]

@@ -2,8 +2,7 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, append
-    , all, any, filter, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail
-    , filterMap, foldl
+    , all, any, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
     )
 
 {-| wrap List
@@ -26,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, append, cons, filter, filterMap foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail
+@docs all, any, append, cons, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
 
 -}
 
@@ -150,6 +149,40 @@ maximum =
                         error "maximum wants a list"
     in
     NamedFunc "List.maximum" maximum0
+
+
+{-| wraps take
+-}
+take : Expr
+take =
+    let
+        take0 : FV
+        take0 =
+            \c nExpr ->
+                case getValue c nExpr of
+                    VInt n ->
+                        n
+                            |> take1
+                            |> ComputedFunc
+
+                    _ ->
+                        error "first arg to take should be an int"
+
+        take1 : Int -> FV
+        take1 =
+            \n ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            lst
+                                |> List.take n
+                                |> VList
+                                |> ComputedValue
+
+                        _ ->
+                            error "take wants a list"
+    in
+    NamedFunc "List.take" take0
 
 
 {-| wraps tail
