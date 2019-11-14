@@ -158,6 +158,24 @@ member =
         A2 MeList.member (MeInt.init 42) (VarName "lst")
 
 
+any : Expr
+any =
+    Function [ "lst" ] <|
+        A2
+            MeList.any
+            (LambdaRight (MeInt.init 4) MeInt.eq "x")
+            (VarName "lst")
+
+
+all : Expr
+all =
+    Function [ "lst" ] <|
+        A2
+            MeList.all
+            (LambdaRight (MeInt.init 1) MeInt.eq "x")
+            (VarName "lst")
+
+
 helper : Expr -> String -> String -> List String
 helper f funcName inString =
     let
@@ -195,6 +213,8 @@ testData : List (List String)
 testData =
     [ helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
+    , helper any "any" "[1, 2, 3]"
+    , helper all "all" "[1, 1, 1]"
     , helper member "member" "[41, 42, 43]"
     , helper length "length" "[1, 2, 3]"
     , helper reverse "reverse" "[1, 2, 3]"

@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
     , cons, plus
-    , map, indexedMap, sortBy, foldl, foldr, filter
+    , map, indexedMap, sortBy, foldl, foldr, filter, all, any
     , range, repeat, singleton, sort, length, reverse, member
     )
 
@@ -26,7 +26,7 @@ module MeList exposing
 
 # wrappers for functions taking functions
 
-@docs map, indexedMap, sortBy, foldl, foldr, filter
+@docs map, indexedMap, sortBy, foldl, foldr, filter, all, any
 
 
 # simple wrappers
@@ -298,6 +298,94 @@ filter =
                             error "need list in filter"
     in
     NamedFunc "List.filter" filter0
+
+
+{-| wraps List.any
+-}
+any : Expr
+any =
+    let
+        any0 : FV
+        any0 =
+            \c predExpr ->
+                let
+                    pred =
+                        getFuncV c predExpr
+                in
+                any1 pred
+                    |> ComputedFunc
+
+        any1 : FV -> FV
+        any1 =
+            \pred ->
+                \c lstExpr ->
+                    let
+                        predicate expr =
+                            case getValue c (pred c expr) of
+                                VBool b ->
+                                    b
+
+                                _ ->
+                                    False
+                    in
+                    case getValue c lstExpr of
+                        VList lst ->
+                            lst
+                                |> List.any predicate
+                                |> VBool
+                                |> ComputedValue
+
+                        VError s ->
+                            error ("bad list in any: " ++ s)
+
+                        _ ->
+                            error "need list in any"
+    in
+    NamedFunc "List.any" any0
+
+
+{-| wraps List.all
+-}
+all : Expr
+all =
+    let
+        all0 : FV
+        all0 =
+            \c predExpr ->
+                let
+                    pred =
+                        getFuncV c predExpr
+                in
+                all1 pred
+                    |> ComputedFunc
+
+        all1 : FV -> FV
+        all1 =
+            \pred ->
+                \c lstExpr ->
+                    let
+                        predicate expr =
+                            case getValue c (pred c expr) of
+                                VBool b ->
+                                    b
+
+                                _ ->
+                                    False
+                    in
+                    case getValue c lstExpr of
+                        VList lst ->
+                            lst
+                                |> List.all predicate
+                                |> VBool
+                                |> ComputedValue
+
+                        VError s ->
+                            error ("bad list in all: " ++ s)
+
+                        _ ->
+                            error "need list in all"
+    in
+    NamedFunc "List.all" all0
 
 
 {-| wraps List.map
