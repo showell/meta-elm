@@ -42,6 +42,29 @@ import MeType exposing (..)
 indexedMap : Expr
 indexedMap =
     let
+        indexedMap0 : FV
+        indexedMap0 =
+            \c mapperExpr ->
+                mapperExpr
+                    |> getFuncVV c
+                    |> indexedMap1
+                    |> ComputedFunc
+
+        indexedMap1 : FVV -> FV
+        indexedMap1 =
+            \mapper ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            indexedMap2 lst (mapper c)
+                                |> ComputedValue
+
+                        VError s ->
+                            error ("bad list in indexedMap: " ++ s)
+
+                        _ ->
+                            error "need list in indexedMap"
+
         indexedMap2 : List Expr -> (Expr -> Expr -> Expr) -> V
         indexedMap2 lst mapper =
             let
@@ -55,25 +78,6 @@ indexedMap =
             lst
                 |> List.indexedMap wrapped_mapper
                 |> VList
-
-        indexedMap1 : FVV -> FV
-        indexedMap1 mapper =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        indexedMap2 lst (mapper c)
-                            |> ComputedValue
-
-                    VError s ->
-                        error ("bad list in indexedMap: " ++ s)
-
-                    _ ->
-                        error "need list in indexedMap"
-
-        indexedMap0 : FV
-        indexedMap0 c mapperExpr =
-            indexedMap1 (getFuncVV c mapperExpr)
-                |> ComputedFunc
     in
     NamedFunc "List.indexedMap" indexedMap0
 
@@ -232,16 +236,12 @@ sum =
 sort : Expr
 sort =
     let
-        ord : FV
-        ord c expr =
-            compute c expr
-
         sort0 : FV
         sort0 =
             \c lstExpr ->
                 case getValue c lstExpr of
                     VList lst ->
-                        transformSort ord c lst
+                        transformSort compute c lst
 
                     _ ->
                         error "sort wants a list"
@@ -254,27 +254,29 @@ sort =
 sortBy : Expr
 sortBy =
     let
-        sortBy1 : FV -> FV
-        sortBy1 ord =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        transformSort ord c lst
-
-                    VError s ->
-                        error ("bad list in sortBy: " ++ s)
-
-                    _ ->
-                        error "need list in sortBy"
-
         sortBy0 : FV
-        sortBy0 c ordExpr =
-            let
-                ord =
-                    getFuncV c ordExpr
-            in
-            sortBy1 ord
-                |> ComputedFunc
+        sortBy0 =
+            \c ordExpr ->
+                let
+                    ord =
+                        getFuncV c ordExpr
+                in
+                sortBy1 ord
+                    |> ComputedFunc
+
+        sortBy1 : FV -> FV
+        sortBy1 =
+            \ord ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            transformSort ord c lst
+
+                        VError s ->
+                            error ("bad list in sortBy: " ++ s)
+
+                        _ ->
+                            error "need list in sortBy"
     in
     NamedFunc "List.sortBy" sortBy0
 
@@ -284,6 +286,17 @@ sortBy =
 foldl : Expr
 foldl =
     let
+        foldl0 : FV
+        foldl0 c accumExpr =
+            foldl1 (getFuncVV c accumExpr)
+                |> ComputedFunc
+
+        foldl1 : FVV -> FV
+        foldl1 accum =
+            \c startVal ->
+                foldl2 accum (compute c startVal)
+                    |> ComputedFunc
+
         foldl2 : FVV -> Expr -> FV
         foldl2 accum startVal =
             \c lstExpr ->
@@ -296,17 +309,6 @@ foldl =
 
                     _ ->
                         error "need list in foldl"
-
-        foldl1 : FVV -> FV
-        foldl1 accum =
-            \c startVal ->
-                foldl2 accum (compute c startVal)
-                    |> ComputedFunc
-
-        foldl0 : FV
-        foldl0 c accumExpr =
-            foldl1 (getFuncVV c accumExpr)
-                |> ComputedFunc
     in
     NamedFunc "List.foldl" foldl0
 
@@ -316,6 +318,17 @@ foldl =
 foldr : Expr
 foldr =
     let
+        foldr0 : FV
+        foldr0 c accumExpr =
+            foldr1 (getFuncVV c accumExpr)
+                |> ComputedFunc
+
+        foldr1 : FVV -> FV
+        foldr1 accum =
+            \c startVal ->
+                foldr2 accum (compute c startVal)
+                    |> ComputedFunc
+
         foldr2 : FVV -> Expr -> FV
         foldr2 accum startVal =
             \c lstExpr ->
@@ -328,17 +341,6 @@ foldr =
 
                     _ ->
                         error "need list in foldr"
-
-        foldr1 : FVV -> FV
-        foldr1 accum =
-            \c startVal ->
-                foldr2 accum (compute c startVal)
-                    |> ComputedFunc
-
-        foldr0 : FV
-        foldr0 c accumExpr =
-            foldr1 (getFuncVV c accumExpr)
-                |> ComputedFunc
     in
     NamedFunc "List.foldr" foldr0
 
@@ -351,11 +353,9 @@ filterMap =
         filterMap0 : FV
         filterMap0 =
             \c predExpr ->
-                let
-                    pred =
-                        getFuncV c predExpr
-                in
-                filterMap1 pred
+                predExpr
+                    |> getFuncV c
+                    |> filterMap1
                     |> ComputedFunc
 
         filterMap1 : FV -> FV
@@ -386,11 +386,9 @@ filter =
         filter0 : FV
         filter0 =
             \c predExpr ->
-                let
-                    pred =
-                        getFuncV c predExpr
-                in
-                filter1 pred
+                predExpr
+                    |> getFuncV c
+                    |> filter1
                     |> ComputedFunc
 
         filter1 : FV -> FV
@@ -421,11 +419,9 @@ any =
         any0 : FV
         any0 =
             \c predExpr ->
-                let
-                    pred =
-                        getFuncV c predExpr
-                in
-                any1 pred
+                predExpr
+                    |> getFuncV c
+                    |> any1
                     |> ComputedFunc
 
         any1 : FV -> FV
@@ -456,11 +452,9 @@ all =
         all0 : FV
         all0 =
             \c predExpr ->
-                let
-                    pred =
-                        getFuncV c predExpr
-                in
-                all1 pred
+                predExpr
+                    |> getFuncV c
+                    |> all1
                     |> ComputedFunc
 
         all1 : FV -> FV
@@ -488,34 +482,34 @@ all =
 map : Expr
 map =
     let
+        map0 : FV
+        map0 =
+            \c mapperExpr ->
+                mapperExpr
+                    |> getFuncV c
+                    |> map1
+                    |> ComputedFunc
+
+        map1 : FV -> FV
+        map1 =
+            \mapper ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            happyPath c lst mapper
+
+                        VError s ->
+                            error ("bad list in map: " ++ s)
+
+                        _ ->
+                            error "need list in map"
+
         happyPath : Context -> List Expr -> FV -> Expr
         happyPath c lst mapper =
             lst
                 |> List.map (mapper c)
                 |> VList
                 |> ComputedValue
-
-        map1 : FV -> FV
-        map1 mapper =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        happyPath c lst mapper
-
-                    VError s ->
-                        error ("bad list in map: " ++ s)
-
-                    _ ->
-                        error "need list in map"
-
-        map0 : FV
-        map0 c mapperExpr =
-            let
-                mapper =
-                    getFuncV c mapperExpr
-            in
-            map1 mapper
-                |> ComputedFunc
     in
     NamedFunc "List.map" map0
 
@@ -618,7 +612,9 @@ singleton =
     let
         f : FV
         f c expr =
-            [ ComputedValue (getValue c expr) ]
+            expr
+                |> compute c
+                |> List.singleton
                 |> VList
                 |> ComputedValue
     in
