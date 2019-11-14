@@ -57,7 +57,7 @@ permuteFloats =
                 (VarName "startList")
                 [ MeList.sort
                 , A1 MeList.map (LambdaLeft "n" MeNumber.plus (MeFloat.init 0.5))
-                , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
+                , LambdaRight (MeFloat.init 0.5) MeList.colonColon "items"
                 ]
     in
     Function [ "lst" ] <|
@@ -69,7 +69,7 @@ permuteFloats =
                 (VarName "newElements")
                 [ A1 MeList.map MeList.singleton
                 , A1 MeList.map
-                    (LambdaRight (VarName "startList") MeList.plus "x")
+                    (LambdaRight (VarName "startList") MeList.plusPlus "x")
                 ]
             )
 
@@ -135,7 +135,7 @@ foldr =
     Function [ "lst" ] <|
         PipeLine
             (VarName "lst")
-            [ A2 MeList.foldr MeList.cons (MeList.initInts []) ]
+            [ A2 MeList.foldr MeList.colonColon (MeList.initInts []) ]
 
 
 filter : Expr

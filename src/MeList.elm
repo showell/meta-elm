@@ -1,7 +1,8 @@
 module MeList exposing
     ( initInts, initFloats
     , toList, toListInts
-    , all, any, cons, filter, foldr, head, indexedMap, length, map, maximum, member, minimum, plus, product, range, repeat, reverse, singleton, sort, sortBy, sum
+    , cons, colonColon, plusPlus, append
+    , all, any, filter, foldr, head, indexedMap, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum
     , filterMap, foldl
     )
 
@@ -18,9 +19,14 @@ module MeList exposing
 @docs toList, toListInts
 
 
+# operators
+
+@docs cons, colonColon, plusPlus, append
+
+
 # wrappers
 
-@docs all, any, cons, filter, filterMap foldl, foldr, head, indexedMap, length, map, maximum, member, minimum, plus, product, range, repeat, reverse, singleton, sort, sortBy, sum
+@docs all, any, append, cons, filter, filterMap foldl, foldr, head, indexedMap, length, map, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum
 
 -}
 
@@ -621,8 +627,8 @@ singleton =
 
 {-| wraps `::`
 -}
-cons : Expr
-cons =
+colonColon : Expr
+colonColon =
     let
         f : FVV
         f c expr1 expr2 =
@@ -635,15 +641,46 @@ cons =
                         |> ComputedValue
 
                 ( _, _ ) ->
-                    error "need list to cons to"
+                    error "need list for :: operator"
     in
     BinOp "::" f
 
 
+{-| wraps cons
+-}
+cons : Expr
+cons =
+    let
+        cons0 : FV
+        cons0 =
+            \c hExpr ->
+                hExpr
+                    |> getValue c
+                    |> cons1
+                    |> ComputedFunc
+
+        cons1 : V -> FV
+        cons1 =
+            \hv ->
+                \c restExpr ->
+                    case ( hv, getValue c restExpr ) of
+                        ( VError s, _ ) ->
+                            error ("bad arg to cons - " ++ s)
+
+                        ( h, VList rest ) ->
+                            VList (ComputedValue h :: rest)
+                                |> ComputedValue
+
+                        ( _, _ ) ->
+                            error "need list to cons to"
+    in
+    NamedFunc "cons" cons0
+
+
 {-| wraps '++' (for lists)
 -}
-plus : Expr
-plus =
+plusPlus : Expr
+plusPlus =
     let
         f : FVV
         f c expr1 expr2 =
@@ -656,6 +693,38 @@ plus =
                     error "need lists in ++"
     in
     BinOp "++" f
+
+
+{-| wraps append
+-}
+append : Expr
+append =
+    let
+        append0 : FV
+        append0 =
+            \c lstExpr1 ->
+                lstExpr1
+                    |> getValue c
+                    |> append1
+                    |> ComputedFunc
+
+        append1 : V -> FV
+        append1 =
+            \v1 ->
+                \c lstExpr2 ->
+                    let
+                        v2 =
+                            getValue c lstExpr2
+                    in
+                    case ( v1, v2 ) of
+                        ( VList lst1, VList lst2 ) ->
+                            VList (lst1 ++ lst2)
+                                |> ComputedValue
+
+                        ( _, _ ) ->
+                            error "need lists in append"
+    in
+    NamedFunc "List.append" append0
 
 
 {-| convert list of ints to an Expr
