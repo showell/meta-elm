@@ -64,6 +64,7 @@ type Expr
     | ComputedFunc FV
     | ComputedValue V
     | F1 String Expr
+    | F2 String String Expr
     | F3 String String String Expr
     | FuncCall Context String (List Expr)
     | Function (List String) Expr

@@ -176,6 +176,16 @@ toElmCode topExpr =
                     )
                         |> parenWrapper
 
+                F2 name1 name2 lambdaExpr ->
+                    ("\\"
+                        ++ name1
+                        ++ " "
+                        ++ name2
+                        ++ " -> "
+                        ++ (lambdaExpr |> toCode withParens)
+                    )
+                        |> parenWrapper
+
                 F3 name1 name2 name3 lambdaExpr ->
                     ("\\"
                         ++ name1

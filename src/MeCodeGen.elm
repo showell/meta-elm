@@ -164,6 +164,13 @@ toCG expr =
                 )
                 (lambdaExpr |> toCG)
 
+        F2 name1 name2 lambdaExpr ->
+            CG.lambda
+                ([ name1, name2 ]
+                    |> List.map CG.varPattern
+                )
+                (lambdaExpr |> toCG)
+
         F3 name1 name2 name3 lambdaExpr ->
             CG.lambda
                 ([ name1, name2, name3 ]

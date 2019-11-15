@@ -244,6 +244,23 @@ map2 =
             [ A2 MeList.map2 MeList.range (MeList.initInts [ 1, 2, 3 ]) ]
 
 
+pythag : Expr
+pythag =
+    F2 "x" "y" <|
+        Infix
+            (Infix (VarName "x") MeNumber.mult (VarName "x"))
+            MeNumber.plus
+            (Infix (VarName "y") MeNumber.mult (VarName "y"))
+
+
+map2Pythag : Expr
+map2Pythag =
+    Function [ "lst" ] <|
+        PipeLine
+            (VarName "lst")
+            [ A2 MeList.map2 pythag (MeList.initInts [ 3, 5, 7 ]) ]
+
+
 drop : Expr
 drop =
     Function [ "lst" ] <|
@@ -343,6 +360,7 @@ testData =
     , helper isEmpty "isEmpty" "[1, 2]"
     , helper length "length" "[1, 2, 3]"
     , helper map2 "map2" "[8, 7, 9]"
+    , helper map2Pythag "map2Pythag" "[4, 12, 24]"
     , helper map3 "map3" "[8, 7, 9]"
     , helper maximum "maximum" "[]"
     , helper maximum "maximum" "[40, 10, 30, 20]"

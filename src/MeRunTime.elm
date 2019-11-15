@@ -246,6 +246,17 @@ getFuncVVV c expr =
 getFuncVV : Context -> Expr -> FVV
 getFuncVV c expr =
     case expr of
+        F2 name1 name2 impl ->
+            \_ e1 e2 ->
+                let
+                    argDict =
+                        [ ( name1, compute c e1 )
+                        , ( name2, compute c e2 )
+                        ]
+                            |> Dict.fromList
+                in
+                compute (union argDict c) impl
+
         _ ->
             let
                 fv1 =
