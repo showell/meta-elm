@@ -1,7 +1,6 @@
 module MeRunTime exposing
     ( computeExpr, compute, getFinalValue
-    , getFuncV, getFuncVV, getFuncVVV, getValue, error
-    , getFuncVVVV
+    , getFuncV, getFuncVV, getFuncVVV, getFuncVVVV, getFuncVVVVV, getValue, error
     )
 
 {-| The MetaElm RunTime (MeRunTime) can evaluate
@@ -18,7 +17,7 @@ AST expressions inside Elm!
 Helpers are mostly used for wrapping library functions
 like List.map.
 
-@docs getFuncV, getFuncVV, getFuncVVV, getValue, error
+@docs getFuncV, getFuncVV, getFuncVVV, getFuncVVVV, getFuncVVVVV, getValue, error
 
 -}
 

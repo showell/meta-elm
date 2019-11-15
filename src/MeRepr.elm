@@ -30,6 +30,7 @@ fromList items =
         ++ String.join ", " items
         ++ " ]"
         |> String.replace "], " "]\n, "
+        |> String.replace "), " ")\n, "
 
 
 {-| emit a tuple of strings

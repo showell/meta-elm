@@ -343,6 +343,21 @@ f5Test =
             (VarName "n")
 
 
+map5 : Expr
+map5 =
+    F1 "lst" <|
+        PipeLine
+            (VarName "lst")
+            [ A5
+                MeList.map5
+                f5
+                (MeList.initInts [ 10, 20, 30 ])
+                (MeList.initInts [ 5, 8, 7 ])
+                (MeList.initInts [ 1, 2, 3, 4, 5 ])
+                (MeList.initInts [ 33, 97, 103 ])
+            ]
+
+
 drop : Expr
 drop =
     F1 "lst" <|
@@ -459,6 +474,7 @@ testData =
     , helper map2Pythag "map2Pythag" "[4, 12, 24]"
     , helper map3 "map3" "[8, 7, 9]"
     , helper map4 "map4" "[1, 3, 19, 22]"
+    , helper map5 "map5" "[5, 10, 15, 20]"
     , helper maximum "maximum" "[]"
     , helper maximum "maximum" "[40, 10, 30, 20]"
     , helper member "member" "[41, 42, 43]"
