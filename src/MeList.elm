@@ -97,7 +97,7 @@ transformSort ord c lst =
         |> ComputedValue
 
 
-{-| wraps minimum
+{-| wraps List.minimum
 -}
 minimum : Expr
 minimum =
@@ -124,7 +124,7 @@ minimum =
     NamedFunc "List.minimum" minimum0
 
 
-{-| wraps maximum
+{-| wraps List.maximum
 -}
 maximum : Expr
 maximum =
@@ -151,7 +151,7 @@ maximum =
     NamedFunc "List.maximum" maximum0
 
 
-{-| wraps intersperse
+{-| wraps List.intersperse
 -}
 intersperse : Expr
 intersperse =
@@ -180,7 +180,7 @@ intersperse =
     NamedFunc "List.intersperse" intersperse0
 
 
-{-| wraps drop
+{-| wraps List.drop
 -}
 drop : Expr
 drop =
@@ -214,7 +214,7 @@ drop =
     NamedFunc "List.drop" drop0
 
 
-{-| wraps take
+{-| wraps List.take
 -}
 take : Expr
 take =
@@ -248,7 +248,7 @@ take =
     NamedFunc "List.take" take0
 
 
-{-| wraps unzip
+{-| wraps List.unzip
 -}
 unzip : Expr
 unzip =
@@ -297,7 +297,7 @@ unzip =
     NamedFunc "List.unzip" unzip0
 
 
-{-| wraps tail
+{-| wraps List.tail
 -}
 tail : Expr
 tail =
@@ -320,7 +320,7 @@ tail =
     NamedFunc "List.tail" tail0
 
 
-{-| wraps head
+{-| wraps List.head
 -}
 head : Expr
 head =
@@ -341,7 +341,7 @@ head =
     NamedFunc "List.head" head0
 
 
-{-| wraps isEmpty
+{-| wraps List.isEmpty
 -}
 isEmpty : Expr
 isEmpty =
@@ -362,7 +362,7 @@ isEmpty =
     NamedFunc "List.isEmpty" isEmpty0
 
 
-{-| wraps length
+{-| wraps List.length
 -}
 length : Expr
 length =
@@ -383,7 +383,7 @@ length =
     NamedFunc "List.length" length0
 
 
-{-| wraps reverse
+{-| wraps List.reverse
 -}
 reverse : Expr
 reverse =
@@ -404,7 +404,7 @@ reverse =
     NamedFunc "List.reverse" reverse0
 
 
-{-| wraps product
+{-| wraps List.product
 -}
 product : Expr
 product =
@@ -412,7 +412,7 @@ product =
         |> Var "List.product"
 
 
-{-| wraps sum
+{-| wraps List.sum
 -}
 sum : Expr
 sum =
@@ -420,7 +420,7 @@ sum =
         |> Var "List.sum"
 
 
-{-| wraps sort
+{-| wraps List.sort
 -}
 sort : Expr
 sort =
@@ -1130,7 +1130,7 @@ singleton =
     NamedFunc "List.singleton" f
 
 
-{-| wraps cons (::)
+{-| wraps List.cons (::)
 -}
 cons : Expr
 cons =
@@ -1169,7 +1169,7 @@ empty =
         |> ComputedValue
 
 
-{-| wraps concat
+{-| wraps List.concat
 -}
 concat : Expr
 concat =
@@ -1177,7 +1177,7 @@ concat =
         |> Var "List.concat"
 
 
-{-| wraps concatMap
+{-| wraps List.concatMap
 -}
 concatMap : Expr
 concatMap =
@@ -1222,7 +1222,7 @@ concatMap =
     NamedFunc "List.concatMap" concatMap0
 
 
-{-| wraps append (++)
+{-| wraps List.append (++)
 -}
 append : Expr
 append =
