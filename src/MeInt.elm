@@ -58,23 +58,32 @@ init num =
 eq : Expr
 eq =
     let
-        f : FVV
-        f c expr1 expr2 =
-            case ( getValue c expr1, getValue c expr2 ) of
-                ( VInt a, VInt b ) ->
-                    VBool (a == b)
-                        |> ComputedValue
+        eq0 : FV
+        eq0 =
+            \c expr1 ->
+                case getValue c expr1 of
+                    VInt n1 ->
+                        n1
+                            |> eq1
+                            |> ComputedFunc
 
-                ( VError s, _ ) ->
-                    error (s ++ " (first arg)")
+                    _ ->
+                        error "need int for first arg"
 
-                ( _, VError s ) ->
-                    error (s ++ " (second arg)")
+        eq1 : Int -> FV
+        eq1 =
+            \n1 ->
+                \c expr2 ->
+                    case getValue c expr2 of
+                        VInt n2 ->
+                            (n1 == n2)
+                                |> VBool
+                                |> ComputedValue
 
-                _ ->
-                    error "need numbers here"
+                        _ ->
+                            error "need int for second arg"
     in
-    BinOp "==" f
+    OpFunc "eq" eq0 "=="
 
 
 {-| convert Expr to raw Int (if types match)

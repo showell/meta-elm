@@ -192,6 +192,9 @@ compute context expr =
                         (opLeft |> compute context)
                         (opRight |> compute context)
 
+                OpFunc _ fv _ ->
+                    apply (fv context opLeft) opRight
+
                 _ ->
                     error "infix needs a binary operator: "
 

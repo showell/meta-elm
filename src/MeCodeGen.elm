@@ -185,6 +185,13 @@ toCG expr =
                         (argRight |> toCG)
                         |> CG.parens
 
+                OpFunc _ _ opName ->
+                    binOp
+                        (argLeft |> toCG)
+                        opName
+                        (argRight |> toCG)
+                        |> CG.parens
+
                 _ ->
                     CG.val "?"
 
