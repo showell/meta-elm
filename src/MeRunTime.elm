@@ -94,15 +94,6 @@ getArgDict args expr =
 -}
 compute : FV
 compute context expr =
-    let
-        pipe : Expr -> Expr -> Expr
-        pipe e1 e0 =
-            let
-                fv =
-                    getFuncV context e0
-            in
-            fv context e1
-    in
     case expr of
         LetIn c resultExpr ->
             compute (union (fromList c) context) resultExpr
@@ -187,21 +178,28 @@ compute context expr =
         Infix opLeft binOp opRight ->
             case binOp of
                 OpFunc _ fv _ ->
-                    pipe opRight (fv context opLeft)
+                    getFuncVV context binOp context opLeft opRight
 
                 _ ->
                     error "infix needs a binary operator: "
 
+        A4 e4 e3 e2 e1 e0 ->
+            getFuncVVVV context e4 context e3 e2 e1 e0
+
         A3 e3 e2 e1 e0 ->
-            List.foldl pipe e3 [ e2, e1, e0 ]
+            getFuncVVV context e3 context e2 e1 e0
 
         A2 e2 e1 e0 ->
-            List.foldl pipe e2 [ e1, e0 ]
+            getFuncVV context e2 context e1 e0
 
         A1 e1 e0 ->
-            pipe e0 e1
+            getFuncV context e1 context e0
 
         _ ->
+            let
+                _ =
+                    Debug.log "fred" expr
+            in
             error "cannot evaluate this type as a value yet"
 
 
@@ -238,6 +236,23 @@ callF c names exprs impl =
                 |> Dict.fromList
     in
     compute (union argDict c) impl
+
+
+{-| kinda gets a four-argument function from an expression
+-}
+getFuncVVVV : Context -> Expr -> FVVVV
+getFuncVVVV c expr =
+    case expr of
+        F4 name3 name2 name1 name0 impl ->
+            \_ e3 e2 e1 e0 ->
+                callF c
+                    [ name3, name2, name1, name0 ]
+                    [ e3, e2, e1, e0 ]
+                    impl
+
+        _ ->
+            \_ e3 e2 e1 e0 ->
+                applyArgsToFunction c expr [ e3, e2, e1 ] e0
 
 
 {-| kinda gets a three-argument function from an expression

@@ -1,4 +1,4 @@
-- clean up support for F1/F2/F3 and A1/A2/A3
+- clean up support for F1/F2/F3/F4 and A1/A2/A3/A4
 - removed support for LambdaLeft/LambdaRight (just use F1/Infix)
 - removed MeElmCode (just use MeCodeGen)
 - replace BinOp with OpFunc

@@ -243,6 +243,21 @@ xyz =
             (VarName "z")
 
 
+f4 : Expr
+f4 =
+    F4 "a" "b" "c" "d" <|
+        Infix
+            (Infix (VarName "a") MeNumber.plus (VarName "b"))
+            MeNumber.mult
+            (Infix (VarName "c") MeNumber.plus (VarName "d"))
+
+
+f4Test : Expr
+f4Test =
+    Function [ "n" ] <|
+        A4 f4 (MeInt.init 1) (MeInt.init 2) (MeInt.init 3) (VarName "n")
+
+
 map3 : Expr
 map3 =
     Function [ "lst" ] <|
@@ -271,6 +286,12 @@ pythag =
             (Infix (VarName "x") MeNumber.mult (VarName "x"))
             MeNumber.plus
             (Infix (VarName "y") MeNumber.mult (VarName "y"))
+
+
+pythagTest : Expr
+pythagTest =
+    Function [ "n" ] <|
+        A2 pythag (MeInt.init 9) (VarName "n")
 
 
 map2Pythag : Expr
@@ -379,6 +400,7 @@ testData =
     , helper concatMap "concatMap" "[ [1,2,3], [4,5,6], [7,8]]"
     , helper drop "drop" "[]"
     , helper drop "drop" "[1, 2, 3]"
+    , helper f4Test "f4Test" "4"
     , helper factorial "factorial" "17"
     , helper factorial2 "factorial2" "11"
     , helper filter "filter" "[ 4, 1, 2, 3, 4, 7, 4 ]"
@@ -403,6 +425,7 @@ testData =
     , helper partition "partition" "[1, 2, 3, 4, 5, 6, 7]"
     , helper permuteFloats "permuteFloats" "[ 4, 3, 2, 5, 1 ]"
     , helper product "product" "[1.2, 2.3, 3.8]"
+    , helper pythagTest "pythagTest" "40"
     , helper repeat "repeat" "5"
     , helper reverse "reverse" "[1, 2, 3]"
     , helper sum "sum" "[1.2, 2.3, 3.8]"

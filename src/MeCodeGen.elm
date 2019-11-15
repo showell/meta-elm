@@ -157,6 +157,11 @@ toCG expr =
                 |> List.map toCG
                 |> CG.apply
 
+        A4 f arg1 arg2 arg3 arg4 ->
+            [ f, arg1, arg2, arg3, arg4 ]
+                |> List.map toCG
+                |> CG.apply
+
         F1 name1 lambdaExpr ->
             CG.lambda
                 ([ name1 ]
@@ -174,6 +179,13 @@ toCG expr =
         F3 name1 name2 name3 lambdaExpr ->
             CG.lambda
                 ([ name1, name2, name3 ]
+                    |> List.map CG.varPattern
+                )
+                (lambdaExpr |> toCG)
+
+        F4 name1 name2 name3 name4 lambdaExpr ->
+            CG.lambda
+                ([ name1, name2, name3, name4 ]
                     |> List.map CG.varPattern
                 )
                 (lambdaExpr |> toCG)
