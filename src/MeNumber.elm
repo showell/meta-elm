@@ -41,35 +41,60 @@ type alias BinaryImpl =
 binOp : BinaryImpl -> String -> Expr
 binOp impl name =
     let
-        f : FVV
-        f c expr1 expr2 =
-            case ( getValue c expr1, getValue c expr2 ) of
-                ( VInt a, VInt b ) ->
-                    VInt (impl.fII a b)
-                        |> ComputedValue
+        f0 : FV
+        f0 =
+            \c expr1 ->
+                case getValue c expr1 of
+                    VInt a ->
+                        a
+                            |> f1Int
+                            |> ComputedFunc
 
-                ( VInt a, VFloat b ) ->
-                    VFloat (impl.fIF a b)
-                        |> ComputedValue
+                    VFloat a ->
+                        a
+                            |> f1Float
+                            |> ComputedFunc
 
-                ( VFloat a, VInt b ) ->
-                    VFloat (impl.fFI a b)
-                        |> ComputedValue
+                    _ ->
+                        error "not a number"
 
-                ( VFloat a, VFloat b ) ->
-                    VFloat (impl.fFF a b)
-                        |> ComputedValue
+        f1Int : Int -> FV
+        f1Int =
+            \a ->
+                \c expr2 ->
+                    case getValue c expr2 of
+                        VInt b ->
+                            impl.fII a b
+                                |> VInt
+                                |> ComputedValue
 
-                ( VError s, _ ) ->
-                    error (s ++ " (first arg)")
+                        VFloat b ->
+                            impl.fIF a b
+                                |> VFloat
+                                |> ComputedValue
 
-                ( _, VError s ) ->
-                    error (s ++ " (second arg)")
+                        _ ->
+                            error "not a number"
 
-                _ ->
-                    error "need numbers here"
+        f1Float : Float -> FV
+        f1Float =
+            \a ->
+                \c expr2 ->
+                    case getValue c expr2 of
+                        VInt b ->
+                            impl.fFI a b
+                                |> VFloat
+                                |> ComputedValue
+
+                        VFloat b ->
+                            impl.fFF a b
+                                |> VFloat
+                                |> ComputedValue
+
+                        _ ->
+                            error "not a number"
     in
-    BinOp name f
+    OpFunc ("(" ++ name ++ ")") f0 name
 
 
 {-| wraps `+` for numbers
