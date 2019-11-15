@@ -22,7 +22,7 @@ import MeType
         )
 
 
-{-| emit a list of strings
+{-| emit a list of strings (i.e. surround with brackets, add commas)
 -}
 fromList : List String -> String
 fromList items =
@@ -33,7 +33,7 @@ fromList items =
         |> String.replace "), " ")\n, "
 
 
-{-| emit a tuple of strings
+{-| emit a tuple of strings (i.e. surround with parens, add commas)
 -}
 fromTuple : ( String, String ) -> String
 fromTuple ( a, b ) =
