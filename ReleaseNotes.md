@@ -1,7 +1,7 @@
 3.0.0
 -----
 
-- nearly completed wrapper for List.elm
+- completed all wrappers for List.elm
 - cleaned up support for F1/F2/F3/F4/F5 and A1/A2/A3/A4/A5
 - removed support for LambdaLeft/LambdaRight (just use F1/Infix)
 - removed support for Function (just use F1/F2/etc.)
