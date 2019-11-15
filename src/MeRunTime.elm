@@ -227,22 +227,30 @@ applyArgsToFunction c firstExpr exprs finalExpr =
     partial c finalExpr
 
 
+callF : Context -> List String -> List Expr -> Expr -> Expr
+callF c names exprs impl =
+    let
+        argDict =
+            List.map2
+                (\name expr -> ( name, compute c expr ))
+                names
+                exprs
+                |> Dict.fromList
+    in
+    compute (union argDict c) impl
+
+
 {-| kinda gets a three-argument function from an expression
 -}
 getFuncVVV : Context -> Expr -> FVVV
 getFuncVVV c expr =
     case expr of
-        F3 name1 name2 name3 impl ->
-            \_ e1 e2 e3 ->
-                let
-                    argDict =
-                        [ ( name1, compute c e1 )
-                        , ( name2, compute c e2 )
-                        , ( name3, compute c e3 )
-                        ]
-                            |> Dict.fromList
-                in
-                compute (union argDict c) impl
+        F3 name2 name1 name0 impl ->
+            \_ e2 e1 e0 ->
+                callF c
+                    [ name2, name1, name0 ]
+                    [ e2, e1, e0 ]
+                    impl
 
         _ ->
             \_ e2 e1 e0 ->
@@ -254,16 +262,12 @@ getFuncVVV c expr =
 getFuncVV : Context -> Expr -> FVV
 getFuncVV c expr =
     case expr of
-        F2 name1 name2 impl ->
-            \_ e1 e2 ->
-                let
-                    argDict =
-                        [ ( name1, compute c e1 )
-                        , ( name2, compute c e2 )
-                        ]
-                            |> Dict.fromList
-                in
-                compute (union argDict c) impl
+        F2 name1 name0 impl ->
+            \_ e1 e0 ->
+                callF c
+                    [ name1, name0 ]
+                    [ e1, e0 ]
+                    impl
 
         _ ->
             \_ e1 e0 ->
@@ -273,7 +277,7 @@ getFuncVV c expr =
 {-| kinda gets a one-argument function from an expression
 -}
 getFuncV : Context -> Expr -> FV
-getFuncV context expr =
+getFuncV c expr =
     let
         err s =
             \_ _ ->
@@ -281,15 +285,12 @@ getFuncV context expr =
                     |> ComputedValue
     in
     case expr of
-        F1 name1 impl ->
-            \c e1 ->
-                let
-                    argDict =
-                        [ ( name1, compute c e1 )
-                        ]
-                            |> Dict.fromList
-                in
-                compute (union argDict c) impl
+        F1 name impl ->
+            \_ e ->
+                callF c
+                    [ name ]
+                    [ e ]
+                    impl
 
         OpFunc _ f _ ->
             f
@@ -307,8 +308,8 @@ getFuncV context expr =
             err "not a function"
 
         _ ->
-            compute context expr
-                |> getFuncV context
+            compute c expr
+                |> getFuncV c
 
 
 evalPipeLine : Context -> Expr -> List Expr -> Expr
