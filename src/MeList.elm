@@ -1157,7 +1157,7 @@ cons =
                         _ ->
                             error "need list to cons to"
     in
-    OpFunc "cons" cons0 "::"
+    OpFunc "List.cons" cons0 "::"
 
 
 {-| make an empty list
