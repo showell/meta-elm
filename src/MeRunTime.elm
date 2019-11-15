@@ -205,6 +205,28 @@ compute context expr =
             error "cannot evaluate this type as a value yet"
 
 
+applyArgsToFunction : Context -> Expr -> List Expr -> Expr -> Expr
+applyArgsToFunction c firstExpr exprs finalExpr =
+    let
+        fvInit =
+            getFuncV c firstExpr
+
+        apply arg fv =
+            case fv c arg of
+                ComputedFunc newF ->
+                    newF
+
+                _ ->
+                    \_ _ ->
+                        error "could not compute function"
+    in
+    let
+        partial =
+            List.foldl apply fvInit exprs
+    in
+    partial c finalExpr
+
+
 {-| kinda gets a three-argument function from an expression
 -}
 getFuncVVV : Context -> Expr -> FVVV
@@ -223,22 +245,8 @@ getFuncVVV c expr =
                 compute (union argDict c) impl
 
         _ ->
-            let
-                fv1 =
-                    getFuncV c expr
-            in
-            \_ e1 e2 e3 ->
-                case fv1 c e1 of
-                    ComputedFunc fv2 ->
-                        case fv2 c e2 of
-                            ComputedFunc fv3 ->
-                                fv3 c e3
-
-                            _ ->
-                                error "could not compute function with three args"
-
-                    _ ->
-                        error "could not compute function with three args"
+            \_ e2 e1 e0 ->
+                applyArgsToFunction c expr [ e2, e1 ] e0
 
 
 {-| kinda gets a two-argument function from an expression
@@ -258,17 +266,8 @@ getFuncVV c expr =
                 compute (union argDict c) impl
 
         _ ->
-            let
-                fv1 =
-                    getFuncV c expr
-            in
-            \_ e1 e2 ->
-                case fv1 c e1 of
-                    ComputedFunc fv2 ->
-                        fv2 c e2
-
-                    _ ->
-                        error "could not compute function with two args"
+            \_ e1 e0 ->
+                applyArgsToFunction c expr [ e1 ] e0
 
 
 {-| kinda gets a one-argument function from an expression
