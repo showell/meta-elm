@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats, empty
     , toList, toListInts
     , cons, append
-    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take, unzip
+    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, map4, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take, unzip
     )
 
 {-| wrap List
@@ -25,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take, unzip
+@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, map4, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take, unzip
 
 -}
 
@@ -812,6 +812,83 @@ map3 =
                             error "need list in map3"
     in
     NamedFunc "List.map3" map3_0
+
+
+{-| wraps List.map4
+-}
+map4 : Expr
+map4 =
+    let
+        map4_0 : FV
+        map4_0 =
+            \c mapperExpr ->
+                mapperExpr
+                    |> getFuncVVVV c
+                    |> map4_1
+                    |> ComputedFunc
+
+        map4_1 : FVVVV -> FV
+        map4_1 =
+            \mapper ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            map4_2 mapper lst
+                                |> ComputedFunc
+
+                        VError s ->
+                            error ("bad list in map4: " ++ s)
+
+                        _ ->
+                            error "need list in map4"
+
+        map4_2 : FVVVV -> List Expr -> FV
+        map4_2 =
+            \mapper lst1 ->
+                \c lst2Expr ->
+                    case getValue c lst2Expr of
+                        VList lst2 ->
+                            map4_3 mapper lst1 lst2
+                                |> ComputedFunc
+
+                        VError s ->
+                            error ("bad list in map4: " ++ s)
+
+                        _ ->
+                            error "need list in map4"
+
+        map4_3 : FVVVV -> List Expr -> List Expr -> FV
+        map4_3 =
+            \mapper lst1 lst2 ->
+                \c lst3Expr ->
+                    case getValue c lst3Expr of
+                        VList lst3 ->
+                            map4_4 mapper lst1 lst2 lst3
+                                |> ComputedFunc
+
+                        VError s ->
+                            error ("bad list in map4: " ++ s)
+
+                        _ ->
+                            error "need list in map4"
+
+        map4_4 : FVVVV -> List Expr -> List Expr -> List Expr -> FV
+        map4_4 =
+            \mapper lst1 lst2 lst3 ->
+                \c lst4Expr ->
+                    case getValue c lst4Expr of
+                        VList lst4 ->
+                            List.map4 (mapper c) lst1 lst2 lst3 lst4
+                                |> VList
+                                |> ComputedValue
+
+                        VError s ->
+                            error ("bad list in map4: " ++ s)
+
+                        _ ->
+                            error "need list in map4"
+    in
+    NamedFunc "List.map4" map4_0
 
 
 {-| wraps List.map

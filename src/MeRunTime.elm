@@ -1,6 +1,7 @@
 module MeRunTime exposing
     ( computeExpr, compute, getFinalValue
     , getFuncV, getFuncVV, getFuncVVV, getValue, error
+    , getFuncVVVV
     )
 
 {-| The MetaElm RunTime (MeRunTime) can evaluate

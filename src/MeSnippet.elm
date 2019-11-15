@@ -258,6 +258,20 @@ f4Test =
         A4 f4 (MeInt.init 1) (MeInt.init 2) (MeInt.init 3) (VarName "n")
 
 
+map4 : Expr
+map4 =
+    F1 "lst" <|
+        PipeLine
+            (VarName "lst")
+            [ A4
+                MeList.map4
+                f4
+                (MeList.initInts [ 10, 20, 30 ])
+                (MeList.initInts [ 5, 8, 7 ])
+                (MeList.initInts [ 1, 2 ])
+            ]
+
+
 map3 : Expr
 map3 =
     F1 "lst" <|
@@ -416,6 +430,7 @@ testData =
     , helper map2 "map2" "[8, 7, 9]"
     , helper map2Pythag "map2Pythag" "[4, 12, 24]"
     , helper map3 "map3" "[8, 7, 9]"
+    , helper map4 "map4" "[1, 3, 19, 22]"
     , helper maximum "maximum" "[]"
     , helper maximum "maximum" "[40, 10, 30, 20]"
     , helper member "member" "[41, 42, 43]"
