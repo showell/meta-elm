@@ -294,6 +294,22 @@ take =
         A2 MeList.take (MeInt.init 2) (VarName "lst")
 
 
+unzip : Expr
+unzip =
+    Function [ "lst" ] <|
+        PipeLine
+            (VarName "lst")
+            [ A1 MeList.map
+                (F1 "x"
+                    (A2 MeTuple.pair
+                        (VarName "x")
+                        (Infix (VarName "x") MeNumber.mult (MeInt.init 3))
+                    )
+                )
+            , MeList.unzip
+            ]
+
+
 maximum : Expr
 maximum =
     Function [ "lst" ] <|
@@ -400,4 +416,5 @@ testData =
     , helper tail "tail" "[1, 2, 3]"
     , helper take "take" "[]"
     , helper take "take" "[1, 2, 3]"
+    , helper unzip "unzip" "[ 1, 2, 3, 4 ]"
     ]

@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats, empty
     , toList, toListInts
     , cons, append
-    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take, unzip
     )
 
 {-| wrap List
@@ -25,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take, unzip
 
 -}
 
@@ -246,6 +246,59 @@ take =
                             error "take wants a list"
     in
     NamedFunc "List.take" take0
+
+
+{-| wraps unzip
+-}
+unzip : Expr
+unzip =
+    let
+        unzip0 : FV
+        unzip0 =
+            \c lstExpr ->
+                case getValue c lstExpr of
+                    VList lst ->
+                        let
+                            first elem =
+                                case getValue c elem of
+                                    VTuple tup ->
+                                        Tuple.first tup
+
+                                    _ ->
+                                        error "not a tuple"
+
+                            second elem =
+                                case getValue c elem of
+                                    VTuple tup ->
+                                        Tuple.second tup
+
+                                    _ ->
+                                        error "not a tuple"
+
+                            lst1 =
+                                lst
+                                    |> List.map first
+                                    |> VList
+                                    |> ComputedValue
+
+                            lst2 =
+                                lst
+                                    |> List.map second
+                                    |> VList
+                                    |> ComputedValue
+                        in
+                        ( lst1, lst2 )
+                            |> VTuple
+                            |> ComputedValue
+
+                    _ ->
+                        let
+                            _ =
+                                Debug.log "fred" lstExpr
+                        in
+                        error "unzip wants a list"
+    in
+    NamedFunc "List.unzip" unzip0
 
 
 {-| wraps tail
