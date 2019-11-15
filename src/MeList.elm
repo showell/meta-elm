@@ -743,6 +743,7 @@ member =
         member0 =
             \c needle ->
                 needle
+                    |> compute c
                     |> member1
                     |> ComputedFunc
 
@@ -788,6 +789,7 @@ repeat =
             \n ->
                 \c vExpr ->
                     vExpr
+                        |> compute c
                         |> List.repeat n
                         |> VList
                         |> ComputedValue
