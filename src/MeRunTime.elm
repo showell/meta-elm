@@ -95,13 +95,13 @@ getArgDict args expr =
 compute : FV
 compute context expr =
     let
-        apply : Expr -> Expr -> Expr
-        apply e1 e0 =
+        pipe : Expr -> Expr -> Expr
+        pipe e1 e0 =
             let
                 fv =
-                    getFuncV context e1
+                    getFuncV context e0
             in
-            fv context e0
+            fv context e1
     in
     case expr of
         LetIn c resultExpr ->
@@ -187,19 +187,19 @@ compute context expr =
         Infix opLeft binOp opRight ->
             case binOp of
                 OpFunc _ fv _ ->
-                    apply (fv context opLeft) opRight
+                    pipe opRight (fv context opLeft)
 
                 _ ->
                     error "infix needs a binary operator: "
 
         A3 e3 e2 e1 e0 ->
-            apply (apply (apply e3 e2) e1) e0
+            List.foldl pipe e3 [ e2, e1, e0 ]
 
         A2 e2 e1 e0 ->
-            apply (apply e2 e1) e0
+            List.foldl pipe e2 [ e1, e0 ]
 
         A1 e1 e0 ->
-            apply e1 e0
+            pipe e0 e1
 
         _ ->
             error "cannot evaluate this type as a value yet"
@@ -313,20 +313,15 @@ getFuncV context expr =
 
 
 evalPipeLine : Context -> Expr -> List Expr -> Expr
-evalPipeLine context v lst =
-    case lst of
-        [] ->
-            compute context v
+evalPipeLine context initVal fList =
+    let
+        accVal =
+            compute context initVal
 
-        head :: rest ->
-            let
-                fv =
-                    getFuncV context head
-
-                newV =
-                    fv context v
-            in
-            evalPipeLine context newV rest
+        accum fexpr val =
+            getFuncV context fexpr context val
+    in
+    List.foldl accum accVal fList
 
 
 {-| get the value of a computed expression (usually
