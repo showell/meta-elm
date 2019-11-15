@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats, empty
     , toList, toListInts
     , cons, append
-    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, map2, map3, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
     )
 
 {-| wrap List
@@ -25,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, map2, map3, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
 
 -}
 
@@ -149,6 +149,35 @@ maximum =
                         error "maximum wants a list"
     in
     NamedFunc "List.maximum" maximum0
+
+
+{-| wraps intersperse
+-}
+intersperse : Expr
+intersperse =
+    let
+        intersperse0 : FV
+        intersperse0 =
+            \c vExpr ->
+                vExpr
+                    |> compute c
+                    |> intersperse1
+                    |> ComputedFunc
+
+        intersperse1 : Expr -> FV
+        intersperse1 =
+            \v ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            List.intersperse v lst
+                                |> VList
+                                |> ComputedValue
+
+                        _ ->
+                            error "need a list in intersperse"
+    in
+    NamedFunc "List.intersperse" intersperse0
 
 
 {-| wraps drop

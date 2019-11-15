@@ -107,6 +107,12 @@ length =
         A1 MeList.length (VarName "lst")
 
 
+intersperse : Expr
+intersperse =
+    Function [ "n" ] <|
+        A2 MeList.intersperse (VarName "n") (MeList.initInts [ 1, 2, 3, 4 ])
+
+
 incr : Expr
 incr =
     Function [ "n" ] <|
@@ -356,6 +362,7 @@ testData =
     , helper head "head" "[]"
     , helper head "head" "[1, 2, 3]"
     , helper incr "incr" "8"
+    , helper intersperse "intersperse" "999"
     , helper isEmpty "isEmpty" "[]"
     , helper isEmpty "isEmpty" "[1, 2]"
     , helper length "length" "[1, 2, 3]"
