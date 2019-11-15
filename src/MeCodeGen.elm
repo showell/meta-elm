@@ -34,19 +34,31 @@ fromContext ns =
     let
         paramPatterns expr =
             case expr of
-                Function params _ ->
-                    params
+                F1 name _ ->
+                    [ name ]
+                        |> List.map CG.varPattern
+
+                F2 name1 name0 _ ->
+                    [ name1, name0 ]
+                        |> List.map CG.varPattern
+
+                F3 name2 name1 name0 _ ->
+                    [ name2, name1, name0 ]
+                        |> List.map CG.varPattern
+
+                F4 name3 name2 name1 name0 _ ->
+                    [ name3, name2, name1, name0 ]
                         |> List.map CG.varPattern
 
                 _ ->
-                    []
+                    [ "?????" |> CG.varPattern ]
 
         block ( name, expr ) =
             CG.funDecl
                 Nothing
                 Nothing
                 name
-                (paramPatterns expr)
+                (expr |> paramPatterns)
                 (expr |> toCG)
                 |> Elm.Pretty.prettyDeclaration
                 |> pretty
@@ -99,9 +111,6 @@ toCG expr =
 
         OpFunc name _ _ ->
             name |> CG.val
-
-        Function _ fexpr ->
-            fexpr |> toCG
 
         LetIn lets vexpr ->
             CG.letExpr

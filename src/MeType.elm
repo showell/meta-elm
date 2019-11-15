@@ -75,7 +75,6 @@ type Expr
     | F3 String String String Expr
     | F4 String String String String Expr
     | FuncCall Context String (List Expr)
-    | Function (List String) Expr
     | IfElse Expr Expr Expr
     | Infix Expr Expr Expr
     | LetIn (List ( String, Expr )) Expr

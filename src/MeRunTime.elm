@@ -93,9 +93,6 @@ getArgDict args expr =
         F1 name0 _ ->
             getDict [ name0 ]
 
-        Function params _ ->
-            getDict params
-
         _ ->
             Err "you must call a function"
 
@@ -109,9 +106,6 @@ compute context expr =
             compute (union (fromList c) context) resultExpr
 
         Var _ v ->
-            compute context v
-
-        Function _ v ->
             compute context v
 
         F1 _ v ->
