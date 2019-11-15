@@ -91,10 +91,6 @@ funcName expr =
             name
 
         _ ->
-            let
-                _ =
-                    Debug.log "missing name" expr
-            in
             "?"
 
 

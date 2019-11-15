@@ -292,10 +292,6 @@ unzip =
                             |> ComputedValue
 
                     _ ->
-                        let
-                            _ =
-                                Debug.log "fred" lstExpr
-                        in
                         error "unzip wants a list"
     in
     NamedFunc "List.unzip" unzip0

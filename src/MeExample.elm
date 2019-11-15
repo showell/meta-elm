@@ -1,6 +1,5 @@
 module MeExample exposing (view)
 
-import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes
     exposing

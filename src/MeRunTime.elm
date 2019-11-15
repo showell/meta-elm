@@ -184,7 +184,7 @@ compute context expr =
 
         Infix opLeft binOp opRight ->
             case binOp of
-                OpFunc _ fv _ ->
+                OpFunc _ _ _ ->
                     getFuncVV context binOp context opLeft opRight
 
                 _ ->
@@ -206,10 +206,6 @@ compute context expr =
             getFuncV context e1 context e0
 
         _ ->
-            let
-                _ =
-                    Debug.log "fred" expr
-            in
             error "cannot evaluate this type as a value yet"
 
 
