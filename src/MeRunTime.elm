@@ -76,8 +76,8 @@ fromList tups =
 
 getArgDict : List Expr -> Expr -> Result String Context
 getArgDict args expr =
-    case expr of
-        Function params _ ->
+    let
+        getDict params =
             if List.length params == List.length args then
                 List.map2 Tuple.pair params args
                     |> Dict.fromList
@@ -85,6 +85,16 @@ getArgDict args expr =
 
             else
                 Err "wrong number of arguments"
+    in
+    case expr of
+        F2 name1 name0 _ ->
+            getDict [ name1, name0 ]
+
+        F1 name0 _ ->
+            getDict [ name0 ]
+
+        Function params _ ->
+            getDict params
 
         _ ->
             Err "you must call a function"
@@ -102,6 +112,9 @@ compute context expr =
             compute context v
 
         Function _ v ->
+            compute context v
+
+        F1 _ v ->
             compute context v
 
         VarName vname ->

@@ -19,7 +19,7 @@ import MeType
 
 factorial : Expr
 factorial =
-    Function [ "n" ] <|
+    F1 "n" <|
         IfElse
             (Infix (VarName "n") MeInt.eq (MeInt.init 0))
             (MeInt.init 1)
@@ -35,7 +35,7 @@ factorial =
 
 factorial2 : Expr
 factorial2 =
-    Function [ "n" ] <|
+    F1 "n" <|
         PipeLine
             (A2 MeList.range (MeInt.init 1) (VarName "n"))
             [ A2 MeList.foldl MeNumber.mult (MeInt.init 1)
@@ -53,7 +53,7 @@ isEven =
 
 partition : Expr
 partition =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A2 MeList.partition isEven (VarName "lst")
 
 
@@ -75,7 +75,7 @@ permuteFloats =
                 , F1 "items" (Infix (MeFloat.init 0.5) MeList.cons (VarName "items"))
                 ]
     in
-    Function [ "lst" ] <|
+    F1 "lst" <|
         LetIn
             [ ( "startList", startList )
             , ( "newElements", newElements )
@@ -96,7 +96,7 @@ normalize =
             F1 "n"
                 (Infix (VarName "n") MeNumber.plus (MeInt.init 1))
     in
-    Function [ "lst" ] <|
+    F1 "lst" <|
         PipeLine
             (VarName "lst")
             [ A1 MeList.indexedMap MeTuple.pair
@@ -111,25 +111,25 @@ normalize =
 
 isEmpty : Expr
 isEmpty =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A1 MeList.isEmpty (VarName "lst")
 
 
 length : Expr
 length =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A1 MeList.length (VarName "lst")
 
 
 intersperse : Expr
 intersperse =
-    Function [ "n" ] <|
+    F1 "n" <|
         A2 MeList.intersperse (VarName "n") (MeList.initInts [ 1, 2, 3, 4 ])
 
 
 incr : Expr
 incr =
-    Function [ "n" ] <|
+    F1 "n" <|
         A1
             (F1 "x" (Infix (VarName "x") MeNumber.plus (MeInt.init 1)))
             (VarName "n")
@@ -137,7 +137,7 @@ incr =
 
 basicTupleStuff : Expr
 basicTupleStuff =
-    Function [ "n" ]
+    F1 "n"
         (( MeInt.init 5, Infix (MeInt.init 2) MeNumber.plus (MeInt.init 4) )
             |> VTuple
             |> SimpleValue
@@ -146,7 +146,7 @@ basicTupleStuff =
 
 basicListStuff : Expr
 basicListStuff =
-    Function [ "n" ]
+    F1 "n"
         ([ MeInt.init 5
          , Infix (MeInt.init 2) MeNumber.plus (MeInt.init 4)
          , Infix (VarName "n") MeNumber.plus (MeInt.init 100)
@@ -158,13 +158,13 @@ basicListStuff =
 
 repeat : Expr
 repeat =
-    Function [ "n" ] <|
+    F1 "n" <|
         A2 MeList.repeat (VarName "n") (MeInt.init 42)
 
 
 foldr : Expr
 foldr =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         PipeLine
             (VarName "lst")
             [ A2 MeList.foldr MeList.cons (MeList.initInts []) ]
@@ -172,7 +172,7 @@ foldr =
 
 filter : Expr
 filter =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         PipeLine
             (VarName "lst")
             [ A1 MeList.filter (F1 "x" (Infix (VarName "x") MeInt.eq (MeInt.init 4))) ]
@@ -180,19 +180,19 @@ filter =
 
 reverse : Expr
 reverse =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A1 MeList.reverse (VarName "lst")
 
 
 member : Expr
 member =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A2 MeList.member (MeInt.init 42) (VarName "lst")
 
 
 any : Expr
 any =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A2
             MeList.any
             (F1 "x" (Infix (MeInt.init 4) MeInt.eq (VarName "x")))
@@ -201,7 +201,7 @@ any =
 
 all : Expr
 all =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A2
             MeList.all
             (F1 "x" (Infix (MeInt.init 1) MeInt.eq (VarName "x")))
@@ -210,25 +210,25 @@ all =
 
 head : Expr
 head =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A1 MeList.head (VarName "lst")
 
 
 tail : Expr
 tail =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A1 MeList.tail (VarName "lst")
 
 
 concat : Expr
 concat =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A1 MeList.concat (VarName "lst")
 
 
 concatMap : Expr
 concatMap =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A2 MeList.concatMap
             (A1 MeList.map (F1 "n" (Infix (VarName "n") MeNumber.mult (MeInt.init 5))))
             (VarName "lst")
@@ -254,13 +254,13 @@ f4 =
 
 f4Test : Expr
 f4Test =
-    Function [ "n" ] <|
+    F1 "n" <|
         A4 f4 (MeInt.init 1) (MeInt.init 2) (MeInt.init 3) (VarName "n")
 
 
 map3 : Expr
 map3 =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         PipeLine
             (VarName "lst")
             [ A3
@@ -273,7 +273,7 @@ map3 =
 
 map2 : Expr
 map2 =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         PipeLine
             (VarName "lst")
             [ A2 MeList.map2 MeList.range (MeList.initInts [ 1, 2, 3 ]) ]
@@ -290,13 +290,13 @@ pythag =
 
 pythagTest : Expr
 pythagTest =
-    Function [ "n" ] <|
+    F1 "n" <|
         A2 pythag (MeInt.init 9) (VarName "n")
 
 
 map2Pythag : Expr
 map2Pythag =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         PipeLine
             (VarName "lst")
             [ A2 MeList.map2 pythag (MeList.initInts [ 3, 5, 7 ]) ]
@@ -304,19 +304,19 @@ map2Pythag =
 
 drop : Expr
 drop =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A2 MeList.drop (MeInt.init 2) (VarName "lst")
 
 
 take : Expr
 take =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A2 MeList.take (MeInt.init 2) (VarName "lst")
 
 
 unzip : Expr
 unzip =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         PipeLine
             (VarName "lst")
             [ A1 MeList.map
@@ -332,31 +332,31 @@ unzip =
 
 maximum : Expr
 maximum =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A1 MeList.maximum (VarName "lst")
 
 
 minimum : Expr
 minimum =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A1 MeList.minimum (VarName "lst")
 
 
 product : Expr
 product =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A1 MeList.product (VarName "lst")
 
 
 sum : Expr
 sum =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A1 MeList.sum (VarName "lst")
 
 
 filterMap : Expr
 filterMap =
-    Function [ "lst" ] <|
+    F1 "lst" <|
         A2 MeList.filterMap MeList.head (VarName "lst")
 
 
