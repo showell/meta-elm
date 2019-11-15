@@ -1,5 +1,5 @@
 module MeList exposing
-    ( initInts, initFloats
+    ( initInts, initFloats, empty
     , toList, toListInts
     , cons, append
     , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, map2, map3, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
@@ -25,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, append, concat, concatMap, cons, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, map2, map3, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, isEmpty, length, map, map2, map3, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
 
 -}
 
