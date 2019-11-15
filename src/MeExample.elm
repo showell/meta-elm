@@ -1,15 +1,22 @@
 module MeExample exposing (view)
 
+import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes
     exposing
         ( style
         )
 import MeSnippet
+import MeWrapper
 
 
 view : List (Html msg)
 view =
+    testResults ++ MeWrapper.viewWrappers
+
+
+testResults : List (Html msg)
+testResults =
     let
         makeTh : String -> Html msg
         makeTh s =
