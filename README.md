@@ -11,7 +11,7 @@ DSL that:
 - can be serialized to simpler Elm code
 
 It can be used with an Elm-native parser, such as elm-in-elm,
-to create REPLs and other learning tools.  Thie DSL will
+to create REPLs and other learning tools.  The DSL will
 always represent a subset of Elm, because we need to wrap
 native methods and don't support every syntax.
 
@@ -20,6 +20,12 @@ native methods and don't support every syntax.
 See
 [MeSnippet.elm](src/MeSnippet.elm)
 for examples of how to use meta-elm.
+
+# Data types
+
+The main focus for now is lists.  We wrap every function in
+List.elm.  There is some basic support for number types and
+tuples, too.
 
 # Project status
 
