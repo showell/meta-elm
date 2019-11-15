@@ -331,8 +331,4 @@ getFinalValue expr =
             v
 
         _ ->
-            let
-                _ =
-                    Debug.log "yo" expr
-            in
             VError "final values were never computed with computeExpr"
