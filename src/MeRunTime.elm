@@ -191,6 +191,9 @@ compute context expr =
                 _ ->
                     error "infix needs a binary operator: "
 
+        A5 e5 e4 e3 e2 e1 e0 ->
+            getFuncVVVVV context e5 context e4 e3 e2 e1 e0
+
         A4 e4 e3 e2 e1 e0 ->
             getFuncVVVV context e4 context e3 e2 e1 e0
 
@@ -244,6 +247,23 @@ callF c names exprs impl =
                 |> Dict.fromList
     in
     compute (union argDict c) impl
+
+
+{-| kinda gets a five-argument function from an expression
+-}
+getFuncVVVVV : Context -> Expr -> FVVVVV
+getFuncVVVVV c expr =
+    case expr of
+        F5 name4 name3 name2 name1 name0 impl ->
+            \_ e4 e3 e2 e1 e0 ->
+                callF c
+                    [ name4, name3, name2, name1, name0 ]
+                    [ e4, e3, e2, e1, e0 ]
+                    impl
+
+        _ ->
+            \_ e4 e3 e2 e1 e0 ->
+                applyArgsToFunction c expr [ e4, e3, e2, e1 ] e0
 
 
 {-| kinda gets a four-argument function from an expression

@@ -50,6 +50,10 @@ fromContext ns =
                     [ name3, name2, name1, name0 ]
                         |> List.map CG.varPattern
 
+                F5 name4 name3 name2 name1 name0 _ ->
+                    [ name4, name3, name2, name1, name0 ]
+                        |> List.map CG.varPattern
+
                 _ ->
                     [ "?????" |> CG.varPattern ]
 
@@ -171,6 +175,11 @@ toCG expr =
                 |> List.map toCG
                 |> CG.apply
 
+        A5 f arg1 arg2 arg3 arg4 arg5 ->
+            [ f, arg1, arg2, arg3, arg4, arg5 ]
+                |> List.map toCG
+                |> CG.apply
+
         F1 name1 lambdaExpr ->
             CG.lambda
                 ([ name1 ]
@@ -195,6 +204,13 @@ toCG expr =
         F4 name1 name2 name3 name4 lambdaExpr ->
             CG.lambda
                 ([ name1, name2, name3, name4 ]
+                    |> List.map CG.varPattern
+                )
+                (lambdaExpr |> toCG)
+
+        F5 name1 name2 name3 name4 name5 lambdaExpr ->
+            CG.lambda
+                ([ name1, name2, name3, name4, name5 ]
                     |> List.map CG.varPattern
                 )
                 (lambdaExpr |> toCG)

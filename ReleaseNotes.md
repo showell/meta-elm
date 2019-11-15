@@ -1,12 +1,16 @@
-- clean up support for F1/F2/F3/F4 and A1/A2/A3/A4
+3.0.0
+-----
+
+- nearly completed wrapper for List.elm
+- cleaned up support for F1/F2/F3/F4/F5 and A1/A2/A3/A4/A5
 - removed support for LambdaLeft/LambdaRight (just use F1/Infix)
 - removed support for Function (just use F1/F2/etc.)
 - removed MeElmCode (just use MeCodeGen)
 - replace BinOp with OpFunc
-- make sort/sortBy generic (and removed sortByInt, etc.)
-- added several List functions
+- made sort/sortBy generic (and removed sortByInt, etc.)
 - made cons/append official names for ::/++
 - added MeInt.modBy
+- added VMaybe
 
 2.0.0
 -----

@@ -316,6 +316,33 @@ map4 =
             ]
 
 
+f5 =
+    F5 "a" "b" "c" "d" "e" <|
+        A2 MeTuple.pair
+            (VarName "a")
+            (A2 MeTuple.pair
+                (VarName "b")
+                (A2 MeTuple.pair
+                    (VarName "c")
+                    (A2 MeTuple.pair
+                        (VarName "d")
+                        (VarName "e")
+                    )
+                )
+            )
+
+
+f5Test : Expr
+f5Test =
+    F1 "n" <|
+        A5 f5
+            (MeInt.init 1)
+            (MeInt.init 2)
+            (MeInt.init 3)
+            (MeInt.init 4)
+            (VarName "n")
+
+
 drop : Expr
 drop =
     F1 "lst" <|
@@ -415,6 +442,7 @@ testData =
     , helper drop "drop" "[]"
     , helper drop "drop" "[1, 2, 3]"
     , helper f4Test "f4Test" "4"
+    , helper f5Test "f5Test" "5"
     , helper factorial "factorial" "17"
     , helper factorial2 "factorial2" "11"
     , helper filter "filter" "[ 4, 1, 2, 3, 4, 7, 4 ]"
