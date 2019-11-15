@@ -20,8 +20,7 @@ view =
 
         headings : Html msg
         headings =
-            [ "generated code"
-            , "via CodeGen"
+            [ "generated code (via CodeGen)"
             , "example input"
             , "example output"
             ]

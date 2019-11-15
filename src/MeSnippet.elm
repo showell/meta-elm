@@ -2,7 +2,6 @@ module MeSnippet exposing (testData)
 
 import Dict
 import MeCodeGen
-import MeElmCode
 import MeFloat
 import MeInt
 import MeList
@@ -352,10 +351,6 @@ helper f funcName inString =
 
         code =
             ns
-                |> MeElmCode.codeFromContext
-
-        code2 =
-            ns
                 |> MeCodeGen.fromContext
 
         args =
@@ -367,7 +362,6 @@ helper f funcName inString =
                 |> MeRepr.fromExpr
     in
     [ code
-    , code2
     , inString
     , outString
     ]
