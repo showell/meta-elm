@@ -234,57 +234,6 @@ concatMap =
             (VarName "lst")
 
 
-xyz : Expr
-xyz =
-    F3 "x" "y" "z" <|
-        Infix
-            (Infix (VarName "x") MeNumber.mult (VarName "y"))
-            MeNumber.plus
-            (VarName "z")
-
-
-f4 : Expr
-f4 =
-    F4 "a" "b" "c" "d" <|
-        Infix
-            (Infix (VarName "a") MeNumber.plus (VarName "b"))
-            MeNumber.mult
-            (Infix (VarName "c") MeNumber.plus (VarName "d"))
-
-
-f4Test : Expr
-f4Test =
-    F1 "n" <|
-        A4 f4 (MeInt.init 1) (MeInt.init 2) (MeInt.init 3) (VarName "n")
-
-
-map4 : Expr
-map4 =
-    F1 "lst" <|
-        PipeLine
-            (VarName "lst")
-            [ A4
-                MeList.map4
-                f4
-                (MeList.initInts [ 10, 20, 30 ])
-                (MeList.initInts [ 5, 8, 7 ])
-                (MeList.initInts [ 1, 2 ])
-            ]
-
-
-map3 : Expr
-map3 =
-    F1 "lst" <|
-        PipeLine
-            (VarName "lst")
-            [ A3
-                MeList.map3
-                xyz
-                (MeList.initInts [ 10, 20, 30 ])
-                (MeList.initInts [ 5, 8, 7 ])
-            ]
-
-
 map2 : Expr
 map2 =
     F1 "lst" <|
@@ -314,6 +263,57 @@ map2Pythag =
         PipeLine
             (VarName "lst")
             [ A2 MeList.map2 pythag (MeList.initInts [ 3, 5, 7 ]) ]
+
+
+f3 : Expr
+f3 =
+    F3 "x" "y" "z" <|
+        Infix
+            (Infix (VarName "x") MeNumber.mult (VarName "y"))
+            MeNumber.plus
+            (VarName "z")
+
+
+map3 : Expr
+map3 =
+    F1 "lst" <|
+        PipeLine
+            (VarName "lst")
+            [ A3
+                MeList.map3
+                f3
+                (MeList.initInts [ 10, 20, 30 ])
+                (MeList.initInts [ 5, 8, 7 ])
+            ]
+
+
+f4 : Expr
+f4 =
+    F4 "a" "b" "c" "d" <|
+        Infix
+            (Infix (VarName "a") MeNumber.plus (VarName "b"))
+            MeNumber.mult
+            (Infix (VarName "c") MeNumber.plus (VarName "d"))
+
+
+f4Test : Expr
+f4Test =
+    F1 "n" <|
+        A4 f4 (MeInt.init 1) (MeInt.init 2) (MeInt.init 3) (VarName "n")
+
+
+map4 : Expr
+map4 =
+    F1 "lst" <|
+        PipeLine
+            (VarName "lst")
+            [ A4
+                MeList.map4
+                f4
+                (MeList.initInts [ 10, 20, 30 ])
+                (MeList.initInts [ 5, 8, 7 ])
+                (MeList.initInts [ 1, 2 ])
+            ]
 
 
 drop : Expr
