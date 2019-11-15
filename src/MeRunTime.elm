@@ -299,26 +299,6 @@ getFuncV context expr =
         ComputedFunc f ->
             f
 
-        LambdaRight opLeft binOp _ ->
-            case binOp of
-                BinOp _ fvv ->
-                    let
-                        fv c opRight =
-                            fvv c opLeft opRight
-                    in
-                    fv
-
-                OpFunc _ fv _ ->
-                    \c opRight ->
-                        let
-                            f1 =
-                                getFuncV c (fv c opLeft)
-                        in
-                        f1 c opRight
-
-                _ ->
-                    err "lambda right needs a binary operator"
-
         ComputedValue _ ->
             err "not a function"
 

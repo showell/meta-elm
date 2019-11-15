@@ -212,33 +212,6 @@ toElmCode topExpr =
                         _ ->
                             "?"
 
-                LambdaRight argLeft opExpr vname ->
-                    case opExpr of
-                        BinOp opName _ ->
-                            "\\"
-                                ++ vname
-                                ++ " -> "
-                                ++ toCode withParens argLeft
-                                ++ " "
-                                ++ opName
-                                ++ " "
-                                ++ vname
-                                |> parenWrapper
-
-                        OpFunc _ _ opName ->
-                            "\\"
-                                ++ vname
-                                ++ " -> "
-                                ++ toCode withParens argLeft
-                                ++ " "
-                                ++ opName
-                                ++ " "
-                                ++ vname
-                                |> parenWrapper
-
-                        _ ->
-                            "?"
-
                 _ ->
                     "?"
     in

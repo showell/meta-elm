@@ -58,7 +58,7 @@ permuteFloats =
                 [ MeList.sort
                 , A1 MeList.map
                     (F1 "n" (Infix (VarName "n") MeNumber.plus (MeFloat.init 0.5)))
-                , LambdaRight (MeFloat.init 0.5) MeList.cons "items"
+                , F1 "items" (Infix (MeFloat.init 0.5) MeList.cons (VarName "items"))
                 ]
     in
     Function [ "lst" ] <|
@@ -70,7 +70,7 @@ permuteFloats =
                 (VarName "newElements")
                 [ A1 MeList.map MeList.singleton
                 , A1 MeList.map
-                    (LambdaRight (VarName "startList") MeList.append "x")
+                    (F1 "x" (Infix (VarName "startList") MeList.append (VarName "x")))
                 ]
             )
 
@@ -175,7 +175,7 @@ any =
     Function [ "lst" ] <|
         A2
             MeList.any
-            (LambdaRight (MeInt.init 4) MeInt.eq "x")
+            (F1 "x" (Infix (MeInt.init 4) MeInt.eq (VarName "x")))
             (VarName "lst")
 
 
@@ -184,7 +184,7 @@ all =
     Function [ "lst" ] <|
         A2
             MeList.all
-            (LambdaRight (MeInt.init 1) MeInt.eq "x")
+            (F1 "x" (Infix (MeInt.init 1) MeInt.eq (VarName "x")))
             (VarName "lst")
 
 
@@ -322,7 +322,9 @@ helper f funcName inString =
 testData : List (List String)
 testData =
     [ helper all "all" "[1, 1, 1]"
+    , helper all "all" "[1, 1, 3]"
     , helper any "any" "[1, 2, 3]"
+    , helper any "any" "[1, 4, 3]"
     , helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
     , helper concat "concat" "[ [1,2,3], [4,5,6], [7,8]]"

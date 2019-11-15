@@ -195,25 +195,6 @@ toCG expr =
                 _ ->
                     CG.val "?"
 
-        LambdaRight argLeft opExpr vname ->
-            case opExpr of
-                BinOp opName _ ->
-                    binOp
-                        (argLeft |> toCG)
-                        opName
-                        (vname |> CG.val)
-                        |> CG.lambda [ CG.varPattern vname ]
-
-                OpFunc _ _ opName ->
-                    binOp
-                        (argLeft |> toCG)
-                        opName
-                        (vname |> CG.val)
-                        |> CG.lambda [ CG.varPattern vname ]
-
-                _ ->
-                    CG.val "?"
-
         FuncCall _ _ _ ->
             CG.val "?"
 

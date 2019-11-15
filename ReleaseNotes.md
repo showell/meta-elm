@@ -1,4 +1,5 @@
 - added F3 and A3 support
+- removed support for LambdaLeft/LambdaRight (just use F1/Infix)
 - make sort/sortBy generic (and removed sortByInt, etc.)
 - added several List functions
 - made cons/append official names for ::/++

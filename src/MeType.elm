@@ -70,7 +70,6 @@ type Expr
     | Function (List String) Expr
     | IfElse Expr Expr Expr
     | Infix Expr Expr Expr
-    | LambdaRight Expr Expr String
     | LetIn (List ( String, Expr )) Expr
     | NamedFunc String FV
     | OpFunc String FV String
