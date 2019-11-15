@@ -171,20 +171,8 @@ toCG expr =
                 )
                 (lambdaExpr |> toCG)
 
-        BinOp opname _ ->
-            opname
-                |> (\s -> "(" ++ s ++ ")")
-                |> CG.val
-
         Infix argLeft opExpr argRight ->
             case opExpr of
-                BinOp opName _ ->
-                    binOp
-                        (argLeft |> toCG)
-                        opName
-                        (argRight |> toCG)
-                        |> CG.parens
-
                 OpFunc _ _ opName ->
                     binOp
                         (argLeft |> toCG)

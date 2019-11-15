@@ -186,12 +186,6 @@ compute context expr =
 
         Infix opLeft binOp opRight ->
             case binOp of
-                BinOp _ fvv ->
-                    fvv
-                        context
-                        (opLeft |> compute context)
-                        (opRight |> compute context)
-
                 OpFunc _ fv _ ->
                     apply (fv context opLeft) opRight
 
@@ -252,9 +246,6 @@ getFuncVVV c expr =
 getFuncVV : Context -> Expr -> FVV
 getFuncVV c expr =
     case expr of
-        BinOp _ fvv ->
-            fvv
-
         _ ->
             let
                 fv1 =

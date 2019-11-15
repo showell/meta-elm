@@ -60,7 +60,6 @@ type Expr
     = A1 Expr Expr
     | A2 Expr Expr Expr
     | A3 Expr Expr Expr Expr
-    | BinOp String FVV
     | Call String (List Expr)
     | ComputedFunc FV
     | ComputedValue V

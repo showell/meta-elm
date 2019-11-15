@@ -144,9 +144,6 @@ toElmCode topExpr =
                         |> List.map (toCode withoutParens)
                         |> String.join "\n    |> "
 
-                BinOp opname _ ->
-                    "(" ++ opname ++ ")"
-
                 A1 f arg1 ->
                     toCode withParens f
                         ++ " "
@@ -193,14 +190,6 @@ toElmCode topExpr =
 
                 Infix argLeft opExpr argRight ->
                     case opExpr of
-                        BinOp opName _ ->
-                            toCode withParens argLeft
-                                ++ " "
-                                ++ opName
-                                ++ " "
-                                ++ toCode withParens argRight
-                                |> parenWrapper
-
                         OpFunc _ _ opName ->
                             toCode withParens argLeft
                                 ++ " "
