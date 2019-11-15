@@ -1,6 +1,6 @@
 module MeInt exposing
     ( init, toInt
-    , eq, toFloat
+    , eq, toFloat, modBy
     )
 
 {-| helper module for Int types
@@ -13,7 +13,7 @@ module MeInt exposing
 
 # expression
 
-@docs eq, toFloat
+@docs eq, toFloat, modBy
 
 -}
 
@@ -51,6 +51,39 @@ init num =
     num
         |> VInt
         |> SimpleValue
+
+
+{-| wraps modBy
+-}
+modBy : Expr
+modBy =
+    let
+        modBy0 : FV
+        modBy0 =
+            \c expr1 ->
+                case getValue c expr1 of
+                    VInt n1 ->
+                        n1
+                            |> modBy1
+                            |> ComputedFunc
+
+                    _ ->
+                        error "need int for first arg"
+
+        modBy1 : Int -> FV
+        modBy1 =
+            \n1 ->
+                \c expr2 ->
+                    case getValue c expr2 of
+                        VInt n2 ->
+                            Basics.modBy n1 n2
+                                |> VInt
+                                |> ComputedValue
+
+                        _ ->
+                            error "need int for second arg"
+    in
+    NamedFunc "modBy" modBy0
 
 
 {-| wraps `==` for ints

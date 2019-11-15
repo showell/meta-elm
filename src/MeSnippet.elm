@@ -43,6 +43,21 @@ factorial2 =
             ]
 
 
+isEven : Expr
+isEven =
+    F1 "n" <|
+        Infix
+            (A2 MeInt.modBy (MeInt.init 2) (VarName "n"))
+            MeInt.eq
+            (MeInt.init 0)
+
+
+partition : Expr
+partition =
+    Function [ "lst" ] <|
+        A2 MeList.partition isEven (VarName "lst")
+
+
 permuteFloats : Expr
 permuteFloats =
     let
@@ -375,6 +390,7 @@ testData =
     , helper minimum "minimum" "[]"
     , helper minimum "minimum" "[40, 10, 30, 20]"
     , helper normalize "normalize" "[ 40, 31, 59, 12, 27 ]"
+    , helper partition "partition" "[1, 2, 3, 4, 5, 6, 7]"
     , helper permuteFloats "permuteFloats" "[ 4, 3, 2, 5, 1 ]"
     , helper product "product" "[1.2, 2.3, 3.8]"
     , helper repeat "repeat" "5"

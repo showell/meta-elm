@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats, empty
     , toList, toListInts
     , cons, append
-    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
     )
 
 {-| wrap List
@@ -25,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
+@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take
 
 -}
 
@@ -549,6 +549,41 @@ filter =
                             error "need list in filter"
     in
     NamedFunc "List.filter" filter0
+
+
+{-| wraps List.partition
+-}
+partition : Expr
+partition =
+    let
+        partition0 : FV
+        partition0 =
+            \c predExpr ->
+                predExpr
+                    |> getFuncV c
+                    |> partition1
+                    |> ComputedFunc
+
+        partition1 : FV -> FV
+        partition1 =
+            \pred ->
+                \c lstExpr ->
+                    case getValue c lstExpr of
+                        VList lst ->
+                            lst
+                                |> List.partition (makePredicate c pred)
+                                |> Tuple.mapBoth VList VList
+                                |> Tuple.mapBoth ComputedValue ComputedValue
+                                |> VTuple
+                                |> ComputedValue
+
+                        VError s ->
+                            error ("bad list in partition: " ++ s)
+
+                        _ ->
+                            error "need list in partition"
+    in
+    NamedFunc "List.partition" partition0
 
 
 {-| wraps List.any

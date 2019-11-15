@@ -4,6 +4,7 @@
 - make sort/sortBy generic (and removed sortByInt, etc.)
 - added several List functions
 - made cons/append official names for ::/++
+- added MeInt.modBy
 
 2.0.0
 -----
