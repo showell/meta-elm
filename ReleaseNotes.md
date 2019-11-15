@@ -6,7 +6,7 @@
 - removed support for LambdaLeft/LambdaRight (just use F1/Infix)
 - removed support for Function (just use F1/F2/etc.)
 - removed MeElmCode (just use MeCodeGen)
-- replace BinOp with OpFunc
+- replaced BinOp with OpFunc
 - made sort/sortBy generic (and removed sortByInt, etc.)
 - made cons/append official names for ::/++
 - added MeInt.modBy

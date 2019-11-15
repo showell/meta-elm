@@ -10,13 +10,15 @@ DSL that:
 - can be evaluated inside Elm
 - can be serialized to simpler Elm code
 
-It's kinda like elm-in-elm, but it's smaller and
-targeted specifically at running Elm natively in Elm.
+It can be used with an Elm-native parser, such as elm-in-elm,
+to create REPLs and other learning tools.  Thie DSL will
+always represent a subset of Elm, because we need to wrap
+native methods and don't support every syntax.
 
 # Example usage
 
 See
-[MeSnippet.elm](https://github.com/showell/meta-elm/blob/master/src/MeSnippet.elm)
+[MeSnippet.elm](src/MeSnippet.elm)
 for examples of how to use meta-elm.
 
 # Project status
@@ -26,4 +28,6 @@ well tested, but there is lots more work to do, particularly when it comes
 to wrapping things like List/Dict/etc.
 
 Also, I haven't spent a ton of effort on documentation yet.
+
+You can read the [release notes](ReleaseNotes.md) to see recent changes.
 
