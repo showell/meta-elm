@@ -318,11 +318,37 @@ getFuncV : Context -> Expr -> FV
 getFuncV c expr =
     let
         err s =
+            let
+                _ =
+                    Debug.log "getFuncV problem" expr
+            in
             \_ _ ->
                 VError s
                     |> ComputedValue
+
+        computeFirst () =
+            compute c expr
+                |> getFuncV c
     in
     case expr of
+        A1 _ _ ->
+            computeFirst ()
+
+        A2 _ _ _ ->
+            computeFirst ()
+
+        A3 _ _ _ _ ->
+            computeFirst ()
+
+        A4 _ _ _ _ _ ->
+            computeFirst ()
+
+        A5 _ _ _ _ _ _ ->
+            computeFirst ()
+
+        Var _ impl ->
+            computeFirst ()
+
         F1 name impl ->
             \_ e ->
                 callF c
@@ -340,14 +366,13 @@ getFuncV c expr =
             f
 
         ComputedValue _ ->
-            err "not a function"
+            err "not a function (computed value)"
 
         SimpleValue _ ->
-            err "not a function"
+            err "not a function (simple value)"
 
         _ ->
-            compute c expr
-                |> getFuncV c
+            err "unsupported type for getFuncV"
 
 
 evalPipeLine : Context -> Expr -> List Expr -> Expr
