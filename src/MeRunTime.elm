@@ -203,7 +203,12 @@ compute context expr =
             getFuncVV context e2 context e1 e0
 
         A1 e1 e0 ->
-            getFuncV context e1 context e0
+            case e1 of
+                F2 name1 name0 impl ->
+                    A1F2 e0 name1 name0 impl
+
+                _ ->
+                    getFuncV context e1 context e0
 
         _ ->
             error "cannot evaluate this type as a value yet"
@@ -331,6 +336,11 @@ getFuncV c expr =
                 |> getFuncV c
     in
     case expr of
+        A1F2 arg1 name1 name0 impl ->
+            \_ e0 ->
+                A2 (F2 name1 name0 impl) arg1 e0
+                    |> compute c
+
         A1 _ _ ->
             computeFirst ()
 

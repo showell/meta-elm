@@ -1,3 +1,5 @@
+- support partial applications of F2 lambdas
+
 3.0.0
 -----
 

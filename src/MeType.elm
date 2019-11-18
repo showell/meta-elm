@@ -70,6 +70,7 @@ type alias FVVVVV =
 -}
 type Expr
     = A1 Expr Expr
+    | A1F2 Expr String String Expr
     | A2 Expr Expr Expr
     | A3 Expr Expr Expr Expr
     | A4 Expr Expr Expr Expr Expr

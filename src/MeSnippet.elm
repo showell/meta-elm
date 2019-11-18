@@ -17,6 +17,29 @@ import MeType
         )
 
 
+a1a1f2 : Expr
+a1a1f2 =
+    let
+        timesN s n =
+            Infix (VarName s) MeNumber.mult (MeInt.init n)
+
+        add e1 e2 =
+            Infix e1 MeNumber.plus e2
+
+        f2 =
+            F2 "x" "y" <|
+                add (timesN "x" 100) (VarName "y")
+
+        one =
+            MeInt.init 1
+
+        two =
+            MeInt.init 2
+    in
+    F1 "n" <|
+        A1 (A1 f2 one) (VarName "n")
+
+
 factorial : Expr
 factorial =
     F1 "n" <|
@@ -446,7 +469,8 @@ helper f funcName inString =
 
 testData : List (List String)
 testData =
-    [ helper all "all" "[1, 1, 1]"
+    [ helper a1a1f2 "a1a1f2" "2"
+    , helper all "all" "[1, 1, 1]"
     , helper all "all" "[1, 1, 3]"
     , helper any "any" "[1, 2, 3]"
     , helper any "any" "[1, 4, 3]"
