@@ -56,21 +56,19 @@ indexedMap =
             \mapper ->
                 MeApply.list <|
                     \c lst ->
-                        indexedMap2 lst (mapper c)
-
-        indexedMap2 : List Expr -> (Expr -> Expr -> Expr) -> V
-        indexedMap2 lst mapper =
-            let
-                wrapped_mapper idx item =
-                    let
-                        idxExpr =
-                            ComputedValue (VInt idx)
-                    in
-                    mapper idxExpr item
-            in
-            lst
-                |> List.indexedMap wrapped_mapper
-                |> VList
+                        let
+                            wrapped_mapper idx item =
+                                let
+                                    idxExpr =
+                                        idx
+                                            |> VInt
+                                            |> ComputedValue
+                                in
+                                mapper c idxExpr item
+                        in
+                        lst
+                            |> List.indexedMap wrapped_mapper
+                            |> VList
     in
     NamedFunc "List.indexedMap" indexedMap0
 
