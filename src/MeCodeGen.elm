@@ -21,6 +21,7 @@ import MeType
 import Pretty
 
 
+pretty : Pretty.Doc -> String
 pretty x =
     -- this is narrow due to how I'm displaying them now
     -- a more typical value is 120
@@ -87,6 +88,7 @@ formatCode code =
         |> pretty
 
 
+binOp : CG.Expression -> String -> CG.Expression -> CG.Expression
 binOp expr1 op expr2 =
     -- CG.infixNon may be deprecated eventually
     CG.opApply op CG.infixNon expr1 expr2

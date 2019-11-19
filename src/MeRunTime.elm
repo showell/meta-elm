@@ -374,7 +374,7 @@ getFuncV c expr =
         A5 _ _ _ _ _ _ ->
             computeFirst ()
 
-        Var _ impl ->
+        Var _ _ ->
             computeFirst ()
 
         F1 name impl ->

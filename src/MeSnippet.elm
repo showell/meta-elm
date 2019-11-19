@@ -60,6 +60,23 @@ f4 =
             (Infix (VarName "c") MeNumber.plus (VarName "d"))
 
 
+f5 : Expr
+f5 =
+    F5 "a" "b" "c" "d" "e" <|
+        A2 MeTuple.pair
+            (VarName "a")
+            (A2 MeTuple.pair
+                (VarName "b")
+                (A2 MeTuple.pair
+                    (VarName "c")
+                    (A2 MeTuple.pair
+                        (VarName "d")
+                        (VarName "e")
+                    )
+                )
+            )
+
+
 a1a1f2 : Expr
 a1a1f2 =
     F1 "n" <|
@@ -351,22 +368,6 @@ map4 =
                 (MeList.initInts [ 5, 8, 7 ])
                 (MeList.initInts [ 1, 2 ])
             ]
-
-
-f5 =
-    F5 "a" "b" "c" "d" "e" <|
-        A2 MeTuple.pair
-            (VarName "a")
-            (A2 MeTuple.pair
-                (VarName "b")
-                (A2 MeTuple.pair
-                    (VarName "c")
-                    (A2 MeTuple.pair
-                        (VarName "d")
-                        (VarName "e")
-                    )
-                )
-            )
 
 
 f5Test : Expr
