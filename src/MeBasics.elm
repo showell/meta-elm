@@ -13,11 +13,10 @@ import MeApply
 import MeType exposing (Expr(..), FV, V(..))
 
 
-
-{--wraps compare
---}
+{-| wraps compare
 
 
+-}
 compare : Expr
 compare =
     let

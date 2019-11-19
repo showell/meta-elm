@@ -5,6 +5,7 @@
     "license": "MIT",
     "version": "5.0.0",
     "exposed-modules": [
+        "MeBasics",
         "MeType",
         "MeRunTime",
         "MeCodeGen",

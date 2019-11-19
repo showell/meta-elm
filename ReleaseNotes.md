@@ -1,5 +1,11 @@
-- added MeApply
-- added MeBasics
+6.00
+----
+- published MeBasics
+
+5.00
+----
+- added MeApply (internal)
+- added MeBasics (internal)
 - added MeList.sortWith (slipped through the cracks in 
   earlier releases)
 
