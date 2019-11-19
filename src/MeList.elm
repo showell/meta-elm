@@ -54,17 +54,9 @@ indexedMap =
         indexedMap1 : FVV -> FV
         indexedMap1 =
             \mapper ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            indexedMap2 lst (mapper c)
-                                |> ComputedValue
-
-                        VError s ->
-                            error ("bad list in indexedMap: " ++ s)
-
-                        _ ->
-                            error "need list in indexedMap"
+                MeApply.list <|
+                    \c lst ->
+                        indexedMap2 lst (mapper c)
 
         indexedMap2 : List Expr -> (Expr -> Expr -> Expr) -> V
         indexedMap2 lst mapper =
@@ -83,7 +75,7 @@ indexedMap =
     NamedFunc "List.indexedMap" indexedMap0
 
 
-transformSort : FV -> Context -> List Expr -> Expr
+transformSort : FV -> Context -> List Expr -> V
 transformSort ord c lst =
     let
         comp item1 item2 =
@@ -94,7 +86,6 @@ transformSort ord c lst =
         |> List.sortWith comp
         |> List.map Tuple.second
         |> VList
-        |> ComputedValue
 
 
 {-| wraps List.minimum
@@ -208,44 +199,39 @@ unzip =
     let
         unzip0 : FV
         unzip0 =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        let
-                            first elem =
-                                case getValue c elem of
-                                    VTuple tup ->
-                                        Tuple.first tup
+            MeApply.list <|
+                \c lst ->
+                    let
+                        first elem =
+                            case getValue c elem of
+                                VTuple tup ->
+                                    Tuple.first tup
 
-                                    _ ->
-                                        error "not a tuple"
+                                _ ->
+                                    error "not a tuple"
 
-                            second elem =
-                                case getValue c elem of
-                                    VTuple tup ->
-                                        Tuple.second tup
+                        second elem =
+                            case getValue c elem of
+                                VTuple tup ->
+                                    Tuple.second tup
 
-                                    _ ->
-                                        error "not a tuple"
+                                _ ->
+                                    error "not a tuple"
 
-                            lst1 =
-                                lst
-                                    |> List.map first
-                                    |> VList
-                                    |> ComputedValue
+                        lst1 =
+                            lst
+                                |> List.map first
+                                |> VList
+                                |> ComputedValue
 
-                            lst2 =
-                                lst
-                                    |> List.map second
-                                    |> VList
-                                    |> ComputedValue
-                        in
-                        ( lst1, lst2 )
-                            |> VTuple
-                            |> ComputedValue
-
-                    _ ->
-                        error "unzip wants a list"
+                        lst2 =
+                            lst
+                                |> List.map second
+                                |> VList
+                                |> ComputedValue
+                    in
+                    ( lst1, lst2 )
+                        |> VTuple
     in
     NamedFunc "List.unzip" unzip0
 
@@ -355,13 +341,9 @@ sort =
     let
         sort0 : FV
         sort0 =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        transformSort compute c lst
-
-                    _ ->
-                        error "sort wants a list"
+            MeApply.list <|
+                \c lst ->
+                    transformSort compute c lst
     in
     NamedFunc "List.sort" sort0
 
@@ -378,16 +360,9 @@ sortBy =
         sortBy1 : FV -> FV
         sortBy1 =
             \ord ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            transformSort ord c lst
-
-                        VError s ->
-                            error ("bad list in sortBy: " ++ s)
-
-                        _ ->
-                            error "need list in sortBy"
+                MeApply.list <|
+                    \c lst ->
+                        transformSort ord c lst
     in
     NamedFunc "List.sortBy" sortBy0
 
@@ -468,19 +443,11 @@ filterMap =
         filterMap1 : FV -> FV
         filterMap1 =
             \pred ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            lst
-                                |> List.filter (makePredicate c pred)
-                                |> VList
-                                |> ComputedValue
-
-                        VError s ->
-                            error ("bad list in filterMap: " ++ s)
-
-                        _ ->
-                            error "need list in filterMap"
+                MeApply.list <|
+                    \c lst ->
+                        lst
+                            |> List.filter (makePredicate c pred)
+                            |> VList
     in
     NamedFunc "List.filterMap" filterMap0
 
@@ -497,19 +464,11 @@ filter =
         filter1 : FV -> FV
         filter1 =
             \pred ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            lst
-                                |> List.filter (makePredicate c pred)
-                                |> VList
-                                |> ComputedValue
-
-                        VError s ->
-                            error ("bad list in filter: " ++ s)
-
-                        _ ->
-                            error "need list in filter"
+                MeApply.list <|
+                    \c lst ->
+                        lst
+                            |> List.filter (makePredicate c pred)
+                            |> VList
     in
     NamedFunc "List.filter" filter0
 
@@ -526,21 +485,13 @@ partition =
         partition1 : FV -> FV
         partition1 =
             \pred ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            lst
-                                |> List.partition (makePredicate c pred)
-                                |> Tuple.mapBoth VList VList
-                                |> Tuple.mapBoth ComputedValue ComputedValue
-                                |> VTuple
-                                |> ComputedValue
-
-                        VError s ->
-                            error ("bad list in partition: " ++ s)
-
-                        _ ->
-                            error "need list in partition"
+                MeApply.list <|
+                    \c lst ->
+                        lst
+                            |> List.partition (makePredicate c pred)
+                            |> Tuple.mapBoth VList VList
+                            |> Tuple.mapBoth ComputedValue ComputedValue
+                            |> VTuple
     in
     NamedFunc "List.partition" partition0
 
@@ -557,19 +508,11 @@ any =
         any1 : FV -> FV
         any1 =
             \pred ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            lst
-                                |> List.any (makePredicate c pred)
-                                |> VBool
-                                |> ComputedValue
-
-                        VError s ->
-                            error ("bad list in any: " ++ s)
-
-                        _ ->
-                            error "need list in any"
+                MeApply.list <|
+                    \c lst ->
+                        lst
+                            |> List.any (makePredicate c pred)
+                            |> VBool
     in
     NamedFunc "List.any" any0
 
@@ -586,19 +529,11 @@ all =
         all1 : FV -> FV
         all1 =
             \pred ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            lst
-                                |> List.all (makePredicate c pred)
-                                |> VBool
-                                |> ComputedValue
-
-                        VError s ->
-                            error ("bad list in all: " ++ s)
-
-                        _ ->
-                            error "need list in all"
+                MeApply.list <|
+                    \c lst ->
+                        lst
+                            |> List.all (makePredicate c pred)
+                            |> VBool
     in
     NamedFunc "List.all" all0
 
@@ -634,18 +569,10 @@ map2 =
         map2_2 : FVV -> List Expr -> FV
         map2_2 =
             \mapper lst1 ->
-                \c lst2Expr ->
-                    case getValue c lst2Expr of
-                        VList lst2 ->
-                            List.map2 (mapper c) lst1 lst2
-                                |> VList
-                                |> ComputedValue
-
-                        VError s ->
-                            error ("bad list in map2: " ++ s)
-
-                        _ ->
-                            error "need list in map2"
+                MeApply.list <|
+                    \c lst2 ->
+                        List.map2 (mapper c) lst1 lst2
+                            |> VList
     in
     NamedFunc "List.map2" map2_0
 
@@ -696,18 +623,10 @@ map3 =
         map3_3 : FVVV -> List Expr -> List Expr -> FV
         map3_3 =
             \mapper lst1 lst2 ->
-                \c lst3Expr ->
-                    case getValue c lst3Expr of
-                        VList lst3 ->
-                            List.map3 (mapper c) lst1 lst2 lst3
-                                |> VList
-                                |> ComputedValue
-
-                        VError s ->
-                            error ("bad list in map3: " ++ s)
-
-                        _ ->
-                            error "need list in map3"
+                MeApply.list <|
+                    \c lst3 ->
+                        List.map3 (mapper c) lst1 lst2 lst3
+                            |> VList
     in
     NamedFunc "List.map3" map3_0
 
@@ -773,18 +692,10 @@ map4 =
         map4_4 : FVVVV -> List Expr -> List Expr -> List Expr -> FV
         map4_4 =
             \mapper lst1 lst2 lst3 ->
-                \c lst4Expr ->
-                    case getValue c lst4Expr of
-                        VList lst4 ->
-                            List.map4 (mapper c) lst1 lst2 lst3 lst4
-                                |> VList
-                                |> ComputedValue
-
-                        VError s ->
-                            error ("bad list in map4: " ++ s)
-
-                        _ ->
-                            error "need list in map4"
+                MeApply.list <|
+                    \c lst4 ->
+                        List.map4 (mapper c) lst1 lst2 lst3 lst4
+                            |> VList
     in
     NamedFunc "List.map4" map4_0
 
@@ -865,18 +776,10 @@ map5 =
         map5_5 : FVVVVV -> List Expr -> List Expr -> List Expr -> List Expr -> FV
         map5_5 =
             \mapper lst1 lst2 lst3 lst4 ->
-                \c lst5Expr ->
-                    case getValue c lst5Expr of
-                        VList lst5 ->
-                            List.map5 (mapper c) lst1 lst2 lst3 lst4 lst5
-                                |> VList
-                                |> ComputedValue
-
-                        VError s ->
-                            error ("bad list in map5: " ++ s)
-
-                        _ ->
-                            error "need list in map5"
+                MeApply.list <|
+                    \c lst5 ->
+                        List.map5 (mapper c) lst1 lst2 lst3 lst4 lst5
+                            |> VList
     in
     NamedFunc "List.map5" map5_0
 
@@ -888,32 +791,16 @@ map =
     let
         map_0 : FV
         map_0 =
-            \c mapperExpr ->
-                mapperExpr
-                    |> getFuncV c
-                    |> map_1
-                    |> ComputedFunc
+            MeApply.fvFV map_1
 
         map_1 : FV -> FV
         map_1 =
             \mapper ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            happyPath c lst mapper
-
-                        VError s ->
-                            error ("bad list in map: " ++ s)
-
-                        _ ->
-                            error "need list in map"
-
-        happyPath : Context -> List Expr -> FV -> Expr
-        happyPath c lst mapper =
-            lst
-                |> List.map (mapper c)
-                |> VList
-                |> ComputedValue
+                MeApply.list <|
+                    \c lst ->
+                        lst
+                            |> List.map (mapper c)
+                            |> VList
     in
     NamedFunc "List.map" map_0
 
@@ -930,20 +817,15 @@ member =
         member1 : Expr -> FV
         member1 =
             \needle ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            let
-                                eq item =
-                                    -- TODO, add Basics.eq
-                                    compare c needle item == EQ
-                            in
-                            List.any eq lst
-                                |> VBool
-                                |> ComputedValue
-
-                        _ ->
-                            error "member needs a list for second arg"
+                MeApply.list <|
+                    \c lst ->
+                        let
+                            eq item =
+                                -- TODO, add Basics.eq
+                                compare c needle item == EQ
+                        in
+                        List.any eq lst
+                            |> VBool
     in
     NamedFunc "List.member" member0
 
@@ -1025,16 +907,11 @@ cons =
         cons1 : Expr -> FV
         cons1 =
             \h ->
-                \c restExpr ->
-                    case getValue c restExpr of
-                        VList rest ->
-                            h
-                                :: rest
-                                |> VList
-                                |> ComputedValue
-
-                        _ ->
-                            error "need list to cons to"
+                MeApply.list <|
+                    \c rest ->
+                        h
+                            :: rest
+                            |> VList
     in
     OpFunc "List.cons" cons0 "::"
 
@@ -1081,18 +958,13 @@ concatMap =
         concatMap1 : FV -> FV
         concatMap1 =
             \f ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            lst
-                                |> List.map (f c)
-                                |> List.map unBoxList
-                                |> List.concat
-                                |> VList
-                                |> ComputedValue
-
-                        _ ->
-                            error "was expecting a list"
+                MeApply.list <|
+                    \c lst ->
+                        lst
+                            |> List.map (f c)
+                            |> List.map unBoxList
+                            |> List.concat
+                            |> VList
     in
     NamedFunc "List.concatMap" concatMap0
 
