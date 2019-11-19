@@ -2,7 +2,7 @@ module MeList exposing
     ( initInts, initFloats, empty
     , toList, toListInts
     , cons, append
-    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, map4, map5, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take, unzip
+    , all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, map4, map5, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sortWith, sum, tail, take, unzip
     )
 
 {-| wrap List
@@ -25,7 +25,7 @@ module MeList exposing
 
 # wrappers
 
-@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, map4, map5, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sum, tail, take, unzip
+@docs all, any, concat, concatMap, drop, filter, filterMap, foldl, foldr, head, indexedMap, intersperse, isEmpty, length, map, map2, map3, map4, map5, maximum, member, minimum, partition, product, range, repeat, reverse, singleton, sort, sortBy, sortWith, sum, tail, take, unzip
 
 -}
 
@@ -336,6 +336,35 @@ sort =
                     transformSort compute c lst
     in
     NamedFunc "List.sort" sort0
+
+
+{-| wraps List.sortWith
+-}
+sortWith : Expr
+sortWith =
+    let
+        sortWith0 : FV
+        sortWith0 =
+            \c withExpr ->
+                withExpr
+                    |> sortWith1
+                    |> ComputedFunc
+
+        sortWith1 : Expr -> FV
+        sortWith1 =
+            \withExpr ->
+                MeApply.list <|
+                    \c lst ->
+                        let
+                            with a b =
+                                getFuncVV c withExpr c a b
+                                    |> toOrderUnsafe
+                        in
+                        lst
+                            |> List.sortWith with
+                            |> VList
+    in
+    NamedFunc "List.sortWith" sortWith0
 
 
 {-| wraps List.sortBy

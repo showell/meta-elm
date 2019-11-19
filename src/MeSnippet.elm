@@ -263,6 +263,23 @@ reverse =
         A1 MeList.reverse (VarName "lst")
 
 
+sortWith : Expr
+sortWith =
+    let
+        mod10 =
+            F1 "n" <|
+                A2 MeInt.modBy (MeInt.init 10) (VarName "n")
+
+        withF =
+            F2 "a" "b" <|
+                A2 MeBasics.compare
+                    (A1 mod10 (VarName "a"))
+                    (A1 mod10 (VarName "b"))
+    in
+    F1 "lst" <|
+        A2 MeList.sortWith withF (VarName "lst")
+
+
 member : Expr
 member =
     F1 "lst" <|
@@ -537,6 +554,7 @@ testData =
     , helper pythagTest "pythagTest" "40"
     , helper repeat "repeat" "5"
     , helper reverse "reverse" "[1, 2, 3]"
+    , helper sortWith "sortWith" "[53, 27, 11, 49, 82]"
     , helper sum "sum" "[1.2, 2.3, 3.8]"
     , helper tail "tail" "[]"
     , helper tail "tail" "[1, 2, 3]"

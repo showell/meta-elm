@@ -1,14 +1,16 @@
-- add MeApply
-- add MeBasics
+- added MeApply
+- added MeBasics
+- added MeList.sortWith (slipped through the cracks in 
+  earlier releases)
 
 4.0.1
 -----
-- fix broken links
+- fixed broken links
 
 4.0.0
 -----
 
-- support partial applications of F2/F3 lambdas
+- supported partial applications of F2/F3 lambdas
 
 3.0.0
 -----
