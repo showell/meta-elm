@@ -18,7 +18,7 @@ native methods and don't support every syntax.
 # Example usage
 
 See
-[MeSnippet.elm](src/MeSnippet.elm)
+[MeSnippet.elm](https://github.com/showell/meta-elm/src/MeSnippet.elm)
 for examples of how to use meta-elm.
 
 # Data types
@@ -35,5 +35,5 @@ to wrapping things like List/Dict/etc.
 
 Also, I haven't spent a ton of effort on documentation yet.
 
-You can read the [release notes](ReleaseNotes.md) to see recent changes.
+You can read the [release notes](https://github.com/showell/meta-elm/ReleaseNotes.md) to see recent changes.
 
