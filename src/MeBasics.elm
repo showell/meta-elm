@@ -33,27 +33,17 @@ compare =
         compare1Int : Int -> FV
         compare1Int =
             \n1 ->
-                \c expr2 ->
-                    case getValue c expr2 of
-                        VInt n2 ->
-                            Basics.compare n1 n2
-                                |> VOrder
-                                |> ComputedValue
-
-                        _ ->
-                            error "cannot be compared to int"
+                MeApply.int <|
+                    \_ n2 ->
+                        Basics.compare n1 n2
+                            |> VOrder
 
         compare1Float : Float -> FV
         compare1Float =
             \n1 ->
-                \c expr2 ->
-                    case getValue c expr2 of
-                        VFloat n2 ->
-                            Basics.compare n1 n2
-                                |> VOrder
-                                |> ComputedValue
-
-                        _ ->
-                            error "cannot be compared to float"
+                MeApply.float <|
+                    \_ n2 ->
+                        Basics.compare n1 n2
+                            |> VOrder
     in
     NamedFunc "Basics.compare" compare0

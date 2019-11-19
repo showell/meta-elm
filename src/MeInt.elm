@@ -66,15 +66,10 @@ modBy =
         modBy1 : Int -> FV
         modBy1 =
             \n1 ->
-                \c expr2 ->
-                    case getValue c expr2 of
-                        VInt n2 ->
-                            Basics.modBy n1 n2
-                                |> VInt
-                                |> ComputedValue
-
-                        _ ->
-                            error "need int for second arg"
+                MeApply.int <|
+                    \_ n2 ->
+                        Basics.modBy n1 n2
+                            |> VInt
     in
     NamedFunc "modBy" modBy0
 
@@ -91,15 +86,10 @@ eq =
         eq1 : Int -> FV
         eq1 =
             \n1 ->
-                \c expr2 ->
-                    case getValue c expr2 of
-                        VInt n2 ->
-                            (n1 == n2)
-                                |> VBool
-                                |> ComputedValue
-
-                        _ ->
-                            error "need int for second arg"
+                MeApply.int <|
+                    \_ n2 ->
+                        (n1 == n2)
+                            |> VBool
     in
     OpFunc "eq" eq0 "=="
 

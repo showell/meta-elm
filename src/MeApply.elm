@@ -1,5 +1,5 @@
 module MeApply exposing
-    ( list
+    ( int, float, list
     , exprFV, intFV, fvFV, numberFV
     )
 
@@ -8,7 +8,7 @@ module MeApply exposing
 
 # function -> value
 
-@docs list
+@docs int, float, list
 
 
 # function -> function
@@ -31,6 +31,38 @@ import MeType
         , FV
         , V(..)
         )
+
+
+{-| creates FV for f(float)
+-}
+float : (Context -> Float -> V) -> FV
+float =
+    \f ->
+        \c expr ->
+            case getValue c expr of
+                VFloat n ->
+                    n
+                        |> f c
+                        |> ComputedValue
+
+                _ ->
+                    error "not a float"
+
+
+{-| creates FV for f(int)
+-}
+int : (Context -> Int -> V) -> FV
+int =
+    \f ->
+        \c expr ->
+            case getValue c expr of
+                VInt n ->
+                    n
+                        |> f c
+                        |> ComputedValue
+
+                _ ->
+                    error "not a int"
 
 
 {-| creates FV for f(list)

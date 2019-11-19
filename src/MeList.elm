@@ -864,17 +864,12 @@ range =
         range1 : Int -> FV
         range1 =
             \lo ->
-                \c hiExpr ->
-                    case getValue c hiExpr of
-                        VInt hi ->
-                            List.range lo hi
-                                |> List.map VInt
-                                |> List.map ComputedValue
-                                |> VList
-                                |> ComputedValue
-
-                        _ ->
-                            error "high value to range must be integer"
+                MeApply.int <|
+                    \c hi ->
+                        List.range lo hi
+                            |> List.map VInt
+                            |> List.map ComputedValue
+                            |> VList
     in
     NamedFunc "List.range" range0
 
