@@ -230,6 +230,12 @@ toCG expr =
         A1F2 _ _ _ _ ->
             CG.val "?"
 
+        A1F3 _ _ _ _ _ ->
+            CG.val "?"
+
+        A2F3 _ _ _ _ _ _ ->
+            CG.val "?"
+
         FuncCall _ _ _ ->
             CG.val "?"
 

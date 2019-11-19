@@ -1,4 +1,4 @@
-- support partial applications of F2 lambdas
+- support partial applications of F2/F3 lambdas
 
 3.0.0
 -----

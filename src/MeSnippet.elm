@@ -17,27 +17,59 @@ import MeType
         )
 
 
+timesN : String -> Int -> Expr
+timesN s n =
+    Infix (VarName s) MeNumber.mult (MeInt.init n)
+
+
+add : Expr -> Expr -> Expr
+add e1 e2 =
+    Infix e1 MeNumber.plus e2
+
+
+one : Expr
+one =
+    MeInt.init 1
+
+
+two : Expr
+two =
+    MeInt.init 2
+
+
+f2 : Expr
+f2 =
+    F2 "x" "y" <|
+        add (timesN "x" 10) (VarName "y")
+
+
+f3 : Expr
+f3 =
+    F3 "x" "y" "z" <|
+        add
+            (timesN "x" 100)
+            (add (timesN "y" 10) (VarName "z"))
+
+
+f4 : Expr
+f4 =
+    F4 "a" "b" "c" "d" <|
+        Infix
+            (Infix (VarName "a") MeNumber.plus (VarName "b"))
+            MeNumber.mult
+            (Infix (VarName "c") MeNumber.plus (VarName "d"))
+
+
 a1a1f2 : Expr
 a1a1f2 =
-    let
-        timesN s n =
-            Infix (VarName s) MeNumber.mult (MeInt.init n)
-
-        add e1 e2 =
-            Infix e1 MeNumber.plus e2
-
-        f2 =
-            F2 "x" "y" <|
-                add (timesN "x" 100) (VarName "y")
-
-        one =
-            MeInt.init 1
-
-        two =
-            MeInt.init 2
-    in
     F1 "n" <|
         A1 (A1 f2 one) (VarName "n")
+
+
+a1a1a1f3 : Expr
+a1a1a1f3 =
+    F1 "n" <|
+        A1 (A1 (A1 f3 one) two) (VarName "n")
 
 
 factorial : Expr
@@ -288,15 +320,6 @@ map2Pythag =
             [ A2 MeList.map2 pythag (MeList.initInts [ 3, 5, 7 ]) ]
 
 
-f3 : Expr
-f3 =
-    F3 "x" "y" "z" <|
-        Infix
-            (Infix (VarName "x") MeNumber.mult (VarName "y"))
-            MeNumber.plus
-            (VarName "z")
-
-
 map3 : Expr
 map3 =
     F1 "lst" <|
@@ -308,15 +331,6 @@ map3 =
                 (MeList.initInts [ 10, 20, 30 ])
                 (MeList.initInts [ 5, 8, 7 ])
             ]
-
-
-f4 : Expr
-f4 =
-    F4 "a" "b" "c" "d" <|
-        Infix
-            (Infix (VarName "a") MeNumber.plus (VarName "b"))
-            MeNumber.mult
-            (Infix (VarName "c") MeNumber.plus (VarName "d"))
 
 
 f4Test : Expr
@@ -470,6 +484,7 @@ helper f funcName inString =
 testData : List (List String)
 testData =
     [ helper a1a1f2 "a1a1f2" "2"
+    , helper a1a1a1f3 "a1a1a1f3" "3"
     , helper all "all" "[1, 1, 1]"
     , helper all "all" "[1, 1, 3]"
     , helper any "any" "[1, 2, 3]"

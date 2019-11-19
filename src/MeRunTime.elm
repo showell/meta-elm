@@ -200,10 +200,18 @@ compute context expr =
             getFuncVVV context e3 context e2 e1 e0
 
         A2 e2 e1 e0 ->
-            getFuncVV context e2 context e1 e0
+            case e2 of
+                F3 name2 name1 name0 impl ->
+                    A2F3 e1 e0 name2 name1 name0 impl
+
+                _ ->
+                    getFuncVV context e2 context e1 e0
 
         A1 e1 e0 ->
             case e1 of
+                F3 name2 name1 name0 impl ->
+                    A1F3 e0 name2 name1 name0 impl
+
                 F2 name1 name0 impl ->
                     A1F2 e0 name1 name0 impl
 
@@ -336,6 +344,16 @@ getFuncV c expr =
                 |> getFuncV c
     in
     case expr of
+        A2F3 arg2 arg1 name2 name1 name0 impl ->
+            \_ e0 ->
+                A3 (F3 name2 name1 name0 impl) arg2 arg1 e0
+                    |> compute c
+
+        A1F3 arg1 name2 name1 name0 impl ->
+            \_ e0 ->
+                A2 (F3 name2 name1 name0 impl) arg1 e0
+                    |> compute c
+
         A1F2 arg1 name1 name0 impl ->
             \_ e0 ->
                 A2 (F2 name1 name0 impl) arg1 e0
