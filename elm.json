@@ -3,7 +3,7 @@
     "name": "showell/meta-elm",
     "summary": "Elm Runtime in Elm",
     "license": "MIT",
-    "version": "4.0.1",
+    "version": "5.0.0",
     "exposed-modules": [
         "MeType",
         "MeRunTime",
