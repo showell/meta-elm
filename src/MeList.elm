@@ -345,7 +345,7 @@ sortWith =
     let
         sortWith0 : FV
         sortWith0 =
-            \c withExpr ->
+            \_ withExpr ->
                 withExpr
                     |> sortWith1
                     |> ComputedFunc
@@ -560,7 +560,7 @@ map2 =
         map2_1 =
             \mapper ->
                 MeApply.listExpr <|
-                    \c lst1 ->
+                    \_ lst1 ->
                         map2_2 mapper lst1
                             |> ComputedFunc
 
@@ -592,7 +592,7 @@ map3 =
         map3_1 =
             \mapper ->
                 MeApply.listExpr <|
-                    \c lst1 ->
+                    \_ lst1 ->
                         map3_2 mapper lst1
                             |> ComputedFunc
 
@@ -632,7 +632,7 @@ map4 =
         map4_1 =
             \mapper ->
                 MeApply.listExpr <|
-                    \c lst1 ->
+                    \_ lst1 ->
                         map4_2 mapper lst1
                             |> ComputedFunc
 
@@ -640,7 +640,7 @@ map4 =
         map4_2 =
             \mapper lst1 ->
                 MeApply.listExpr <|
-                    \c lst2 ->
+                    \_ lst2 ->
                         map4_3 mapper lst1 lst2
                             |> ComputedFunc
 
@@ -648,7 +648,7 @@ map4 =
         map4_3 =
             \mapper lst1 lst2 ->
                 MeApply.listExpr <|
-                    \c lst3 ->
+                    \_ lst3 ->
                         map4_4 mapper lst1 lst2 lst3
                             |> ComputedFunc
 
@@ -800,7 +800,7 @@ range =
         range1 =
             \lo ->
                 MeApply.int <|
-                    \c hi ->
+                    \_ hi ->
                         List.range lo hi
                             |> List.map VInt
                             |> List.map ComputedValue
@@ -838,7 +838,7 @@ cons =
         cons1 =
             \h ->
                 MeApply.list <|
-                    \c rest ->
+                    \_ rest ->
                         h
                             :: rest
                             |> VList

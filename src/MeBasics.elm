@@ -10,11 +10,6 @@ module MeBasics exposing (compare)
 -}
 
 import MeApply
-import MeRunTime
-    exposing
-        ( error
-        , getValue
-        )
 import MeType exposing (Expr(..), FV, V(..))
 
 

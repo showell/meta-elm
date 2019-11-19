@@ -7,7 +7,7 @@ module MeTuple exposing (first, second, pair)
 -}
 
 import MeApply
-import MeRunTime exposing (compute, error, getValue)
+import MeRunTime exposing (compute)
 import MeType exposing (..)
 
 
