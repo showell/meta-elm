@@ -1,5 +1,5 @@
 module MeApply exposing
-    ( int, float, list, tuple
+    ( int, float, list, listExpr, tuple
     , exprFV, intFV, fvFV, numberFV
     )
 
@@ -8,7 +8,7 @@ module MeApply exposing
 
 # function -> value
 
-@docs int, float, list, tuple
+@docs int, float, list, listExpr, tuple
 
 
 # function -> function
@@ -65,20 +65,31 @@ int =
                     error "not a int"
 
 
-{-| creates FV for f(list)
+{-| creates Expr for f(list)
 -}
-list : (Context -> List Expr -> V) -> FV
-list =
+listExpr : (Context -> List Expr -> Expr) -> FV
+listExpr =
     \f ->
         \c lstExpr ->
             case getValue c lstExpr of
                 VList lst ->
                     lst
                         |> f c
-                        |> ComputedValue
 
                 _ ->
                     error "not a list"
+
+
+{-| creates FV for f(list)
+-}
+list : (Context -> List Expr -> V) -> FV
+list =
+    \fv ->
+        listExpr <|
+            \c lst ->
+                lst
+                    |> fv c
+                    |> ComputedValue
 
 
 {-| creates FV for f(tuple)

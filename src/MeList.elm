@@ -375,16 +375,9 @@ foldl =
 
         foldl2 : FVV -> Expr -> FV
         foldl2 accum startVal =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        List.foldl (accum c) startVal lst
-
-                    VError s ->
-                        error ("bad list in foldl: " ++ s)
-
-                    _ ->
-                        error "need list in foldl"
+            MeApply.listExpr <|
+                \c lst ->
+                    List.foldl (accum c) startVal lst
     in
     NamedFunc "List.foldl" foldl0
 
@@ -407,16 +400,9 @@ foldr =
 
         foldr2 : FVV -> Expr -> FV
         foldr2 accum startVal =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        List.foldr (accum c) startVal lst
-
-                    VError s ->
-                        error ("bad list in foldr: " ++ s)
-
-                    _ ->
-                        error "need list in foldr"
+            MeApply.listExpr <|
+                \c lst ->
+                    List.foldr (accum c) startVal lst
     in
     NamedFunc "List.foldr" foldr0
 
@@ -544,17 +530,10 @@ map2 =
         map2_1 : FVV -> FV
         map2_1 =
             \mapper ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            map2_2 mapper lst
-                                |> ComputedFunc
-
-                        VError s ->
-                            error ("bad list in map2: " ++ s)
-
-                        _ ->
-                            error "need list in map2"
+                MeApply.listExpr <|
+                    \c lst1 ->
+                        map2_2 mapper lst1
+                            |> ComputedFunc
 
         map2_2 : FVV -> List Expr -> FV
         map2_2 =
@@ -583,32 +562,18 @@ map3 =
         map3_1 : FVVV -> FV
         map3_1 =
             \mapper ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            map3_2 mapper lst
-                                |> ComputedFunc
-
-                        VError s ->
-                            error ("bad list in map3: " ++ s)
-
-                        _ ->
-                            error "need list in map3"
+                MeApply.listExpr <|
+                    \c lst1 ->
+                        map3_2 mapper lst1
+                            |> ComputedFunc
 
         map3_2 : FVVV -> List Expr -> FV
         map3_2 =
             \mapper lst1 ->
-                \c lst2Expr ->
-                    case getValue c lst2Expr of
-                        VList lst2 ->
-                            map3_3 mapper lst1 lst2
-                                |> ComputedFunc
-
-                        VError s ->
-                            error ("bad list in map3: " ++ s)
-
-                        _ ->
-                            error "need list in map3"
+                MeApply.listExpr <|
+                    \_ lst2 ->
+                        map3_3 mapper lst1 lst2
+                            |> ComputedFunc
 
         map3_3 : FVVV -> List Expr -> List Expr -> FV
         map3_3 =
@@ -637,47 +602,26 @@ map4 =
         map4_1 : FVVVV -> FV
         map4_1 =
             \mapper ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            map4_2 mapper lst
-                                |> ComputedFunc
-
-                        VError s ->
-                            error ("bad list in map4: " ++ s)
-
-                        _ ->
-                            error "need list in map4"
+                MeApply.listExpr <|
+                    \c lst1 ->
+                        map4_2 mapper lst1
+                            |> ComputedFunc
 
         map4_2 : FVVVV -> List Expr -> FV
         map4_2 =
             \mapper lst1 ->
-                \c lst2Expr ->
-                    case getValue c lst2Expr of
-                        VList lst2 ->
-                            map4_3 mapper lst1 lst2
-                                |> ComputedFunc
-
-                        VError s ->
-                            error ("bad list in map4: " ++ s)
-
-                        _ ->
-                            error "need list in map4"
+                MeApply.listExpr <|
+                    \c lst2 ->
+                        map4_3 mapper lst1 lst2
+                            |> ComputedFunc
 
         map4_3 : FVVVV -> List Expr -> List Expr -> FV
         map4_3 =
             \mapper lst1 lst2 ->
-                \c lst3Expr ->
-                    case getValue c lst3Expr of
-                        VList lst3 ->
-                            map4_4 mapper lst1 lst2 lst3
-                                |> ComputedFunc
-
-                        VError s ->
-                            error ("bad list in map4: " ++ s)
-
-                        _ ->
-                            error "need list in map4"
+                MeApply.listExpr <|
+                    \c lst3 ->
+                        map4_4 mapper lst1 lst2 lst3
+                            |> ComputedFunc
 
         map4_4 : FVVVV -> List Expr -> List Expr -> List Expr -> FV
         map4_4 =
@@ -706,62 +650,34 @@ map5 =
         map5_1 : FVVVVV -> FV
         map5_1 =
             \mapper ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            map5_2 mapper lst
-                                |> ComputedFunc
-
-                        VError s ->
-                            error ("bad list in map5: " ++ s)
-
-                        _ ->
-                            error "need list in map5"
+                MeApply.listExpr <|
+                    \_ lst1 ->
+                        map5_2 mapper lst1
+                            |> ComputedFunc
 
         map5_2 : FVVVVV -> List Expr -> FV
         map5_2 =
             \mapper lst1 ->
-                \c lst2Expr ->
-                    case getValue c lst2Expr of
-                        VList lst2 ->
-                            map5_3 mapper lst1 lst2
-                                |> ComputedFunc
-
-                        VError s ->
-                            error ("bad list in map5: " ++ s)
-
-                        _ ->
-                            error "need list in map5"
+                MeApply.listExpr <|
+                    \_ lst2 ->
+                        map5_3 mapper lst1 lst2
+                            |> ComputedFunc
 
         map5_3 : FVVVVV -> List Expr -> List Expr -> FV
         map5_3 =
             \mapper lst1 lst2 ->
-                \c lst3Expr ->
-                    case getValue c lst3Expr of
-                        VList lst3 ->
-                            map5_4 mapper lst1 lst2 lst3
-                                |> ComputedFunc
-
-                        VError s ->
-                            error ("bad list in map5: " ++ s)
-
-                        _ ->
-                            error "need list in map5"
+                MeApply.listExpr <|
+                    \_ lst3 ->
+                        map5_4 mapper lst1 lst2 lst3
+                            |> ComputedFunc
 
         map5_4 : FVVVVV -> List Expr -> List Expr -> List Expr -> FV
         map5_4 =
             \mapper lst1 lst2 lst3 ->
-                \c lst4Expr ->
-                    case getValue c lst4Expr of
-                        VList lst4 ->
-                            map5_5 mapper lst1 lst2 lst3 lst4
-                                |> ComputedFunc
-
-                        VError s ->
-                            error ("bad list in map5: " ++ s)
-
-                        _ ->
-                            error "need list in map5"
+                MeApply.listExpr <|
+                    \_ lst4 ->
+                        map5_5 mapper lst1 lst2 lst3 lst4
+                            |> ComputedFunc
 
         map5_5 : FVVVVV -> List Expr -> List Expr -> List Expr -> List Expr -> FV
         map5_5 =
