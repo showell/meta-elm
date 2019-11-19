@@ -68,6 +68,7 @@ allFunctions =
     , MeList.singleton
     , MeList.sort
     , MeList.sortBy
+    , MeList.sortWith
     , MeList.sum
     , MeList.tail
     , MeList.take
