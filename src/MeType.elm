@@ -34,6 +34,7 @@ type V
     | VList (List Expr)
     | VError String
     | VMaybe (Maybe Expr)
+    | VOrder Order
 
 
 {-| function w/one var

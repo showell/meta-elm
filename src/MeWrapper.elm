@@ -16,6 +16,7 @@ directly use things like `MeList.map`. When you use
 
 import Dict exposing (Dict)
 import Html exposing (Html)
+import MeBasics
 import MeInt
 import MeList
 import MeTuple
@@ -34,7 +35,8 @@ allWrappers =
 
 allFunctions : List Expr
 allFunctions =
-    [ MeList.all
+    [ MeBasics.compare
+    , MeList.all
     , MeList.any
     , MeList.append
     , MeList.concat

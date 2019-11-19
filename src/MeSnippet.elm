@@ -1,6 +1,7 @@
 module MeSnippet exposing (testData)
 
 import Dict
+import MeBasics
 import MeCodeGen
 import MeFloat
 import MeInt
@@ -35,6 +36,12 @@ one =
 two : Expr
 two =
     MeInt.init 2
+
+
+compare : Expr
+compare =
+    F1 "n" <|
+        A2 MeBasics.compare two (VarName "n")
 
 
 f2 : Expr
@@ -492,6 +499,9 @@ testData =
     , helper any "any" "[1, 4, 3]"
     , helper basicTupleStuff "basicTupleStuff" "5"
     , helper basicListStuff "basicListStuff" "5"
+    , helper compare "compare" "1"
+    , helper compare "compare" "2"
+    , helper compare "compare" "3"
     , helper concat "concat" "[ [1,2,3], [4,5,6], [7,8]]"
     , helper concatMap "concatMap" "[ [1,2,3], [4,5,6], [7,8]]"
     , helper drop "drop" "[]"

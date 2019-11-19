@@ -75,6 +75,17 @@ fromExpr expr =
             else
                 "false"
 
+        VOrder ord ->
+            case ord of
+                EQ ->
+                    "EQ"
+
+                LT ->
+                    "LT"
+
+                GT ->
+                    "GT"
+
         VInt n ->
             String.fromInt n
 

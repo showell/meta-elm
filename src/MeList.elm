@@ -29,6 +29,7 @@ module MeList exposing
 
 -}
 
+import MeBasics
 import MeFloat
 import MeInt
 import MeNumber
@@ -85,9 +86,7 @@ transformSort : FV -> Context -> List Expr -> Expr
 transformSort ord c lst =
     let
         comp item1 item2 =
-            compare
-                (Tuple.first item1)
-                (Tuple.first item2)
+            compare c (Tuple.first item1) (Tuple.first item2)
     in
     lst
         |> List.map (\item -> ( ord c item, item ))
@@ -1037,7 +1036,8 @@ member =
                         VList lst ->
                             let
                                 eq item =
-                                    compare needle item == EQ
+                                    -- TODO, add Basics.eq
+                                    compare c needle item == EQ
                             in
                             List.any eq lst
                                 |> VBool
@@ -1379,14 +1379,36 @@ max vExpr1 vExpr2 =
                 |> ComputedValue
 
 
-compare : Expr -> Expr -> Order
-compare vExpr1 vExpr2 =
-    case ( getFinalValue vExpr1, getFinalValue vExpr2 ) of
-        ( VInt n1, VInt n2 ) ->
-            Basics.compare n1 n2
+compare : Context -> Expr -> Expr -> Order
+compare c expr1 expr2 =
+    getFuncVV c MeBasics.compare c expr1 expr2
+        |> toOrderUnsafe
 
-        ( VFloat n1, VFloat n2 ) ->
-            Basics.compare n1 n2
+
+toOrderUnsafe : Expr -> Order
+toOrderUnsafe expr =
+    {--This is a necessary evil when we talk to functions
+        like native List.sortWith.  There's no way to reuse
+        the code of List.sortWith without actually returning
+        EQ, LT, or GT.  If our callers give us a bad
+        ordBy/with function, we just have to return EQ.
+    --}
+    let
+        err () =
+            let
+                _ =
+                    Debug.log "bad expression for toOrderUnsafe" expr
+            in
+            EQ
+    in
+    case expr of
+        ComputedValue v ->
+            case v of
+                VOrder ord ->
+                    ord
+
+                _ ->
+                    err ()
 
         _ ->
-            Basics.EQ
+            err ()
