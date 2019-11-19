@@ -1,3 +1,10 @@
+4.0.1
+-----
+fix broken links
+
+4.0.0
+-----
+
 - support partial applications of F2/F3 lambdas
 
 3.0.0
