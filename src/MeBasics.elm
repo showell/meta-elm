@@ -9,6 +9,7 @@ module MeBasics exposing (compare)
 
 -}
 
+import MeApply
 import MeRunTime
     exposing
         ( error
@@ -27,20 +28,7 @@ compare =
     let
         compare0 : FV
         compare0 =
-            \c expr1 ->
-                case getValue c expr1 of
-                    VInt n ->
-                        n
-                            |> compare1Int
-                            |> ComputedFunc
-
-                    VFloat n ->
-                        n
-                            |> compare1Float
-                            |> ComputedFunc
-
-                    _ ->
-                        error "not a supported comparable"
+            MeApply.numberFV compare1Int compare1Float
 
         compare1Int : Int -> FV
         compare1Int =

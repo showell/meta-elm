@@ -29,6 +29,7 @@ module MeList exposing
 
 -}
 
+import MeApply
 import MeBasics
 import MeFloat
 import MeInt
@@ -103,22 +104,16 @@ minimum =
     let
         minimum0 : FV
         minimum0 =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        case lst of
-                            x :: xs ->
-                                Just (List.foldl min x xs)
-                                    |> VMaybe
-                                    |> ComputedValue
+            MeApply.list <|
+                \lst ->
+                    case lst of
+                        x :: xs ->
+                            Just (List.foldl min x xs)
+                                |> VMaybe
 
-                            _ ->
-                                Nothing
-                                    |> VMaybe
-                                    |> ComputedValue
-
-                    _ ->
-                        error "minimum wants a list"
+                        _ ->
+                            Nothing
+                                |> VMaybe
     in
     NamedFunc "List.minimum" minimum0
 
@@ -130,22 +125,16 @@ maximum =
     let
         maximum0 : FV
         maximum0 =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        case lst of
-                            x :: xs ->
-                                Just (List.foldl max x xs)
-                                    |> VMaybe
-                                    |> ComputedValue
+            MeApply.list <|
+                \lst ->
+                    case lst of
+                        x :: xs ->
+                            Just (List.foldl max x xs)
+                                |> VMaybe
 
-                            _ ->
-                                Nothing
-                                    |> VMaybe
-                                    |> ComputedValue
-
-                    _ ->
-                        error "maximum wants a list"
+                        _ ->
+                            Nothing
+                                |> VMaybe
     in
     NamedFunc "List.maximum" maximum0
 
@@ -157,24 +146,15 @@ intersperse =
     let
         intersperse0 : FV
         intersperse0 =
-            \c vExpr ->
-                vExpr
-                    |> compute c
-                    |> intersperse1
-                    |> ComputedFunc
+            MeApply.exprFV intersperse1
 
         intersperse1 : Expr -> FV
         intersperse1 =
             \v ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            List.intersperse v lst
-                                |> VList
-                                |> ComputedValue
-
-                        _ ->
-                            error "need a list in intersperse"
+                MeApply.list <|
+                    \lst ->
+                        List.intersperse v lst
+                            |> VList
     in
     NamedFunc "List.intersperse" intersperse0
 
@@ -186,29 +166,16 @@ drop =
     let
         drop0 : FV
         drop0 =
-            \c nExpr ->
-                case getValue c nExpr of
-                    VInt n ->
-                        n
-                            |> drop1
-                            |> ComputedFunc
-
-                    _ ->
-                        error "first arg to drop should be an int"
+            MeApply.intFV drop1
 
         drop1 : Int -> FV
         drop1 =
             \n ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            lst
-                                |> List.drop n
-                                |> VList
-                                |> ComputedValue
-
-                        _ ->
-                            error "drop wants a list"
+                MeApply.list <|
+                    \lst ->
+                        lst
+                            |> List.drop n
+                            |> VList
     in
     NamedFunc "List.drop" drop0
 
@@ -220,29 +187,16 @@ take =
     let
         take0 : FV
         take0 =
-            \c nExpr ->
-                case getValue c nExpr of
-                    VInt n ->
-                        n
-                            |> take1
-                            |> ComputedFunc
-
-                    _ ->
-                        error "first arg to take should be an int"
+            MeApply.intFV take1
 
         take1 : Int -> FV
         take1 =
             \n ->
-                \c lstExpr ->
-                    case getValue c lstExpr of
-                        VList lst ->
-                            lst
-                                |> List.take n
-                                |> VList
-                                |> ComputedValue
-
-                        _ ->
-                            error "take wants a list"
+                MeApply.list <|
+                    \lst ->
+                        lst
+                            |> List.take n
+                            |> VList
     in
     NamedFunc "List.take" take0
 
@@ -303,18 +257,13 @@ tail =
     let
         tail0 : FV
         tail0 =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        lst
-                            |> List.tail
-                            |> Maybe.map VList
-                            |> Maybe.map ComputedValue
-                            |> VMaybe
-                            |> ComputedValue
-
-                    _ ->
-                        error "tail wants a list"
+            MeApply.list <|
+                \lst ->
+                    lst
+                        |> List.tail
+                        |> Maybe.map VList
+                        |> Maybe.map ComputedValue
+                        |> VMaybe
     in
     NamedFunc "List.tail" tail0
 
@@ -326,16 +275,11 @@ head =
     let
         head0 : FV
         head0 =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        lst
-                            |> List.head
-                            |> VMaybe
-                            |> ComputedValue
-
-                    _ ->
-                        error "head wants a list"
+            MeApply.list <|
+                \lst ->
+                    lst
+                        |> List.head
+                        |> VMaybe
     in
     NamedFunc "List.head" head0
 
@@ -347,16 +291,11 @@ isEmpty =
     let
         isEmpty0 : FV
         isEmpty0 =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        lst
-                            |> List.isEmpty
-                            |> VBool
-                            |> ComputedValue
-
-                    _ ->
-                        error "isEmpty wants a list"
+            MeApply.list <|
+                \lst ->
+                    lst
+                        |> List.isEmpty
+                        |> VBool
     in
     NamedFunc "List.isEmpty" isEmpty0
 
@@ -368,16 +307,11 @@ length =
     let
         length0 : FV
         length0 =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        lst
-                            |> List.length
-                            |> VInt
-                            |> ComputedValue
-
-                    _ ->
-                        error "length wants a list"
+            MeApply.list <|
+                \lst ->
+                    lst
+                        |> List.length
+                        |> VInt
     in
     NamedFunc "List.length" length0
 
@@ -389,16 +323,11 @@ reverse =
     let
         reverse0 : FV
         reverse0 =
-            \c lstExpr ->
-                case getValue c lstExpr of
-                    VList lst ->
-                        lst
-                            |> List.reverse
-                            |> VList
-                            |> ComputedValue
-
-                    _ ->
-                        error "reverse wants a list"
+            MeApply.list <|
+                \lst ->
+                    lst
+                        |> List.reverse
+                        |> VList
     in
     NamedFunc "List.reverse" reverse0
 
@@ -444,13 +373,7 @@ sortBy =
     let
         sortBy0 : FV
         sortBy0 =
-            \c ordExpr ->
-                let
-                    ord =
-                        getFuncV c ordExpr
-                in
-                sortBy1 ord
-                    |> ComputedFunc
+            MeApply.fvFV sortBy1
 
         sortBy1 : FV -> FV
         sortBy1 =
@@ -540,11 +463,7 @@ filterMap =
     let
         filterMap0 : FV
         filterMap0 =
-            \c predExpr ->
-                predExpr
-                    |> getFuncV c
-                    |> filterMap1
-                    |> ComputedFunc
+            MeApply.fvFV filterMap1
 
         filterMap1 : FV -> FV
         filterMap1 =
@@ -573,11 +492,7 @@ filter =
     let
         filter0 : FV
         filter0 =
-            \c predExpr ->
-                predExpr
-                    |> getFuncV c
-                    |> filter1
-                    |> ComputedFunc
+            MeApply.fvFV filter1
 
         filter1 : FV -> FV
         filter1 =
@@ -606,11 +521,7 @@ partition =
     let
         partition0 : FV
         partition0 =
-            \c predExpr ->
-                predExpr
-                    |> getFuncV c
-                    |> partition1
-                    |> ComputedFunc
+            MeApply.fvFV partition1
 
         partition1 : FV -> FV
         partition1 =
@@ -641,11 +552,7 @@ any =
     let
         any0 : FV
         any0 =
-            \c predExpr ->
-                predExpr
-                    |> getFuncV c
-                    |> any1
-                    |> ComputedFunc
+            MeApply.fvFV any1
 
         any1 : FV -> FV
         any1 =
@@ -674,11 +581,7 @@ all =
     let
         all0 : FV
         all0 =
-            \c predExpr ->
-                predExpr
-                    |> getFuncV c
-                    |> all1
-                    |> ComputedFunc
+            MeApply.fvFV all1
 
         all1 : FV -> FV
         all1 =
@@ -1022,11 +925,7 @@ member =
     let
         member0 : FV
         member0 =
-            \c needle ->
-                needle
-                    |> compute c
-                    |> member1
-                    |> ComputedFunc
+            MeApply.exprFV member1
 
         member1 : Expr -> FV
         member1 =
@@ -1056,17 +955,9 @@ repeat =
     let
         repeat0 : Context -> Expr -> Expr
         repeat0 =
-            \c nExpr ->
-                case getValue c nExpr of
-                    VInt n ->
-                        n
-                            |> repeat1
-                            |> ComputedFunc
+            MeApply.intFV repeat1
 
-                    _ ->
-                        error "first arg to repeat must be an integer"
-
-        repeat1 : Int -> (Context -> Expr -> Expr)
+        repeat1 : Int -> FV
         repeat1 =
             \n ->
                 \c vExpr ->
@@ -1086,17 +977,9 @@ range =
     let
         range0 : Context -> Expr -> Expr
         range0 =
-            \c loExpr ->
-                case getValue c loExpr of
-                    VInt lo ->
-                        lo
-                            |> range1
-                            |> ComputedFunc
+            MeApply.intFV range1
 
-                    _ ->
-                        error "low value to range must be integer"
-
-        range1 : Int -> (Context -> Expr -> Expr)
+        range1 : Int -> FV
         range1 =
             \lo ->
                 \c hiExpr ->
@@ -1137,11 +1020,7 @@ cons =
     let
         cons0 : FV
         cons0 =
-            \c hExpr ->
-                hExpr
-                    |> compute c
-                    |> cons1
-                    |> ComputedFunc
+            MeApply.exprFV cons1
 
         cons1 : Expr -> FV
         cons1 =
@@ -1197,11 +1076,7 @@ concatMap =
 
         concatMap0 : FV
         concatMap0 =
-            \c fExpr ->
-                fExpr
-                    |> getFuncV c
-                    |> concatMap1
-                    |> ComputedFunc
+            MeApply.fvFV concatMap1
 
         concatMap1 : FV -> FV
         concatMap1 =
@@ -1242,19 +1117,10 @@ append =
         append1 : List Expr -> FV
         append1 =
             \lst1 ->
-                \c lstExpr2 ->
-                    let
-                        v2 =
-                            getValue c lstExpr2
-                    in
-                    case v2 of
-                        VList lst2 ->
-                            (lst1 ++ lst2)
-                                |> VList
-                                |> ComputedValue
-
-                        _ ->
-                            error "second arg to append should be a list"
+                MeApply.list <|
+                    \lst2 ->
+                        (lst1 ++ lst2)
+                            |> VList
     in
     OpFunc "List.append" append0 "++"
 

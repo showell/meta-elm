@@ -17,6 +17,7 @@ module MeInt exposing
 
 -}
 
+import MeApply
 import MeRunTime
     exposing
         ( error
@@ -60,15 +61,7 @@ modBy =
     let
         modBy0 : FV
         modBy0 =
-            \c expr1 ->
-                case getValue c expr1 of
-                    VInt n1 ->
-                        n1
-                            |> modBy1
-                            |> ComputedFunc
-
-                    _ ->
-                        error "need int for first arg"
+            MeApply.intFV modBy1
 
         modBy1 : Int -> FV
         modBy1 =
@@ -93,15 +86,7 @@ eq =
     let
         eq0 : FV
         eq0 =
-            \c expr1 ->
-                case getValue c expr1 of
-                    VInt n1 ->
-                        n1
-                            |> eq1
-                            |> ComputedFunc
-
-                    _ ->
-                        error "need int for first arg"
+            MeApply.intFV eq1
 
         eq1 : Int -> FV
         eq1 =

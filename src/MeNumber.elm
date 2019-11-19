@@ -6,6 +6,7 @@ module MeNumber exposing (plus, minus, mult)
 
 -}
 
+import MeApply
 import MeRunTime
     exposing
         ( error
@@ -43,20 +44,7 @@ binOp impl name =
     let
         f0 : FV
         f0 =
-            \c expr1 ->
-                case getValue c expr1 of
-                    VInt a ->
-                        a
-                            |> f1Int
-                            |> ComputedFunc
-
-                    VFloat a ->
-                        a
-                            |> f1Float
-                            |> ComputedFunc
-
-                    _ ->
-                        error "not a number"
+            MeApply.numberFV f1Int f1Float
 
         f1Int : Int -> FV
         f1Int =

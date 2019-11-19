@@ -6,6 +6,7 @@ module MeTuple exposing (first, second, pair)
 
 -}
 
+import MeApply
 import MeRunTime exposing (compute, error, getValue)
 import MeType exposing (..)
 
@@ -44,6 +45,10 @@ second =
 pair : Expr
 pair =
     let
+        pair0 : FV
+        pair0 =
+            MeApply.exprFV pair1
+
         pair1 : Expr -> FV
         pair1 left =
             \c rightExpr ->
@@ -53,14 +58,5 @@ pair =
                 in
                 VTuple (Tuple.pair left right)
                     |> ComputedValue
-
-        pair0 : FV
-        pair0 c leftExpr =
-            let
-                left =
-                    compute c leftExpr
-            in
-            pair1 left
-                |> ComputedFunc
     in
     NamedFunc "Tuple.pair" pair0
