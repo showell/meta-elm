@@ -26,7 +26,8 @@ import MeRunTime
         )
 import MeType
     exposing
-        ( Expr(..)
+        ( Context
+        , Expr(..)
         , FV
         , V(..)
         )
@@ -34,14 +35,14 @@ import MeType
 
 {-| creates FV for f(list)
 -}
-list : (List Expr -> V) -> FV
+list : (Context -> List Expr -> V) -> FV
 list =
     \f ->
         \c lstExpr ->
             case getValue c lstExpr of
                 VList lst ->
                     lst
-                        |> f
+                        |> f c
                         |> ComputedValue
 
                 _ ->

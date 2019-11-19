@@ -105,7 +105,7 @@ minimum =
         minimum0 : FV
         minimum0 =
             MeApply.list <|
-                \lst ->
+                \_ lst ->
                     case lst of
                         x :: xs ->
                             Just (List.foldl min x xs)
@@ -126,7 +126,7 @@ maximum =
         maximum0 : FV
         maximum0 =
             MeApply.list <|
-                \lst ->
+                \_ lst ->
                     case lst of
                         x :: xs ->
                             Just (List.foldl max x xs)
@@ -152,7 +152,7 @@ intersperse =
         intersperse1 =
             \v ->
                 MeApply.list <|
-                    \lst ->
+                    \_ lst ->
                         List.intersperse v lst
                             |> VList
     in
@@ -172,7 +172,7 @@ drop =
         drop1 =
             \n ->
                 MeApply.list <|
-                    \lst ->
+                    \_ lst ->
                         lst
                             |> List.drop n
                             |> VList
@@ -193,7 +193,7 @@ take =
         take1 =
             \n ->
                 MeApply.list <|
-                    \lst ->
+                    \_ lst ->
                         lst
                             |> List.take n
                             |> VList
@@ -258,7 +258,7 @@ tail =
         tail0 : FV
         tail0 =
             MeApply.list <|
-                \lst ->
+                \_ lst ->
                     lst
                         |> List.tail
                         |> Maybe.map VList
@@ -276,7 +276,7 @@ head =
         head0 : FV
         head0 =
             MeApply.list <|
-                \lst ->
+                \_ lst ->
                     lst
                         |> List.head
                         |> VMaybe
@@ -292,7 +292,7 @@ isEmpty =
         isEmpty0 : FV
         isEmpty0 =
             MeApply.list <|
-                \lst ->
+                \_ lst ->
                     lst
                         |> List.isEmpty
                         |> VBool
@@ -308,7 +308,7 @@ length =
         length0 : FV
         length0 =
             MeApply.list <|
-                \lst ->
+                \_ lst ->
                     lst
                         |> List.length
                         |> VInt
@@ -324,7 +324,7 @@ reverse =
         reverse0 : FV
         reverse0 =
             MeApply.list <|
-                \lst ->
+                \_ lst ->
                     lst
                         |> List.reverse
                         |> VList
@@ -1118,7 +1118,7 @@ append =
         append1 =
             \lst1 ->
                 MeApply.list <|
-                    \lst2 ->
+                    \_ lst2 ->
                         (lst1 ++ lst2)
                             |> VList
     in
