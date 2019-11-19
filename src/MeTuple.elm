@@ -11,33 +11,22 @@ import MeRunTime exposing (compute, error, getValue)
 import MeType exposing (..)
 
 
-fFrom : String -> (( Expr, Expr ) -> Expr) -> Expr
-fFrom name rawF =
-    let
-        f : FV
-        f c expr =
-            case getValue c expr of
-                VTuple tup ->
-                    compute c (rawF tup)
-
-                _ ->
-                    error "not a tuple"
-    in
-    NamedFunc name f
-
-
 {-| wraps Tuple.first
 -}
 first : Expr
 first =
-    fFrom "Tuple.first" Tuple.first
+    Tuple.first
+        |> MeApply.tuple
+        |> NamedFunc "tuple.first"
 
 
 {-| wraps Tuple.second
 -}
 second : Expr
 second =
-    fFrom "Tuple.second" Tuple.second
+    Tuple.second
+        |> MeApply.tuple
+        |> NamedFunc "Tuple.second"
 
 
 {-| wraps Tuple.pair
@@ -52,11 +41,10 @@ pair =
         pair1 : Expr -> FV
         pair1 left =
             \c rightExpr ->
-                let
-                    right =
-                        compute c rightExpr
-                in
-                VTuple (Tuple.pair left right)
+                rightExpr
+                    |> compute c
+                    |> Tuple.pair left
+                    |> VTuple
                     |> ComputedValue
     in
     NamedFunc "Tuple.pair" pair0
