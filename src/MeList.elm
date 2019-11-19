@@ -200,31 +200,23 @@ unzip =
             MeApply.list <|
                 \c lst ->
                     let
-                        first elem =
-                            case getValue c elem of
-                                VTuple tup ->
-                                    Tuple.first tup
+                        first =
+                            Tuple.first
+                                |> MeApply.tuple
 
-                                _ ->
-                                    error "not a tuple"
-
-                        second elem =
-                            case getValue c elem of
-                                VTuple tup ->
-                                    Tuple.second tup
-
-                                _ ->
-                                    error "not a tuple"
+                        second =
+                            Tuple.second
+                                |> MeApply.tuple
 
                         lst1 =
                             lst
-                                |> List.map first
+                                |> List.map (first c)
                                 |> VList
                                 |> ComputedValue
 
                         lst2 =
                             lst
-                                |> List.map second
+                                |> List.map (second c)
                                 |> VList
                                 |> ComputedValue
                     in
