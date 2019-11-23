@@ -14,8 +14,6 @@ import MeType exposing (Expr(..), FV, V(..))
 
 
 {-| wraps compare
-
-
 -}
 compare : Expr
 compare =

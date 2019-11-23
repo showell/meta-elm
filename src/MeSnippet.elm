@@ -8,6 +8,7 @@ import MeInt
 import MeList
 import MeNumber
 import MeParser
+import MePython
 import MeRepr
 import MeRunTime
 import MeTuple
@@ -492,6 +493,10 @@ helper f funcName inString =
             ns
                 |> MeCodeGen.fromContext
 
+        pythonCode =
+            ns
+                |> MePython.fromContext
+
         args =
             [ inExpr ]
 
@@ -502,6 +507,7 @@ helper f funcName inString =
     in
     [ code
     , inString
+    , pythonCode
     , outString
     ]
 

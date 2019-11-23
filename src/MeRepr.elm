@@ -1,6 +1,6 @@
 module MeRepr exposing
     ( fromExpr
-    , fromList, fromTuple
+    , fromList, fromTuple, fromV
     )
 
 {-| convert Expr to String
@@ -10,11 +10,10 @@ module MeRepr exposing
 
 # Helpers
 
-@docs fromList, fromTuple
+@docs fromList, fromTuple, fromV
 
 -}
 
-import MeRunTime
 import MeType
     exposing
         ( Expr(..)
@@ -48,22 +47,42 @@ fromTuple ( a, b ) =
 -}
 fromExpr : Expr -> String
 fromExpr expr =
-    case MeRunTime.getFinalValue expr of
+    case expr of
+        ComputedValue v ->
+            fromV v fromExpr
+
+        SimpleValue v ->
+            fromV v fromExpr
+
+        _ ->
+            "????"
+
+
+{-| convert Value to String
+
+    pass in helper to convert subexpressions
+
+    (usually you just wanna call fromExpr)
+
+-}
+fromV : V -> (Expr -> String) -> String
+fromV val helper =
+    case val of
         VList lst ->
             lst
-                |> List.map fromExpr
+                |> List.map helper
                 |> fromList
 
         VTuple ( a, b ) ->
-            ( a |> fromExpr
-            , b |> fromExpr
+            ( a |> helper
+            , b |> helper
             )
                 |> fromTuple
 
         VMaybe m ->
             case m of
                 Just v ->
-                    "Just " ++ (v |> fromExpr)
+                    "Just " ++ (v |> helper)
 
                 Nothing ->
                     "Nothing"
