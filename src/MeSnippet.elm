@@ -493,9 +493,21 @@ helper f funcName inString =
             ns
                 |> MeCodeGen.fromContext
 
-        pythonCode =
+        pythonDef =
             ns
                 |> MePython.fromContext
+
+        pythonCall =
+            "\n\n"
+                ++ "print(toPy(\n"
+                ++ "    "
+                ++ funcName
+                ++ "("
+                ++ (inString |> String.trim)
+                ++ ")\n))\n"
+
+        pythonCode =
+            pythonDef ++ pythonCall
 
         args =
             [ inExpr ]

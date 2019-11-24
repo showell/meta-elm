@@ -6,6 +6,7 @@ import Html.Attributes
         ( style
         )
 import List.Extra
+import MePython
 import MeSnippet
 import MeType exposing (Expr(..), V(..))
 import MeWrapper
@@ -22,10 +23,20 @@ view =
 
 pythonCode : List (Html msg)
 pythonCode =
-    MeSnippet.testData
-        |> List.map (List.Extra.getAt 1)
-        |> List.map (Maybe.withDefault "??")
-        |> String.join "\n\n"
+    let
+        prelude =
+            MePython.prelude
+
+        defs =
+            MeSnippet.testData
+                |> List.map (List.Extra.getAt 1)
+                |> List.map (Maybe.withDefault "??")
+                |> String.join "\n\n"
+
+        fullCode =
+            prelude ++ defs
+    in
+    fullCode
         |> Html.text
         |> List.singleton
         |> Html.pre []

@@ -1,5 +1,6 @@
 module MePython exposing
     ( fromContext
+    , prelude
     , toPython
     )
 
@@ -10,6 +11,20 @@ import MeType
         ( Context
         , Expr(..)
         )
+
+
+prelude : String
+prelude =
+    """
+from Kernel import (
+    toElm,
+    toPy,
+    )
+from Elm import F
+import List
+import Tuple
+
+"""
 
 
 opName : Expr -> String
@@ -164,14 +179,20 @@ toPython expr =
                     argRight |> toPython
             in
             if op == "::" then
-                "["
+                "List.cons("
                     ++ left
-                    ++ "]"
-                    ++ " + "
+                    ++ ", "
                     ++ right
+                    ++ ")"
 
             else
-                left ++ "  " ++ op ++ " " ++ right
+                "toElm("
+                    ++ left
+                    ++ " "
+                    ++ op
+                    ++ " "
+                    ++ right
+                    ++ ")"
 
         LetIn lets vexpr ->
             formatLets lets ++ "\n\nreturn " ++ toPython vexpr
