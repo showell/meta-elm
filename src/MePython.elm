@@ -1,5 +1,6 @@
 module MePython exposing
-    ( fromContext
+    ( formatArgs
+    , fromContext
     , prelude
     , toPython
     )
@@ -142,11 +143,18 @@ aN args =
                 ++ (rest |> argList)
 
 
+formatArgs : List String -> String
+formatArgs args =
+    "(\n"
+        ++ (args |> String.join ",\n" |> indent)
+        ++ "\n)"
+
+
 argList : List Expr -> String
 argList args =
-    "(\n"
-        ++ (args |> List.map toPython |> String.join ",\n" |> indent)
-        ++ "\n)"
+    args
+        |> List.map toPython
+        |> formatArgs
 
 
 fN : List String -> Expr -> String

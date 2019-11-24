@@ -507,17 +507,14 @@ helper f funcName inString =
 
         pythonCall =
             "\n\n"
-                ++ "test("
-                ++ "'"
-                ++ funcName
-                ++ "'"
-                ++ ", "
-                ++ funcName
-                ++ ", "
-                ++ (inString |> String.trim)
-                ++ ", "
-                ++ outString
-                ++ ")\n"
+                ++ "test"
+                ++ ([ "'" ++ funcName ++ "'"
+                    , funcName
+                    , inString |> String.trim
+                    , outString
+                    ]
+                        |> MePython.formatArgs
+                   )
 
         pythonCode =
             pythonDef ++ pythonCall
