@@ -472,7 +472,7 @@ filter =
                 MeApply.list <|
                     \c lst ->
                         lst
-                            |> List.filter (makePredicate c pred)
+                            |> List.filter (boolPredicate c pred)
                             |> VList
     in
     NamedFunc "List.filter" filter0
@@ -493,7 +493,7 @@ partition =
                 MeApply.list <|
                     \c lst ->
                         lst
-                            |> List.partition (makePredicate c pred)
+                            |> List.partition (boolPredicate c pred)
                             |> Tuple.mapBoth VList VList
                             |> Tuple.mapBoth ComputedValue ComputedValue
                             |> VTuple
@@ -516,7 +516,7 @@ any =
                 MeApply.list <|
                     \c lst ->
                         lst
-                            |> List.any (makePredicate c pred)
+                            |> List.any (boolPredicate c pred)
                             |> VBool
     in
     NamedFunc "List.any" any0
@@ -537,7 +537,7 @@ all =
                 MeApply.list <|
                     \c lst ->
                         lst
-                            |> List.all (makePredicate c pred)
+                            |> List.all (boolPredicate c pred)
                             |> VBool
     in
     NamedFunc "List.all" all0
@@ -1003,21 +1003,13 @@ maybePredicate =
                     Nothing
 
 
-makePredicate : Context -> FV -> (Expr -> Bool)
-makePredicate =
+boolPredicate : Context -> FV -> (Expr -> Bool)
+boolPredicate =
     \c pred ->
         \vExpr ->
             case getValue c (pred c vExpr) of
                 VBool b ->
                     b
-
-                VMaybe m ->
-                    case m of
-                        Just _ ->
-                            True
-
-                        _ ->
-                            False
 
                 _ ->
                     False
