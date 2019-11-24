@@ -1,4 +1,4 @@
-module MeSnippet exposing (testData)
+module MeSnippet exposing (pythonCode)
 
 import Dict
 import MeBasics
@@ -479,7 +479,7 @@ filterMap =
         A2 MeList.filterMap MeList.head (VarName "lst")
 
 
-helper : Expr -> String -> String -> List String
+helper : Expr -> String -> String -> String
 helper f funcName inString =
     let
         ns =
@@ -505,7 +505,7 @@ helper f funcName inString =
                 |> MeRunTime.computeExpr
                 |> MeRepr.fromExpr
 
-        pythonCall =
+        testCall =
             "\n\n"
                 ++ "test"
                 ++ ([ "'" ++ funcName ++ "'"
@@ -515,19 +515,12 @@ helper f funcName inString =
                     ]
                         |> MePython.formatArgs
                    )
-
-        pythonCode =
-            pythonDef ++ pythonCall
     in
-    [ code
-    , pythonCode
-    , inString
-    , outString
-    ]
+    pythonDef ++ testCall
 
 
-testData : List (List String)
-testData =
+pythonCode : List String
+pythonCode =
     [ helper a1a1f2 "a1a1f2" "2"
     , helper a1a1a1f3 "a1a1a1f3" "3"
     , helper all "all" "[1, 1, 1]"
