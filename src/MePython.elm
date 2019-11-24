@@ -12,8 +12,8 @@ import MeType
         )
 
 
-op : Expr -> String
-op expr =
+opName : Expr -> String
+opName expr =
     case expr of
         OpFunc _ _ name ->
             name
@@ -24,12 +24,24 @@ op expr =
 
 def : String -> List String -> Expr -> String
 def name params expr =
-    "def "
-        ++ name
-        ++ "("
-        ++ (params |> String.join ", ")
-        ++ "):\n    return \\\n"
-        ++ (expr |> toPython |> indent |> indent)
+    let
+        topLine =
+            "def "
+                ++ name
+                ++ "("
+                ++ (params |> String.join ", ")
+                ++ "):\n"
+
+        body =
+            case expr of
+                LetIn _ _ ->
+                    expr |> toPython |> indent
+
+                _ ->
+                    "    return \\\n"
+                        ++ (expr |> toPython |> indent |> indent)
+    in
+    topLine ++ body
 
 
 block : ( String, Expr ) -> String
@@ -52,7 +64,7 @@ block ( name, expr ) =
 
         _ ->
             name
-                ++ " =\n"
+                ++ " = \\\n"
                 ++ (expr |> toPython |> indent)
 
 
@@ -97,9 +109,14 @@ aN args =
 
         head :: rest ->
             (head |> toPython |> fWrap)
-                ++ "(\n"
-                ++ (rest |> List.map toPython |> String.join ",\n" |> indent)
-                ++ "\n)"
+                ++ (rest |> argList)
+
+
+argList : List Expr -> String
+argList args =
+    "(\n"
+        ++ (args |> List.map toPython |> String.join ",\n" |> indent)
+        ++ "\n)"
 
 
 fN : List String -> Expr -> String
@@ -123,31 +140,54 @@ toPython expr =
         NamedFunc name _ ->
             name
 
-        OpFunc name _ _ ->
-            name
+        OpFunc _ _ name ->
+            if name == "::" then
+                "List.cons"
+
+            else
+                "lambda a, b: a "
+                    ++ name
+                    ++ " b"
 
         SimpleValue v ->
             MeRepr.fromV v toPython
 
         Infix argLeft opExpr argRight ->
-            (argLeft |> toPython)
-                ++ " "
-                ++ (opExpr |> op)
-                ++ " "
-                ++ (argRight |> toPython)
+            let
+                left =
+                    argLeft |> toPython
+
+                op =
+                    opExpr |> opName
+
+                right =
+                    argRight |> toPython
+            in
+            if op == "::" then
+                "["
+                    ++ left
+                    ++ "]"
+                    ++ " + "
+                    ++ right
+
+            else
+                left ++ "  " ++ op ++ " " ++ right
 
         LetIn lets vexpr ->
             formatLets lets ++ "\n\nreturn " ++ toPython vexpr
 
         IfElse cond expr1 expr2 ->
-            (expr1 |> toPython)
-                ++ " if\n"
+            "("
+                ++ (expr1 |> toPython)
+                ++ "\nif\n"
                 ++ (cond |> toPython |> indent)
                 ++ "\nelse\n"
                 ++ (toPython expr2 |> indent)
+                ++ ")"
 
         Call funcName args ->
-            parens funcName ++ aN args
+            (funcName |> parens)
+                ++ (args |> argList)
 
         PipeLine a lst ->
             "Elm.pipe("

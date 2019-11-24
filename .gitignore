@@ -4,6 +4,7 @@ elm-stuff
 repl-temp-*
 index.html
 docs.json
+foo.py
 
 src/todo.txt
 

@@ -5,6 +5,7 @@ import Html.Attributes
     exposing
         ( style
         )
+import List.Extra
 import MeSnippet
 import MeType exposing (Expr(..), V(..))
 import MeWrapper
@@ -12,7 +13,23 @@ import MeWrapper
 
 view : List (Html msg)
 view =
-    testResults ++ MeWrapper.viewWrappers
+    pythonCode
+
+
+
+-- testResults
+
+
+pythonCode : List (Html msg)
+pythonCode =
+    MeSnippet.testData
+        |> List.map (List.Extra.getAt 1)
+        |> List.map (Maybe.withDefault "??")
+        |> String.join "\n\n"
+        |> Html.text
+        |> List.singleton
+        |> Html.pre []
+        |> List.singleton
 
 
 testResults : List (Html msg)
@@ -28,6 +45,7 @@ testResults =
         headings : Html msg
         headings =
             [ "generated code (via CodeGen)"
+            , "python"
             , "example input"
             , "example output"
             ]

@@ -506,8 +506,8 @@ helper f funcName inString =
                 |> MeRepr.fromExpr
     in
     [ code
-    , inString
     , pythonCode
+    , inString
     , outString
     ]
 
