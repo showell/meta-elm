@@ -17,7 +17,7 @@ first : Expr
 first =
     Tuple.first
         |> MeApply.tuple
-        |> NamedFunc "tuple.first"
+        |> NamedFunc "Tuple.first"
 
 
 {-| wraps Tuple.second

@@ -502,13 +502,12 @@ helper f funcName inString =
                 ++ "print("
                 ++ "'"
                 ++ funcName
-                ++ "', "
-                ++ "toPy(\n"
+                ++ "', \n"
                 ++ "    "
                 ++ funcName
                 ++ "(toElm("
                 ++ (inString |> String.trim)
-                ++ "))\n))\n"
+                ++ "))\n)\n"
 
         pythonCode =
             pythonDef ++ pythonCall
