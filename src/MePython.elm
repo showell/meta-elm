@@ -217,13 +217,22 @@ toPython expr =
                         ++ ")"
 
                 _ ->
+                    let
+                        wrapper =
+                            case op of
+                                "==" ->
+                                    toElmWrap
+
+                                _ ->
+                                    parens
+                    in
                     (left
                         ++ " "
                         ++ op
                         ++ " "
                         ++ right
                     )
-                        |> toElmWrap
+                        |> wrapper
 
         LetIn lets vexpr ->
             formatLets lets ++ "\n\nreturn " ++ toPython vexpr
