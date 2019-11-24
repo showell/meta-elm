@@ -1,3 +1,5 @@
+- fixed MeList.drop and MeList.filterMap
+
 5.0.1
 -----
 - published MeBasics

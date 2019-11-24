@@ -451,7 +451,7 @@ filterMap =
                 MeApply.list <|
                     \c lst ->
                         lst
-                            |> List.filter (makePredicate c pred)
+                            |> List.filterMap (maybePredicate c pred)
                             |> VList
     in
     NamedFunc "List.filterMap" filterMap0
@@ -989,6 +989,18 @@ toList convert vList =
 toListInts : V -> Result String (List Int)
 toListInts vList =
     toList MeInt.toInt vList
+
+
+maybePredicate : Context -> FV -> (Expr -> Maybe Expr)
+maybePredicate =
+    \c pred ->
+        \vExpr ->
+            case getValue c (pred c vExpr) of
+                VMaybe m ->
+                    m
+
+                _ ->
+                    Nothing
 
 
 makePredicate : Context -> FV -> (Expr -> Bool)
