@@ -25,9 +25,9 @@ import MeType
 -}
 fromList : List String -> String
 fromList items =
-    "[ "
+    "List.toElm([ "
         ++ String.join ", " items
-        ++ " ]"
+        ++ " ])"
         |> String.replace "], " "]\n, "
         |> String.replace "), " ")\n, "
 
@@ -36,11 +36,11 @@ fromList items =
 -}
 fromTuple : ( String, String ) -> String
 fromTuple ( a, b ) =
-    "( "
+    "Tuple.toElm(( "
         ++ a
         ++ ", "
         ++ b
-        ++ " )"
+        ++ " ))"
 
 
 {-| convert Expr to String
@@ -82,28 +82,28 @@ fromV val helper =
         VMaybe m ->
             case m of
                 Just v ->
-                    "Just " ++ (v |> helper)
+                    "Maybe.Just(" ++ (v |> helper) ++ ")"
 
                 Nothing ->
-                    "Nothing"
+                    "Maybe.Nothing"
 
         VBool b ->
             if b then
-                "true"
+                "Bool.true"
 
             else
-                "false"
+                "Bool.false"
 
         VOrder ord ->
             case ord of
                 EQ ->
-                    "EQ"
+                    "Order.EQ"
 
                 LT ->
-                    "LT"
+                    "Order.LT"
 
                 GT ->
-                    "GT"
+                    "Order.GT"
 
         VInt n ->
             String.fromInt n

@@ -23,7 +23,10 @@ from Kernel import (
     )
 from Elm import F, pipe
 import Basics
+import Bool
 import List
+import Maybe
+import Order
 import Tuple
 
 """
@@ -177,16 +180,7 @@ toPython expr =
                     ++ " b"
 
         SimpleValue v ->
-            case v of
-                VInt n ->
-                    expr |> MeRepr.fromExpr
-
-                VFloat n ->
-                    expr |> MeRepr.fromExpr
-
-                _ ->
-                    MeRepr.fromV v toPython
-                        |> toElmWrap
+            MeRepr.fromV v toPython
 
         Infix argLeft opExpr argRight ->
             let

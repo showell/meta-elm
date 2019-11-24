@@ -497,6 +497,14 @@ helper f funcName inString =
             ns
                 |> MePython.fromContext
 
+        args =
+            [ inExpr ]
+
+        outString =
+            FuncCall ns funcName args
+                |> MeRunTime.computeExpr
+                |> MeRepr.fromExpr
+
         pythonCall =
             "\n\n"
                 ++ "test("
@@ -507,18 +515,12 @@ helper f funcName inString =
                 ++ funcName
                 ++ ", "
                 ++ (inString |> String.trim)
+                ++ ", "
+                ++ outString
                 ++ ")\n"
 
         pythonCode =
             pythonDef ++ pythonCall
-
-        args =
-            [ inExpr ]
-
-        outString =
-            FuncCall ns funcName args
-                |> MeRunTime.computeExpr
-                |> MeRepr.fromExpr
     in
     [ code
     , pythonCode

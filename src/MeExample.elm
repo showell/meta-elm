@@ -14,18 +14,17 @@ import MeWrapper
 
 view : List (Html msg)
 view =
+    -- testResults
     pythonCode
-
-
-
--- testResults
 
 
 pyTestHelper : String
 pyTestHelper =
     """
-def test(funcName, f, arg):
+def test(funcName, f, arg, expected):
+    result = f(toElm(arg))
     print(funcName, f(toElm(arg)))
+    assert result == expected
 
 
 """
