@@ -199,21 +199,29 @@ toPython expr =
                 right =
                     argRight |> toPython
             in
-            if op == "::" then
-                "List.cons("
-                    ++ left
-                    ++ ", "
-                    ++ right
-                    ++ ")"
+            case op of
+                "::" ->
+                    "List.cons("
+                        ++ left
+                        ++ ", "
+                        ++ right
+                        ++ ")"
 
-            else
-                (left
-                    ++ " "
-                    ++ op
-                    ++ " "
-                    ++ right
-                )
-                    |> toElmWrap
+                "++" ->
+                    "List.append("
+                        ++ left
+                        ++ ", "
+                        ++ right
+                        ++ ")"
+
+                _ ->
+                    (left
+                        ++ " "
+                        ++ op
+                        ++ " "
+                        ++ right
+                    )
+                        |> toElmWrap
 
         LetIn lets vexpr ->
             formatLets lets ++ "\n\nreturn " ++ toPython vexpr

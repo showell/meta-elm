@@ -42,7 +42,7 @@ toFloat =
                 _ ->
                     error "need int in toFloat"
     in
-    NamedFunc "toFloat" f
+    NamedFunc "Basics.toFloat" f
 
 
 {-| turn raw Int into an Expr
@@ -71,7 +71,7 @@ modBy =
                         Basics.modBy n1 n2
                             |> VInt
     in
-    NamedFunc "modBy" modBy0
+    NamedFunc "Basics.modBy" modBy0
 
 
 {-| wraps `==` for ints
