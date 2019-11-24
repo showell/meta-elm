@@ -21,6 +21,16 @@ view =
 -- testResults
 
 
+pyTestHelper : String
+pyTestHelper =
+    """
+def test(funcName, f, arg):
+    print(funcName, f(toElm(arg)))
+
+
+"""
+
+
 pythonCode : List (Html msg)
 pythonCode =
     let
@@ -34,7 +44,7 @@ pythonCode =
                 |> String.join "\n\n"
 
         fullCode =
-            prelude ++ defs
+            prelude ++ pyTestHelper ++ defs
     in
     fullCode
         |> Html.text
