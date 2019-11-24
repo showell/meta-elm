@@ -1,5 +1,6 @@
 module MePython exposing
-    ( formatArgs
+    ( blockComment
+    , formatArgs
     , fromContext
     , prelude
     , toPython
@@ -31,6 +32,15 @@ import Order
 import Tuple
 
 """
+
+
+blockComment : String -> String
+blockComment text =
+    text
+        |> String.split "\n"
+        |> List.map (\s -> "# " ++ s)
+        |> String.join "\n"
+        |> (\s -> s ++ "\n\n")
 
 
 toPyWrap : String -> String

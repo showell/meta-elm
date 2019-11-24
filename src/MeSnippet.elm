@@ -489,9 +489,10 @@ helper f funcName inString =
             inString
                 |> MeParser.toExpr
 
-        code =
+        elmCode =
             ns
                 |> MeCodeGen.fromContext
+                |> MePython.blockComment
 
         pythonDef =
             ns
@@ -516,7 +517,7 @@ helper f funcName inString =
                         |> MePython.formatArgs
                    )
     in
-    pythonDef ++ testCall
+    elmCode ++ pythonDef ++ testCall
 
 
 pythonCode : List String

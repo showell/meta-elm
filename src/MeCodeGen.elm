@@ -33,37 +33,12 @@ pretty x =
 fromContext : Context -> String
 fromContext ns =
     let
-        paramPatterns expr =
-            case expr of
-                F1 name _ ->
-                    [ name ]
-                        |> List.map CG.varPattern
-
-                F2 name1 name0 _ ->
-                    [ name1, name0 ]
-                        |> List.map CG.varPattern
-
-                F3 name2 name1 name0 _ ->
-                    [ name2, name1, name0 ]
-                        |> List.map CG.varPattern
-
-                F4 name3 name2 name1 name0 _ ->
-                    [ name3, name2, name1, name0 ]
-                        |> List.map CG.varPattern
-
-                F5 name4 name3 name2 name1 name0 _ ->
-                    [ name4, name3, name2, name1, name0 ]
-                        |> List.map CG.varPattern
-
-                _ ->
-                    [ "?????" |> CG.varPattern ]
-
         block ( name, expr ) =
             CG.funDecl
                 Nothing
                 Nothing
                 name
-                (expr |> paramPatterns)
+                []
                 (expr |> toCG)
                 |> Elm.Pretty.prettyDeclaration
                 |> pretty
