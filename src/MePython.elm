@@ -10,6 +10,7 @@ import MeType
     exposing
         ( Context
         , Expr(..)
+        , V(..)
         )
 
 
@@ -20,11 +21,22 @@ from Kernel import (
     toElm,
     toPy,
     )
-from Elm import F
+from Elm import F, pipe
+import Basics
 import List
 import Tuple
 
 """
+
+
+toPyWrap : String -> String
+toPyWrap s =
+    "toPy(" ++ s ++ ")"
+
+
+toElmWrap : String -> String
+toElmWrap s =
+    "toElm(" ++ s ++ ")"
 
 
 opName : Expr -> String
@@ -165,7 +177,16 @@ toPython expr =
                     ++ " b"
 
         SimpleValue v ->
-            MeRepr.fromV v toPython
+            case v of
+                VInt n ->
+                    expr |> MeRepr.fromExpr
+
+                VFloat n ->
+                    expr |> MeRepr.fromExpr
+
+                _ ->
+                    MeRepr.fromV v toPython
+                        |> toElmWrap
 
         Infix argLeft opExpr argRight ->
             let
@@ -186,13 +207,13 @@ toPython expr =
                     ++ ")"
 
             else
-                "toElm("
-                    ++ left
+                (left
                     ++ " "
                     ++ op
                     ++ " "
                     ++ right
-                    ++ ")"
+                )
+                    |> toElmWrap
 
         LetIn lets vexpr ->
             formatLets lets ++ "\n\nreturn " ++ toPython vexpr
@@ -201,7 +222,7 @@ toPython expr =
             "("
                 ++ (expr1 |> toPython)
                 ++ "\nif\n"
-                ++ (cond |> toPython |> indent)
+                ++ (cond |> toPython |> toPyWrap |> indent)
                 ++ "\nelse\n"
                 ++ (toPython expr2 |> indent)
                 ++ ")"
@@ -211,15 +232,15 @@ toPython expr =
                 ++ (args |> argList)
 
         PipeLine a lst ->
-            "Elm.pipe("
+            "pipe("
                 ++ (a |> toPython)
-                ++ ",\n"
+                ++ ",\n[\n"
                 ++ (lst
                         |> List.map toPython
                         |> String.join ",\n"
                         |> indent
                    )
-                ++ "\n)\n"
+                ++ "\n])\n"
 
         A1 f arg1 ->
             [ f, arg1 ]

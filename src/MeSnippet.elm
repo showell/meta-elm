@@ -499,12 +499,16 @@ helper f funcName inString =
 
         pythonCall =
             "\n\n"
-                ++ "print(toPy(\n"
+                ++ "print("
+                ++ "'"
+                ++ funcName
+                ++ "', "
+                ++ "toPy(\n"
                 ++ "    "
                 ++ funcName
-                ++ "("
+                ++ "(toElm("
                 ++ (inString |> String.trim)
-                ++ ")\n))\n"
+                ++ "))\n))\n"
 
         pythonCode =
             pythonDef ++ pythonCall
