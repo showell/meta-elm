@@ -104,11 +104,11 @@ aN args =
 
 fN : List String -> Expr -> String
 fN params expr =
-    "F(lambda "
+    "lambda "
         ++ (params |> String.join ", ")
         ++ ":\n"
         ++ (expr |> toPython |> indent)
-        ++ "\n)"
+        ++ "\n"
 
 
 toPython : Expr -> String
