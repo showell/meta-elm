@@ -36,11 +36,11 @@ fromList items =
 -}
 fromTuple : ( String, String ) -> String
 fromTuple ( a, b ) =
-    "Tuple.toElm(( "
+    "( "
         ++ a
         ++ ", "
         ++ b
-        ++ " ))"
+        ++ " )"
 
 
 {-| convert Expr to String
@@ -89,10 +89,10 @@ fromV val helper =
 
         VBool b ->
             if b then
-                "Bool.true"
+                "True"
 
             else
-                "Bool.false"
+                "False"
 
         VOrder ord ->
             case ord of

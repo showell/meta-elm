@@ -25,7 +25,6 @@ from Kernel import (
     )
 from Elm import F, pipe
 import Basics
-import Bool
 import List
 import Maybe
 import Order
@@ -46,11 +45,6 @@ blockComment text =
 toPyWrap : String -> String
 toPyWrap s =
     "toPy(" ++ s ++ ")"
-
-
-toElmWrap : String -> String
-toElmWrap s =
-    "toElm(" ++ s ++ ")"
 
 
 opName : Expr -> String
@@ -227,22 +221,13 @@ toPython expr =
                         ++ ")"
 
                 _ ->
-                    let
-                        wrapper =
-                            case op of
-                                "==" ->
-                                    toElmWrap
-
-                                _ ->
-                                    parens
-                    in
                     (left
                         ++ " "
                         ++ op
                         ++ " "
                         ++ right
                     )
-                        |> wrapper
+                        |> parens
 
         LetIn lets vexpr ->
             formatLets lets ++ "\n\nreturn " ++ toPython vexpr
