@@ -15,6 +15,12 @@ view =
 pyTestHelper : String
 pyTestHelper =
     """
+
+# This code was automatically generated from here:
+# https://github.com/showell/meta-elm/blob/master/src/MeExample.elm
+#
+# The Python functions were emitted from meta-elm ASTs.
+
 def test(funcName, f, arg, expected):
     result = f(toElm(arg))
     assert result == expected
