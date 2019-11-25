@@ -17,9 +17,8 @@ pyTestHelper =
     """
 def test(funcName, f, arg, expected):
     result = f(toElm(arg))
-    print('expected (from Elm)', expected)
-    print(funcName, f(toElm(arg)))
     assert result == expected
+    print('pass: ', funcName)
 
 
 """
@@ -33,7 +32,7 @@ pythonCode =
 
         defs =
             MeSnippet.pythonCode
-                |> String.join "\n\n"
+                |> String.join "\n\n\n"
 
         fullCode =
             prelude ++ pyTestHelper ++ defs

@@ -169,8 +169,8 @@ permuteFloats =
             )
 
 
-normalize : Expr
-normalize =
+ranks : Expr
+ranks =
     let
         nPlusOne =
             F1 "n"
@@ -479,15 +479,11 @@ filterMap =
         A2 MeList.filterMap MeList.head (VarName "lst")
 
 
-helper : Expr -> String -> String -> String
-helper f funcName inString =
+helper : Expr -> String -> List String -> String
+helper f funcName inStrings =
     let
         ns =
             Dict.fromList [ ( funcName, f ) ]
-
-        inExpr =
-            inString
-                |> MeParser.toExpr
 
         elmCode =
             ns
@@ -498,15 +494,17 @@ helper f funcName inString =
             ns
                 |> MePython.fromContext
 
-        args =
-            [ inExpr ]
+        testCall inString =
+            let
+                inExpr =
+                    inString
+                        |> MeParser.toExpr
 
-        outString =
-            FuncCall ns funcName args
-                |> MeRunTime.computeExpr
-                |> MeRepr.fromExpr
-
-        testCall =
+                outString =
+                    FuncCall ns funcName [ inExpr ]
+                        |> MeRunTime.computeExpr
+                        |> MeRepr.fromExpr
+            in
             "\n\n"
                 ++ "test"
                 ++ ([ "'" ++ funcName ++ "'"
@@ -516,63 +514,102 @@ helper f funcName inString =
                     ]
                         |> MePython.formatArgs
                    )
+
+        testCalls =
+            inStrings
+                |> List.map testCall
+                |> String.join "\n"
     in
-    elmCode ++ pythonDef ++ testCall
+    elmCode ++ pythonDef ++ testCalls
 
 
 pythonCode : List String
 pythonCode =
-    [ helper a1a1f2 "a1a1f2" "2"
-    , helper a1a1a1f3 "a1a1a1f3" "3"
-    , helper all "all" "[1, 1, 1]"
-    , helper all "all" "[1, 1, 3]"
-    , helper any "any" "[1, 2, 3]"
-    , helper any "any" "[1, 4, 3]"
-    , helper basicTupleStuff "basicTupleStuff" "5"
-    , helper basicListStuff "basicListStuff" "5"
-    , helper compare "compare" "1"
-    , helper compare "compare" "2"
-    , helper compare "compare" "3"
-    , helper concat "concat" "[ [1,2,3], [4,5,6], [7,8]]"
-    , helper concatMap "concatMap" "[ [1,2,3], [4,5,6], [7,8]]"
-    , helper drop "drop" "[]"
-    , helper drop "drop" "[1, 2, 3]"
-    , helper f4Test "f4Test" "4"
-    , helper f5Test "f5Test" "5"
-    , helper factorial "factorial" "17"
-    , helper factorial2 "factorial2" "11"
-    , helper filter "filter" "[ 4, 1, 2, 3, 4, 7, 4 ]"
-    , helper filterMap "filterMap" "[ [1], [], [2], [], [3] ]"
-    , helper foldr "foldr" "[ 1, 2, 3]"
-    , helper head "head" "[]"
-    , helper head "head" "[1, 2, 3]"
-    , helper incr "incr" "8"
-    , helper intersperse "intersperse" "999"
-    , helper isEmpty "isEmpty" "[]"
-    , helper isEmpty "isEmpty" "[1, 2]"
-    , helper length "length" "[1, 2, 3]"
-    , helper map2 "map2" "[8, 7, 9]"
-    , helper map2Pythag "map2Pythag" "[4, 12, 24]"
-    , helper map3 "map3" "[8, 7, 9]"
-    , helper map4 "map4" "[1, 3, 19, 22]"
-    , helper map5 "map5" "[5, 10, 15, 20]"
-    , helper maximum "maximum" "[]"
-    , helper maximum "maximum" "[40, 10, 30, 20]"
-    , helper member "member" "[41, 42, 43]"
-    , helper minimum "minimum" "[]"
-    , helper minimum "minimum" "[40, 10, 30, 20]"
-    , helper normalize "normalize" "[ 40, 31, 59, 12, 27 ]"
-    , helper partition "partition" "[1, 2, 3, 4, 5, 6, 7]"
-    , helper permuteFloats "permuteFloats" "[ 4, 3, 2, 5, 1 ]"
-    , helper product "product" "[1.2, 2.3, 3.8]"
-    , helper pythagTest "pythagTest" "40"
-    , helper repeat "repeat" "5"
-    , helper reverse "reverse" "[1, 2, 3]"
-    , helper sortWith "sortWith" "[53, 27, 11, 49, 82]"
-    , helper sum "sum" "[1.2, 2.3, 3.8]"
-    , helper tail "tail" "[]"
-    , helper tail "tail" "[1, 2, 3]"
-    , helper take "take" "[]"
-    , helper take "take" "[1, 2, 3]"
-    , helper unzip "unzip" "[ 1, 2, 3, 4 ]"
+    let
+        helper1 f fname input =
+            helper f fname [ input ]
+    in
+    [ helper1 a1a1f2 "a1a1f2" "2"
+    , helper1 a1a1a1f3 "a1a1a1f3" "3"
+    , helper all
+        "all"
+        [ "[1, 1, 1]"
+        , "[1, 1, 3]"
+        ]
+    , helper any
+        "any"
+        [ "[1, 2, 3]"
+        , "[1, 4, 3]"
+        ]
+    , helper1 basicTupleStuff "basicTupleStuff" "5"
+    , helper1 basicListStuff "basicListStuff" "5"
+    , helper compare
+        "compare"
+        [ "1"
+        , "2"
+        , "3"
+        ]
+    , helper1 concat "concat" "[ [1,2,3], [4,5,6], [7,8]]"
+    , helper1 concatMap "concatMap" "[ [1,2,3], [4,5,6], [7,8]]"
+    , helper drop
+        "drop"
+        [ "[]"
+        , "[1, 2, 3]"
+        ]
+    , helper1 f4Test "f4Test" "4"
+    , helper1 f5Test "f5Test" "5"
+    , helper1 factorial "factorial" "17"
+    , helper1 factorial2 "factorial2" "11"
+    , helper1 filter "filter" "[ 4, 1, 2, 3, 4, 7, 4 ]"
+    , helper1 filterMap "filterMap" "[ [1], [], [2], [], [3] ]"
+    , helper1 foldr "foldr" "[ 1, 2, 3]"
+    , helper head
+        "head"
+        [ "[]"
+        , "[1, 2, 3]"
+        ]
+    , helper1 incr "incr" "8"
+    , helper1 intersperse "intersperse" "999"
+    , helper isEmpty
+        "isEmpty"
+        [ "[]"
+        , "[1, 2]"
+        ]
+    , helper1 length "length" "[1, 2, 3]"
+    , helper1 map2 "map2" "[8, 7, 9]"
+    , helper1 map2Pythag "map2Pythag" "[4, 12, 24]"
+    , helper1 map3 "map3" "[8, 7, 9]"
+    , helper1 map4 "map4" "[1, 3, 19, 22]"
+    , helper1 map5 "map5" "[5, 10, 15, 20]"
+    , helper maximum
+        "maximum"
+        [ "[]"
+        , "[40, 10, 30, 20]"
+        ]
+    , helper1 member "member" "[41, 42, 43]"
+    , helper minimum
+        "minimum"
+        [ "[]"
+        , "[40, 10, 30, 20]"
+        ]
+    , helper1 partition "partition" "[1, 2, 3, 4, 5, 6, 7]"
+    , helper1 permuteFloats "permuteFloats" "[ 4, 3, 2, 5, 1 ]"
+    , helper1 product "product" "[1.2, 2.3, 3.8]"
+    , helper1 pythagTest "pythagTest" "40"
+    , helper1 ranks "ranks" "[ 40, 31, 59, 12, 27 ]"
+    , helper1 repeat "repeat" "5"
+    , helper1 reverse "reverse" "[1, 2, 3]"
+    , helper1 sortWith "sortWith" "[53, 27, 11, 49, 82]"
+    , helper1 sum "sum" "[1.2, 2.3, 3.8]"
+    , helper tail
+        "tail"
+        [ "[]"
+        , "[1, 2, 3]"
+        ]
+    , helper take
+        "take"
+        [ "[]"
+        , "[1, 2, 3]"
+        ]
+    , helper1 unzip "unzip" "[ 1, 2, 3, 4 ]"
     ]
